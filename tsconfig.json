@@ -3,5 +3,12 @@
   "exclude": [
     "node_modules"
   ],
-  "references": []
+  "references": [
+    {
+      "path": "exercises/01.start/01.problem.start"
+    },
+    {
+      "path": "exercises/11.finish/01.problem.finished"
+    }
+  ]
 }
