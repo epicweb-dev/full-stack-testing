@@ -53,6 +53,7 @@ test('The user profile when logged in as self', async () => {
 					ENV: { MODE: 'test' },
 					theme: 'light',
 					username: 'testuser',
+					toast: null,
 					user: {
 						...user,
 						roles: [],

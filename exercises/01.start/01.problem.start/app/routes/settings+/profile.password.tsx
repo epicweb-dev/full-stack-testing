@@ -13,7 +13,7 @@ import {
 	verifyUserPassword,
 } from '~/utils/auth.server.ts'
 import { prisma } from '~/utils/db.server.ts'
-import { useIsSubmitting } from '~/utils/misc.tsx'
+import { useIsPending } from '~/utils/misc.tsx'
 import { passwordSchema } from '~/utils/user-validation.ts'
 
 export const handle = {
@@ -36,8 +36,25 @@ const ChangePasswordForm = z
 		}
 	})
 
+async function requirePassword(userId: string) {
+	const password = await prisma.password.findUnique({
+		select: { userId: true },
+		where: { userId },
+	})
+	if (!password) {
+		throw redirect('/settings/profile/password/create')
+	}
+}
+
+export async function loader({ request }: DataFunctionArgs) {
+	const userId = await requireUserId(request)
+	await requirePassword(userId)
+	return json({})
+}
+
 export async function action({ request }: DataFunctionArgs) {
 	const userId = await requireUserId(request)
+	await requirePassword(userId)
 	const formData = await request.formData()
 	const submission = await parse(formData, {
 		async: true,
@@ -86,7 +103,7 @@ export async function action({ request }: DataFunctionArgs) {
 
 export default function ChangePasswordRoute() {
 	const actionData = useActionData<typeof action>()
-	const isSubmitting = useIsSubmitting()
+	const isPending = useIsPending()
 
 	const [form, fields] = useForm({
 		id: 'signup-form',
@@ -124,7 +141,7 @@ export default function ChangePasswordRoute() {
 				</Button>
 				<StatusButton
 					type="submit"
-					status={isSubmitting ? 'pending' : actionData?.status ?? 'idle'}
+					status={isPending ? 'pending' : actionData?.status ?? 'idle'}
 				>
 					Change Password
 				</StatusButton>

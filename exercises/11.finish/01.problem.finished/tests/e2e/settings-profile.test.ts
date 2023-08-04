@@ -14,7 +14,6 @@ test('Users can update their basic info', async ({ login, page }) => {
 	await page
 		.getByRole('textbox', { name: /^username/i })
 		.fill(newUserData.username)
-	await page.getByRole('textbox', { name: /^email/i }).fill(newUserData.email)
 
 	await page.getByRole('button', { name: /^save/i }).click()
 
@@ -25,7 +24,6 @@ test('Users can update their basic info', async ({ login, page }) => {
 	})
 	expect(updatedUser.name).toEqual(newUserData.name)
 	expect(updatedUser.username).toEqual(newUserData.username)
-	expect(updatedUser.email).toEqual(newUserData.email)
 })
 
 test('Users can update their password', async ({ login, page }) => {

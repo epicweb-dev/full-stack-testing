@@ -81,6 +81,29 @@ CREATE TABLE "Role" (
 );
 
 -- CreateTable
+CREATE TABLE "Verification" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "type" TEXT NOT NULL,
+    "target" TEXT NOT NULL,
+    "secret" TEXT NOT NULL,
+    "algorithm" TEXT NOT NULL,
+    "digits" INTEGER NOT NULL,
+    "period" INTEGER NOT NULL,
+    "expiresAt" DATETIME
+);
+
+-- CreateTable
+CREATE TABLE "GitHubConnection" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "providerId" TEXT NOT NULL,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" DATETIME NOT NULL,
+    "userId" TEXT NOT NULL,
+    CONSTRAINT "GitHubConnection_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+-- CreateTable
 CREATE TABLE "_PermissionToRole" (
     "A" TEXT NOT NULL,
     "B" TEXT NOT NULL,
@@ -125,6 +148,15 @@ CREATE UNIQUE INDEX "Permission_action_entity_access_key" ON "Permission"("actio
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Role_name_key" ON "Role"("name");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Verification_target_type_key" ON "Verification"("target", "type");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "GitHubConnection_providerId_key" ON "GitHubConnection"("providerId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "GitHubConnection_providerId_userId_key" ON "GitHubConnection"("providerId", "userId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "_PermissionToRole_AB_unique" ON "_PermissionToRole"("A", "B");

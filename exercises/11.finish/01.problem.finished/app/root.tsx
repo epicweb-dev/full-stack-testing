@@ -21,6 +21,8 @@ import {
 	type V2_MetaFunction,
 } from '@remix-run/react'
 import os from 'node:os'
+import { useEffect } from 'react'
+import { Toaster, toast as showToast } from 'sonner'
 import { z } from 'zod'
 import faviconAssetUrl from './assets/favicon.svg'
 import { GeneralErrorBoundary } from './components/error-boundary.tsx'
@@ -36,9 +38,10 @@ import { getUserId } from './utils/auth.server.ts'
 import { prisma } from './utils/db.server.ts'
 import { getEnv } from './utils/env.server.ts'
 import { getUserImgSrc, invariantResponse } from './utils/misc.tsx'
-import { getTheme, setTheme, type Theme } from './utils/theme.server.ts'
-import { useOptionalUser } from './utils/user.ts'
 import { userHasRole } from './utils/permissions.ts'
+import { getTheme, setTheme, type Theme } from './utils/theme.server.ts'
+import { type Toast, getToast } from './utils/toast.server.ts'
+import { useOptionalUser } from './utils/user.ts'
 
 export const links: LinksFunction = () => {
 	return [
@@ -52,6 +55,7 @@ export const links: LinksFunction = () => {
 }
 
 export async function loader({ request }: DataFunctionArgs) {
+	const { toast, headers: toastHeaders } = await getToast(request)
 	const userId = await getUserId(request)
 	const user = userId
 		? await prisma.user.findUniqueOrThrow({
@@ -72,12 +76,16 @@ export async function loader({ request }: DataFunctionArgs) {
 				where: { id: userId },
 		  })
 		: null
-	return json({
-		username: os.userInfo().username,
-		user,
-		theme: getTheme(request),
-		ENV: getEnv(),
-	})
+	return json(
+		{
+			username: os.userInfo().username,
+			user,
+			theme: getTheme(request),
+			toast,
+			ENV: getEnv(),
+		},
+		{ headers: toastHeaders },
+	)
 }
 
 const ThemeFormSchema = z.object({
@@ -132,6 +140,7 @@ function Document({
 						__html: `window.ENV = ${JSON.stringify(env)}`,
 					}}
 				/>
+				<Toaster closeButton position="top-center" />
 				<ScrollRestoration />
 				<Scripts />
 				<KCDShop />
@@ -211,6 +220,7 @@ export default function App() {
 				</div>
 			</div>
 			<Spacer size="3xs" />
+			{data.toast ? <ShowToast toast={data.toast} /> : null}
 		</Document>
 	)
 }
@@ -261,6 +271,7 @@ function ThemeSwitch({ userPreference }: { userPreference?: Theme }) {
 				<button
 					name="intent"
 					value="update-theme"
+					type="submit"
 					className="flex h-8 w-8 cursor-pointer items-center justify-center"
 				>
 					{modeLabel[mode]}
@@ -269,6 +280,16 @@ function ThemeSwitch({ userPreference }: { userPreference?: Theme }) {
 			<ErrorList errors={form.errors} id={form.errorId} />
 		</fetcher.Form>
 	)
+}
+
+function ShowToast({ toast }: { toast: Toast }) {
+	const { id, type, title, description } = toast
+	useEffect(() => {
+		setTimeout(() => {
+			showToast[type](title, { id, description })
+		}, 0)
+	}, [description, id, title, type])
+	return null
 }
 
 export const meta: V2_MetaFunction = () => {

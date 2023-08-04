@@ -1,6 +1,6 @@
 import { useForm } from '@conform-to/react'
 import { getFieldsetConstraint, parse } from '@conform-to/zod'
-import { json, redirect, type DataFunctionArgs } from '@remix-run/node'
+import { json, type DataFunctionArgs } from '@remix-run/node'
 import {
 	Form,
 	Link,
@@ -16,19 +16,20 @@ import { ErrorList } from '~/components/forms.tsx'
 import { Button } from '~/components/ui/button.tsx'
 import { Icon } from '~/components/ui/icon.tsx'
 import { StatusButton } from '~/components/ui/status-button.tsx'
+import { requireUserId } from '~/utils/auth.server.ts'
 import { prisma } from '~/utils/db.server.ts'
 import {
 	getNoteImgSrc,
 	invariantResponse,
-	useIsSubmitting,
+	useIsPending,
 } from '~/utils/misc.tsx'
 import {
 	requireUserWithPermission,
 	userHasPermission,
 } from '~/utils/permissions.ts'
+import { redirectWithToast } from '~/utils/toast.server.ts'
 import { useOptionalUser } from '~/utils/user.ts'
 import { type loader as notesLoader } from './notes.tsx'
-import { requireUserId } from '~/utils/auth.server.ts'
 
 export async function loader({ params }: DataFunctionArgs) {
 	const note = await prisma.note.findUnique({
@@ -89,12 +90,16 @@ export async function action({ request }: DataFunctionArgs) {
 	const isOwner = note.ownerId === userId
 	await requireUserWithPermission(
 		request,
-		isOwner ? `delete:note:any,own` : `delete:note:any`,
+		isOwner ? `delete:note:own` : `delete:note:any`,
 	)
 
 	await prisma.note.delete({ where: { id: note.id } })
 
-	return redirect(`/users/${note.owner.username}/notes`)
+	return redirectWithToast(`/users/${note.owner.username}/notes`, {
+		type: 'success',
+		title: 'Success',
+		description: 'Your note has been deleted.',
+	})
 }
 
 export default function NoteRoute() {
@@ -103,7 +108,7 @@ export default function NoteRoute() {
 	const isOwner = user?.id === data.note.ownerId
 	const canDelete = userHasPermission(
 		user,
-		isOwner ? `delete:note:any,own` : `delete:note:any`,
+		isOwner ? `delete:note:own` : `delete:note:any`,
 	)
 	const displayBar = canDelete || isOwner
 
@@ -156,7 +161,7 @@ export default function NoteRoute() {
 
 export function DeleteNote({ id }: { id: string }) {
 	const actionData = useActionData<typeof action>()
-	const isSubmitting = useIsSubmitting()
+	const isPending = useIsPending()
 	const [form] = useForm({
 		id: 'delete-note',
 		lastSubmission: actionData?.submission,
@@ -174,8 +179,8 @@ export function DeleteNote({ id }: { id: string }) {
 				name="intent"
 				value="delete-note"
 				variant="destructive"
-				status={isSubmitting ? 'pending' : actionData?.status ?? 'idle'}
-				disabled={isSubmitting}
+				status={isPending ? 'pending' : actionData?.status ?? 'idle'}
+				disabled={isPending}
 				className="w-full max-md:aspect-square max-md:px-0"
 			>
 				<Icon name="trash" className="scale-125 max-md:scale-150">

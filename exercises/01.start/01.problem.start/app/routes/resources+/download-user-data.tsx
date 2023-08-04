@@ -3,6 +3,8 @@ import { requireUserId } from '~/utils/auth.server.ts'
 import { prisma } from '~/utils/db.server.ts'
 import { getDomainUrl } from '~/utils/misc.tsx'
 
+export const ROUTE_PATH = '/resources/download-user-data'
+
 export async function loader({ request }: DataFunctionArgs) {
 	const userId = await requireUserId(request)
 	const user = await prisma.user.findUniqueOrThrow({
@@ -35,6 +37,7 @@ export async function loader({ request }: DataFunctionArgs) {
 			},
 			password: false, // <-- intentionally omit password
 			sessions: true,
+			roles: true,
 		},
 	})
 

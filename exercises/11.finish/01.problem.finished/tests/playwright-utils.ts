@@ -2,7 +2,7 @@ import { test as base, type Page } from '@playwright/test'
 import { parse } from 'cookie'
 import { getPasswordHash, sessionKey } from '~/utils/auth.server.ts'
 import { prisma } from '~/utils/db.server.ts'
-import { commitSession, getSession } from '~/utils/session.server.ts'
+import { sessionStorage } from '~/utils/session.server.ts'
 import { createUser } from '../tests/db-utils.ts'
 
 export const dataCleanup = {
@@ -24,6 +24,7 @@ export async function insertNewUser({
 			data: {
 				...userData,
 				username,
+				roles: { connect: { name: 'user' } },
 				password: {
 					create: {
 						hash: await getPasswordHash(password || userData.username),
@@ -92,18 +93,18 @@ export async function loginPage({
 		select: { id: true },
 	})
 
-	const cookieSession = await getSession()
+	const cookieSession = await sessionStorage.getSession()
 	cookieSession.set(sessionKey, session.id)
-	const cookieValue = await commitSession(cookieSession)
-	const { _session } = parse(cookieValue)
+	const cookieValue = await sessionStorage.commitSession(cookieSession)
+	const { en_session } = parse(cookieValue)
 	await page.context().addCookies([
 		{
-			name: '_session',
+			name: 'en_session',
 			sameSite: 'Lax',
 			url: baseURL,
 			httpOnly: true,
 			secure: process.env.NODE_ENV === 'production',
-			value: _session,
+			value: en_session,
 		},
 	])
 	return user

@@ -1,11 +1,19 @@
 import { faker } from '@faker-js/faker'
+import { createUser } from 'tests/db-utils.ts'
+import { requireEmail } from 'tests/mocks/utils.ts'
+import { invariant } from '~/utils/misc.tsx'
 import {
 	deleteUserByUsername,
 	expect,
 	insertNewUser,
 	test,
 } from '../playwright-utils.ts'
-import { createUser } from 'tests/db-utils.ts'
+
+const urlRegex = /(?<url>https?:\/\/[^\s$.?#].[^\s]*)/
+function extractUrl(text: string) {
+	const match = text.match(urlRegex)
+	return match?.groups?.url
+}
 
 const usernamesToDelete = new Set<string>()
 
@@ -35,6 +43,21 @@ test('onboarding with link', async ({ page }) => {
 	await expect(page).toHaveURL(`/signup`)
 
 	await page.getByRole('textbox', { name: /email/i }).fill(onboardingData.email)
+	await page.getByRole('button', { name: /submit/i }).click()
+	await expect(
+		page.getByRole('button', { name: /submit/i, disabled: true }),
+	).toBeVisible()
+	await expect(page.getByText(/check your email/i)).toBeVisible()
+
+	const email = await requireEmail(onboardingData.email)
+	expect(email.to).toBe(onboardingData.email.toLowerCase())
+	expect(email.from).toBe('hello@epicstack.dev')
+	expect(email.subject).toMatch(/welcome/i)
+	const onboardingUrl = extractUrl(email.text)
+	invariant(onboardingUrl, 'Onboarding URL not found')
+	await page.goto(onboardingUrl)
+
+	await expect(page).toHaveURL(`/onboarding`)
 	await page
 		.getByRole('textbox', { name: /^username/i })
 		.fill(onboardingData.username)
