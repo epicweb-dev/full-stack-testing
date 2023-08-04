@@ -63,7 +63,7 @@ test('Users can update their profile photo', async ({ login, page }) => {
 	await page.goto('/settings/profile')
 
 	const beforeSrc = await page
-		.getByRole('img', { name: user.name ?? user.username })
+		.getByRole('img', { name: user.name })
 		.getAttribute('src')
 
 	await page.getByRole('link', { name: /change profile photo/i }).click()
@@ -78,7 +78,7 @@ test('Users can update their profile photo', async ({ login, page }) => {
 
 	const afterSrc = await page
 		.getByRole('main')
-		.getByRole('img', { name: user.name ?? user.username })
+		.getByRole('img', { name: user.name })
 		.getAttribute('src')
 
 	expect(beforeSrc).not.toEqual(afterSrc)

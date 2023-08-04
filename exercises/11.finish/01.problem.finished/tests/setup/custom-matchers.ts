@@ -5,7 +5,7 @@ import {
 	toastSessionStorage,
 	toastKey,
 } from '~/utils/toast.server.ts'
-import { convertSetCookieToCookie } from 'tests/vitest-utils.ts'
+import { convertSetCookieToCookie } from 'tests/utils.ts'
 import { sessionKey } from '~/utils/auth.server.ts'
 import { prisma } from '~/utils/db.server.ts'
 import { sessionStorage } from '~/utils/session.server.ts'

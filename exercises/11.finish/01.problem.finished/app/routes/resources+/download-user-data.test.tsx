@@ -4,7 +4,7 @@
 import { faker } from '@faker-js/faker'
 import fs from 'fs'
 import { createPassword, createUser } from 'tests/db-utils.ts'
-import { BASE_URL, getSessionSetCookieHeader } from 'tests/vitest-utils.ts'
+import { BASE_URL, getSessionSetCookieHeader } from 'tests/utils.ts'
 import { expect, test } from 'vitest'
 import { prisma } from '~/utils/db.server.ts'
 import { ROUTE_PATH, loader } from './download-user-data.tsx'

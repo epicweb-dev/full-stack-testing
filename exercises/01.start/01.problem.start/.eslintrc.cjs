@@ -46,6 +46,7 @@ module.exports = {
 			rules: {
 				'testing-library/no-await-sync-events': 'off',
 				'jest-dom/prefer-in-document': 'off',
+				'jest-dom/prefer-to-have-attribute': 'off',
 			},
 			// we're using vitest which has a very similar API to jest
 			// (so the linting plugins work nicely), but it means we have to explicitly

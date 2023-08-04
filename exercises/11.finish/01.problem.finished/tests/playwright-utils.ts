@@ -18,38 +18,19 @@ export async function insertNewUser({
 	password,
 }: { username?: string; password?: string } = {}) {
 	const userData = createUser()
-	username = username ?? userData.username
-	const user = (await prisma.user
-		.create({
-			data: {
-				...userData,
-				username,
-				roles: { connect: { name: 'user' } },
-				password: {
-					create: {
-						hash: await getPasswordHash(password || userData.username),
-					},
-				},
-			},
-			select: { id: true, name: true, username: true, email: true },
-		})
-		.catch(async err => {
-			// sometimes the tests fail before data cleanup can happen. So we'll just
-			// delete the user and try again.
-			if (
-				err instanceof Error &&
-				err.message.includes(
-					'Unique constraint failed on the fields: (`username`)',
-				)
-			) {
-				await prisma.user.delete({ where: { username } })
-				return insertNewUser({ username, password })
-			} else {
-				throw err
-			}
-		})) as { id: string; name: string; username: string; email: string }
+	username ??= userData.username
+	password ??= userData.username
+	const user = await prisma.user.create({
+		select: { id: true, name: true, username: true, email: true },
+		data: {
+			...userData,
+			username,
+			roles: { connect: { name: 'user' } },
+			password: { create: { hash: await getPasswordHash(password) } },
+		},
+	})
 	dataCleanup.users.add(user.id)
-	return user
+	return user as typeof user & { name: string }
 }
 
 export const test = base.extend<{
@@ -107,7 +88,7 @@ export async function loginPage({
 			value: en_session,
 		},
 	])
-	return user
+	return user as typeof user & { name: string }
 }
 
 /**

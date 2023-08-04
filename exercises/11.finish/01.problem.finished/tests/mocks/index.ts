@@ -106,14 +106,20 @@ export const server = setupServer(...handlers)
 
 server.listen({
 	onUnhandledRequest(request, print) {
-		if (request.url.includes(process.cwd())) return
+		if (
+			request.url.includes(process.cwd()) ||
+			request.url.includes('node_modules')
+		) {
+			return
+		}
 		print.warning()
 	},
 })
+
 if (process.env.NODE_ENV !== 'test') {
 	console.info('🔶 Mock server installed')
-}
 
-closeWithGrace(() => {
-	server.close()
-})
+	closeWithGrace(() => {
+		server.close()
+	})
+}

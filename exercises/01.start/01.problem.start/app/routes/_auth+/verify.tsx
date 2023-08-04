@@ -241,6 +241,7 @@ async function validateRequest(
 export default function VerifyRoute() {
 	const data = useLoaderData<typeof loader>()
 	const [searchParams] = useSearchParams()
+	const remember = searchParams.get(rememberQueryParam)
 	const isPending = useIsPending()
 	const actionData = useActionData<typeof action>()
 	const type = VerificationTypeSchema.parse(searchParams.get(typeQueryParam))
@@ -314,9 +315,9 @@ export default function VerifyRoute() {
 								type: 'hidden',
 							})}
 						/>
-						<input
-							{...conform.input(fields[rememberQueryParam], { type: 'hidden' })}
-						/>
+						{remember === 'on' ? (
+							<input name={rememberQueryParam} value="on" type="hidden" />
+						) : null}
 						<StatusButton
 							className="w-full"
 							status={isPending ? 'pending' : actionData?.status ?? 'idle'}

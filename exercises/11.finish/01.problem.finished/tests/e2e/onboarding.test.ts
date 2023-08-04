@@ -7,6 +7,7 @@ import {
 	expect,
 	insertNewUser,
 	test,
+	waitFor,
 } from '../playwright-utils.ts'
 
 const urlRegex = /(?<url>https?:\/\/[^\s$.?#].[^\s]*)/
@@ -49,7 +50,7 @@ test('onboarding with link', async ({ page }) => {
 	).toBeVisible()
 	await expect(page.getByText(/check your email/i)).toBeVisible()
 
-	const email = await requireEmail(onboardingData.email)
+	const email = await waitFor(() => requireEmail(onboardingData.email))
 	expect(email.to).toBe(onboardingData.email.toLowerCase())
 	expect(email.from).toBe('hello@epicstack.dev')
 	expect(email.subject).toMatch(/welcome/i)

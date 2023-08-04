@@ -12,6 +12,7 @@ import {
 	type SpyInstance,
 } from 'vitest'
 import { prisma } from '~/utils/db.server.ts'
+import { cleanup } from '@testing-library/react'
 import '~/utils/env.server.ts'
 import { server } from '../mocks/index.ts'
 import { BASE_DATABASE_PATH, DATABASE_PATH } from './paths.ts'
@@ -28,6 +29,7 @@ afterEach(async () => {
 	await prisma.user.deleteMany()
 	await prisma.permission.deleteMany()
 	await prisma.role.deleteMany()
+	cleanup()
 })
 
 afterAll(async () => {
