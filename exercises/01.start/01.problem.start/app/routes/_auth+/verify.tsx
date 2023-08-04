@@ -26,11 +26,13 @@ import { handleVerification as handleResetPasswordVerification } from './reset-p
 import { requireUserId } from '~/utils/auth.server.ts'
 import { twoFAVerificationType } from '../settings+/profile.two-factor.tsx'
 import { redirectWithToast } from '~/utils/toast.server.ts'
+import { checkboxSchema } from '~/utils/zod-extensions.ts'
 
 export const codeQueryParam = 'code'
 export const targetQueryParam = 'target'
 export const typeQueryParam = 'type'
 export const redirectToQueryParam = 'redirectTo'
+export const rememberQueryParam = 'remember'
 const types = ['onboarding', 'reset-password', 'change-email', '2fa'] as const
 const VerificationTypeSchema = z.enum(types)
 export type VerificationTypes = z.infer<typeof VerificationTypeSchema>
@@ -40,6 +42,7 @@ const VerifySchema = z.object({
 	[typeQueryParam]: VerificationTypeSchema,
 	[targetQueryParam]: z.string(),
 	[redirectToQueryParam]: z.string().optional(),
+	[rememberQueryParam]: checkboxSchema().optional(),
 })
 
 export async function loader({ request }: DataFunctionArgs) {
@@ -310,6 +313,9 @@ export default function VerifyRoute() {
 							{...conform.input(fields[redirectToQueryParam], {
 								type: 'hidden',
 							})}
+						/>
+						<input
+							{...conform.input(fields[rememberQueryParam], { type: 'hidden' })}
 						/>
 						<StatusButton
 							className="w-full"

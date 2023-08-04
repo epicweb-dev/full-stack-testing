@@ -27,6 +27,7 @@ import { verifySessionStorage } from '~/utils/verification.server.ts'
 import { checkboxSchema } from '~/utils/zod-extensions.ts'
 import { twoFAVerificationType } from '../settings+/profile.two-factor.tsx'
 import { getRedirectToUrl, type VerifyFunctionArgs } from './verify.tsx'
+import { redirectWithToast } from '~/utils/toast.server.ts'
 
 const verifiedTimeKey = 'verified-time'
 const unverifiedSessionIdKey = 'unverified-session-id'
@@ -62,9 +63,14 @@ export async function handleNewSession(
 			request,
 			type: twoFAVerificationType,
 			target: session.userId,
+			redirectTo,
 		})
+		if (remember) {
+			redirectUrl.searchParams.set('remember', 'on')
+		}
+		redirectUrl.searchParams.sort()
 		return redirect(
-			redirectUrl.toString(),
+			`${redirectUrl.pathname}?${redirectUrl.searchParams}`,
 			combineResponseInits(
 				{
 					headers: {
@@ -109,16 +115,29 @@ export async function handleVerification({
 	const verifySession = await verifySessionStorage.getSession(
 		request.headers.get('cookie'),
 	)
-	if (verifySession.has(unverifiedSessionIdKey)) {
-		cookieSession.set(sessionKey, verifySession.get(unverifiedSessionIdKey))
+
+	const session = await prisma.session.findUnique({
+		select: { expirationDate: true },
+		where: { id: verifySession.get(unverifiedSessionIdKey) },
+	})
+	if (!session) {
+		throw redirectWithToast('/login', {
+			type: 'error',
+			title: 'Invalid session',
+			description: 'Could not find session to verify. Please try again.',
+		})
 	}
+
+	cookieSession.set(sessionKey, verifySession.get(unverifiedSessionIdKey))
 	const { redirectTo } = submission.value
 	cookieSession.set(verifiedTimeKey, Date.now())
 
 	const headers = new Headers()
 	headers.append(
 		'set-cookie',
-		await sessionStorage.commitSession(cookieSession),
+		await sessionStorage.commitSession(cookieSession, {
+			expires: submission.value.remember ? session.expirationDate : undefined,
+		}),
 	)
 	headers.append(
 		'set-cookie',

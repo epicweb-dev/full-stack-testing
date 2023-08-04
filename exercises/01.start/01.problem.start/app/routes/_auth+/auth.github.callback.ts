@@ -21,37 +21,14 @@ import {
 	prefilledProfileKey,
 } from './onboarding_.github.tsx'
 
-const destroyRedirectTo = { 'set-cookie': destroyRedirectToHeader }
+export const ROUTE_PATH = '/auth/github/callback'
 
-async function makeSession(
-	{
-		request,
-		userId,
-		redirectTo,
-	}: { request: Request; userId: string; redirectTo?: string | null },
-	responseInit?: ResponseInit,
-) {
-	redirectTo ??= '/'
-	const session = await prisma.session.create({
-		select: { id: true, expirationDate: true, userId: true },
-		data: {
-			expirationDate: new Date(Date.now() + SESSION_EXPIRATION_TIME),
-			userId,
-		},
-	})
-	return handleNewSession(
-		{ request, session, redirectTo, remember: true },
-		{ headers: combineHeaders(responseInit?.headers, destroyRedirectTo) },
-	)
-}
+const destroyRedirectTo = { 'set-cookie': destroyRedirectToHeader }
 
 export async function loader({ request }: DataFunctionArgs) {
 	const reqUrl = new URL(request.url)
 	const redirectTo = getRedirectCookieValue(request)
-	if (
-		process.env.GITHUB_CLIENT_ID.startsWith('MOCK_') &&
-		reqUrl.searchParams.get('state') === 'MOCK_STATE'
-	) {
+	if (process.env.GITHUB_CLIENT_ID.startsWith('MOCK_')) {
 		const cookieSession = await sessionStorage.getSession(
 			request.headers.get('cookie'),
 		)
@@ -74,7 +51,7 @@ export async function loader({ request }: DataFunctionArgs) {
 
 	if (!authResult.success) {
 		console.error(authResult.error)
-		return redirectWithToast(
+		throw redirectWithToast(
 			'/login',
 			{
 				title: 'Auth Failed',
@@ -125,6 +102,7 @@ export async function loader({ request }: DataFunctionArgs) {
 			'/settings/profile/connections',
 			{
 				title: 'Connected',
+				type: 'success',
 				description: `Your "${profile.username}" GitHub account has been connected.`,
 			},
 			{ headers: destroyRedirectTo },
@@ -140,7 +118,7 @@ export async function loader({ request }: DataFunctionArgs) {
 	// make a new session
 	const user = await prisma.user.findUnique({
 		select: { id: true },
-		where: { email: profile.email },
+		where: { email: profile.email.toLowerCase() },
 	})
 	if (user) {
 		await prisma.gitHubConnection.create({
@@ -162,7 +140,11 @@ export async function loader({ request }: DataFunctionArgs) {
 		request.headers.get('cookie'),
 	)
 	verifySession.set(onboardingEmailSessionKey, profile.email)
-	verifySession.set(prefilledProfileKey, profile)
+	verifySession.set(prefilledProfileKey, {
+		...profile,
+		email: profile.email.toLowerCase(),
+		username: profile.username.replace(/[^a-zA-Z0-9_]/g, '_').toLowerCase(),
+	})
 	verifySession.set(githubIdKey, profile.id)
 	const onboardingRedirect = [
 		'/onboarding/github',
@@ -170,10 +152,32 @@ export async function loader({ request }: DataFunctionArgs) {
 	]
 		.filter(Boolean)
 		.join('?')
-	throw redirect(onboardingRedirect, {
+	return redirect(onboardingRedirect, {
 		headers: combineHeaders(
 			{ 'set-cookie': await verifySessionStorage.commitSession(verifySession) },
 			destroyRedirectTo,
 		),
 	})
+}
+
+async function makeSession(
+	{
+		request,
+		userId,
+		redirectTo,
+	}: { request: Request; userId: string; redirectTo?: string | null },
+	responseInit?: ResponseInit,
+) {
+	redirectTo ??= '/'
+	const session = await prisma.session.create({
+		select: { id: true, expirationDate: true, userId: true },
+		data: {
+			expirationDate: new Date(Date.now() + SESSION_EXPIRATION_TIME),
+			userId,
+		},
+	})
+	return handleNewSession(
+		{ request, session, redirectTo, remember: true },
+		{ headers: combineHeaders(responseInit?.headers, destroyRedirectTo) },
+	)
 }

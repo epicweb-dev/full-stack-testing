@@ -29,9 +29,7 @@ authenticator.use(
 		},
 		async ({ profile }) => {
 			const email = profile.emails[0].value.trim().toLowerCase()
-			const rawUsername = profile.displayName
-			const regex = /[^a-zA-Z0-9_]/g
-			const username = rawUsername.replace(regex, '_').toLowerCase()
+			const username = profile.displayName
 			const imageUrl = profile.photos[0].value
 			return {
 				email,
