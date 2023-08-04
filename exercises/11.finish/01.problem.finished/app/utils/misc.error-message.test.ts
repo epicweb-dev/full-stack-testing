@@ -1,26 +1,7 @@
 import { faker } from '@faker-js/faker'
-import {
-	afterEach,
-	beforeEach,
-	expect,
-	test,
-	vi,
-	type SpyInstance,
-} from 'vitest'
+import { expect, test } from 'vitest'
 import { getErrorMessage } from './misc.tsx'
-
-let consoleError: SpyInstance<Parameters<(typeof console)['error']>> | undefined
-
-beforeEach(() => {
-	consoleError = vi.spyOn(console, 'error')
-	consoleError.mockImplementation(() => {})
-})
-
-afterEach(() => {
-	// make sure to call mockClear in any test you expect console.error to be called
-	expect(consoleError).not.toHaveBeenCalled()
-	consoleError?.mockRestore()
-})
+import { consoleError } from 'tests/setup/setup-test-env.ts'
 
 test('Error object returns message', () => {
 	const message = faker.lorem.words(2)

@@ -1,3 +1,4 @@
+import * as setCookieParser from 'set-cookie-parser'
 import { sessionKey } from '~/utils/auth.server.ts'
 import { sessionStorage } from '~/utils/session.server.ts'
 
@@ -11,4 +12,22 @@ export async function getSessionSetCookieHeader(
 	cookieSession.set(sessionKey, session.id)
 	const setCookieHeader = await sessionStorage.commitSession(cookieSession)
 	return setCookieHeader
+}
+
+export function convertSetCookieToCookie(setCookie: string) {
+	const parsedCookie = setCookieParser.parseString(setCookie)
+	return new URLSearchParams({
+		[parsedCookie.name]: parsedCookie.value,
+	}).toString()
+}
+
+export async function getSessionCookieHeader(
+	session: { id: string },
+	existingCookie?: string,
+) {
+	const setCookieHeader = await getSessionSetCookieHeader(
+		session,
+		existingCookie,
+	)
+	return convertSetCookieToCookie(setCookieHeader)
 }

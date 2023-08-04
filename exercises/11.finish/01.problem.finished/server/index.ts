@@ -8,9 +8,14 @@ import address from 'address'
 import closeWithGrace from 'close-with-grace'
 import crypto from 'crypto'
 import { type RequestHandler, createRequestHandler } from '@remix-run/express'
-import { type ServerBuild, broadcastDevReady } from '@remix-run/node'
+import {
+	type ServerBuild,
+	broadcastDevReady,
+	installGlobals,
+} from '@remix-run/node'
 import getPort, { portNumbers } from 'get-port'
 import chalk from 'chalk'
+import sourceMapSupport from 'source-map-support'
 
 // @ts-ignore - this file may not exist if you haven't built yet, but it will
 // definitely exist by the time the dev or prod server actually runs.
@@ -18,6 +23,9 @@ import * as remixBuild from '../build/index.js'
 const MODE = process.env.NODE_ENV
 
 const BUILD_PATH = '../build/index.js'
+
+sourceMapSupport.install()
+installGlobals()
 
 const build = remixBuild as unknown as ServerBuild
 let devBuild = build

@@ -31,6 +31,7 @@ export const emailSchema = z.object({
 export async function writeEmail(rawEmail: unknown) {
 	const email = emailSchema.parse(rawEmail)
 	await createFixture('email', email.to, email)
+	return email
 }
 
 export async function requireEmail(recipient: string) {
