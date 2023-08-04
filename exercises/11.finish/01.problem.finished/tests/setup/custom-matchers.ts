@@ -29,7 +29,9 @@ expect.extend({
 			return {
 				pass: false,
 				message: () =>
-					`en_session set-cookie header was${this.isNot ? '' : ' not'} defined`,
+					`The en_session set-cookie header was${
+						this.isNot ? '' : ' not'
+					} defined`,
 			}
 		}
 
@@ -41,7 +43,7 @@ expect.extend({
 		if (!sessionValue) {
 			return {
 				pass: false,
-				message: () => `session was${this.isNot ? '' : ' not'} set in cookie`,
+				message: () => `A session was${this.isNot ? '' : ' not'} set in cookie`,
 			}
 		}
 
@@ -50,26 +52,12 @@ expect.extend({
 			where: { userId, id: sessionValue },
 		})
 
-		if (!session) {
-			return {
-				pass: false,
-				message: () =>
-					`session was${
-						this.isNot ? '' : ' not'
-					} created in database for ${userId}`,
-			}
-		}
-
-		const pass = this.equals(session.id, sessionValue)
-
-		const diff = pass ? null : `\n${this.utils.diff(session.id, sessionValue)}`
-
 		return {
-			pass,
+			pass: Boolean(session),
 			message: () =>
-				`session in the response ${
-					this.isNot ? 'does not match' : 'matches'
-				} the expected session${diff}`,
+				`A session was${
+					this.isNot ? ' not' : ''
+				} created in the database for ${userId}`,
 		}
 	},
 	async toSendToast(response: Response, toast: OptionalToast) {
