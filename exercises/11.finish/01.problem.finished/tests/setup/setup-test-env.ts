@@ -21,17 +21,15 @@ import './custom-matchers.ts'
 import { BASE_DATABASE_PATH, DATABASE_PATH } from './paths.ts'
 
 installGlobals()
-fs.copyFileSync(BASE_DATABASE_PATH, DATABASE_PATH)
+await fs.promises.copyFile(BASE_DATABASE_PATH, DATABASE_PATH)
 
-beforeEach(() => {
-	server.resetHandlers()
-})
+afterEach(() => server.resetHandlers())
+afterEach(() => cleanup())
 
 afterEach(async () => {
 	await prisma.user.deleteMany()
 	await prisma.permission.deleteMany()
 	await prisma.role.deleteMany()
-	cleanup()
 })
 
 afterAll(async () => {

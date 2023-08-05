@@ -119,7 +119,7 @@ test('when a user exists with the same email, create connection and make session
 		},
 	})
 	expect(
-		!connection,
+		connection,
 		'the connection was not created in the database',
 	).toBeTruthy()
 

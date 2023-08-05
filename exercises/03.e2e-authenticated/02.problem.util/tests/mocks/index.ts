@@ -8,6 +8,12 @@ import { requireHeader, writeEmail } from './utils.ts'
 const { json } = HttpResponse
 
 export const MOCK_ACCESS_TOKEN = '__MOCK_ACCESS_TOKEN__'
+export const primaryGitHubEmail = {
+	email: faker.internet.email(),
+	verified: true,
+	primary: true,
+	visibility: 'public',
+}
 const githubEmails = [
 	{
 		email: faker.internet.email(),
@@ -21,12 +27,7 @@ const githubEmails = [
 		primary: false,
 		visibility: null,
 	},
-	{
-		email: faker.internet.email(),
-		verified: true,
-		primary: true,
-		visibility: 'public',
-	},
+	primaryGitHubEmail,
 ]
 export const mockGithubProfile = {
 	login: faker.internet.userName(),

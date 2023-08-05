@@ -101,6 +101,18 @@
       "path": "exercises/05.component-test/02.solution.cleanup"
     },
     {
+      "path": "exercises/06.remix-component/01.problem.remix-stub"
+    },
+    {
+      "path": "exercises/06.remix-component/01.solution.remix-stub"
+    },
+    {
+      "path": "exercises/06.remix-component/02.problem.multiple-routes"
+    },
+    {
+      "path": "exercises/06.remix-component/02.solution.multiple-routes"
+    },
+    {
       "path": "exercises/11.finish/01.problem.finished"
     }
   ]
