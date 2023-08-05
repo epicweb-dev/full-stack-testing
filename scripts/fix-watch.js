@@ -1,5 +1,5 @@
 import chokidar from 'chokidar'
-import path from 'path'
+import path from 'node:path'
 import { $ } from 'execa'
 import { fileURLToPath } from 'node:url'
 

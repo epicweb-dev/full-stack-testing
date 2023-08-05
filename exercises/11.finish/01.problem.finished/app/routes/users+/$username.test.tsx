@@ -2,38 +2,29 @@
  * @vitest-environment jsdom
  */
 import { faker } from '@faker-js/faker'
-import { json } from '@remix-run/node'
 import { unstable_createRemixStub as createRemixStub } from '@remix-run/testing'
 import { render, screen } from '@testing-library/react'
 import { test } from 'vitest'
-import { default as UsernameRoute, type loader } from './$username.tsx'
-import { type loader as rootLoader } from '~/root.tsx'
-
-function createFakeUser() {
-	const user = {
-		id: faker.string.uuid(),
-		name: faker.person.fullName(),
-		username: faker.internet.userName(),
-		createdAt: faker.date.past(),
-		image: {
-			id: faker.string.uuid(),
-		},
-	}
-	return user
-}
+import { default as UsernameRoute, loader } from './$username.tsx'
+import { loader as rootLoader } from '~/root.tsx'
+import { getUserImages, insertNewUser } from 'tests/db-utils.ts'
+import { prisma } from '~/utils/db.server.ts'
+import { getSessionCookieHeader } from 'tests/utils.ts'
 
 test('The user profile when not logged in as self', async () => {
-	const user = createFakeUser()
+	const user = await insertNewUser()
+	const userImages = await getUserImages()
+	const userImage =
+		userImages[faker.number.int({ min: 0, max: userImages.length - 1 })]
+	await prisma.user.update({
+		where: { id: user.id },
+		data: { image: { create: userImage } },
+	})
 	const App = createRemixStub([
 		{
 			path: '/users/:username',
 			element: <UsernameRoute />,
-			loader(): Awaited<ReturnType<typeof loader>> {
-				return json({
-					user,
-					userJoinedDisplay: user.createdAt.toLocaleDateString(),
-				})
-			},
+			loader,
 		},
 	])
 
@@ -46,33 +37,49 @@ test('The user profile when not logged in as self', async () => {
 })
 
 test('The user profile when logged in as self', async () => {
-	const user = createFakeUser()
+	const user = await insertNewUser()
+	const userImages = await getUserImages()
+	const userImage =
+		userImages[faker.number.int({ min: 0, max: userImages.length - 1 })]
+	await prisma.user.update({
+		where: { id: user.id },
+		data: {
+			image: { create: userImage },
+			sessions: {
+				create: {
+					expirationDate: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
+				},
+			},
+		},
+	})
+	const session = await prisma.session.create({
+		select: { id: true },
+		data: {
+			expirationDate: new Date(Date.now() + 1000 * 60 * 60 * 24 * 365),
+			userId: user.id,
+		},
+	})
+
+	const cookieHeader = await getSessionCookieHeader(session)
+
 	const App = createRemixStub([
 		{
 			id: 'root',
 			path: '/',
-			loader(): Awaited<ReturnType<typeof rootLoader>> {
-				return json({
-					ENV: { MODE: 'test' },
-					theme: 'light',
-					username: 'testuser',
-					toast: null,
-					user: {
-						...user,
-						roles: [],
-					},
-				})
+			loader: async args => {
+				// add the cookie header to the request
+				args.request.headers.set('cookie', cookieHeader)
+				return rootLoader(args)
 			},
 			children: [
 				{
 					path: '/users/:username',
 					element: <UsernameRoute />,
-					loader(): Awaited<ReturnType<typeof loader>> {
-						const data = {
-							user,
-							userJoinedDisplay: user.createdAt.toLocaleDateString(),
-						}
-						return json(data)
+					loader: async args => {
+						// add the cookie header to the request
+						args.request.headers.set('cookie', cookieHeader)
+						// @ts-expect-error https://github.com/remix-run/remix/issues/7082
+						return loader(args)
 					},
 				},
 			],

@@ -1,24 +1,13 @@
 import { faker } from '@faker-js/faker'
-import { PrismaClient } from '@prisma/client'
-import fs from 'node:fs'
 import { promiseHash } from 'remix-utils'
-import { createPassword, createUser } from 'tests/db-utils.ts'
-
-const prisma = new PrismaClient()
-
-async function img({
-	altText,
-	filepath,
-}: {
-	altText?: string
-	filepath: string
-}) {
-	return {
-		altText,
-		contentType: filepath.endsWith('.png') ? 'image/png' : 'image/jpeg',
-		blob: await fs.promises.readFile(filepath),
-	}
-}
+import {
+	createPassword,
+	createUser,
+	getNoteImages,
+	getUserImages,
+	img,
+} from 'tests/db-utils.ts'
+import { prisma } from '~/utils/db.server.ts'
 
 async function seed() {
 	console.log('🌱 Seeding...')
@@ -26,6 +15,8 @@ async function seed() {
 
 	console.time('🧹 Cleaned up the database...')
 	await prisma.user.deleteMany()
+	await prisma.role.deleteMany()
+	await prisma.permission.deleteMany()
 	console.timeEnd('🧹 Cleaned up the database...')
 
 	console.time('🔑 Created permissions...')
@@ -68,55 +59,8 @@ async function seed() {
 
 	const totalUsers = 5
 	console.time(`👤 Created ${totalUsers} users...`)
-	const noteImages = await Promise.all([
-		img({
-			altText: 'a nice country house',
-			filepath: './tests/fixtures/images/notes/0.png',
-		}),
-		img({
-			altText: 'a city scape',
-			filepath: './tests/fixtures/images/notes/1.png',
-		}),
-		img({
-			altText: 'a sunrise',
-			filepath: './tests/fixtures/images/notes/2.png',
-		}),
-		img({
-			altText: 'a group of friends',
-			filepath: './tests/fixtures/images/notes/3.png',
-		}),
-		img({
-			altText: 'friends being inclusive of someone who looks lonely',
-			filepath: './tests/fixtures/images/notes/4.png',
-		}),
-		img({
-			altText: 'an illustration of a hot air balloon',
-			filepath: './tests/fixtures/images/notes/5.png',
-		}),
-		img({
-			altText:
-				'an office full of laptops and other office equipment that look like it was abandond in a rush out of the building in an emergency years ago.',
-			filepath: './tests/fixtures/images/notes/6.png',
-		}),
-		img({
-			altText: 'a rusty lock',
-			filepath: './tests/fixtures/images/notes/7.png',
-		}),
-		img({
-			altText: 'something very happy in nature',
-			filepath: './tests/fixtures/images/notes/8.png',
-		}),
-		img({
-			altText: `someone at the end of a cry session who's starting to feel a little better.`,
-			filepath: './tests/fixtures/images/notes/9.png',
-		}),
-	])
-
-	const userImages = await Promise.all(
-		Array.from({ length: 10 }, (_, index) =>
-			img({ filepath: `./tests/fixtures/images/user/${index}.jpg` }),
-		),
-	)
+	const noteImages = await getNoteImages()
+	const userImages = await getUserImages()
 
 	for (let index = 0; index < totalUsers; index++) {
 		const userData = createUser()
@@ -126,7 +70,7 @@ async function seed() {
 				data: {
 					...userData,
 					password: { create: createPassword(userData.username) },
-					image: { create: userImages[index % 10] },
+					image: { create: userImages[index % userImages.length] },
 					roles: { connect: { name: 'user' } },
 					notes: {
 						create: Array.from({

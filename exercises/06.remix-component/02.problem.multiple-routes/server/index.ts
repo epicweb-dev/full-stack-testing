@@ -14,7 +14,7 @@ import express from 'express'
 import getPort, { portNumbers } from 'get-port'
 import morgan from 'morgan'
 import { fileURLToPath } from 'node:url'
-import path from 'path'
+import path from 'node:path'
 import 'source-map-support/register'
 
 // @ts-ignore - this file may not exist if you haven't built yet, but it will

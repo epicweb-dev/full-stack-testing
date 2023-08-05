@@ -47,6 +47,7 @@ export async function getUserId(request: Request) {
 	const cookieSession = await sessionStorage.getSession(
 		request.headers.get('cookie'),
 	)
+
 	const sessionId = cookieSession.get(sessionKey)
 	if (!sessionId) return null
 	const session = await prisma.session.findUnique({

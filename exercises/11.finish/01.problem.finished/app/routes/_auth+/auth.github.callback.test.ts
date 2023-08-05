@@ -19,6 +19,13 @@ import { ROUTE_PATH, loader } from './auth.github.callback.ts'
 
 const RESOURCE_URL_STRING = `${BASE_URL}${ROUTE_PATH}`
 
+test('a new user goes to onboarding', async () => {
+	const request = await setupRequest()
+	const response = await loader({ request, params: {}, context: {} })
+	expect(response.status).toBe(302)
+	expect(response.headers.get('location')).toBe('/onboarding/github')
+})
+
 test('when auth fails, send the user to login with a toast', async () => {
 	server.use(
 		rest.post('https://github.com/login/oauth/access_token', async () => {
@@ -40,13 +47,6 @@ test('when auth fails, send the user to login with a toast', async () => {
 	)
 	expect(consoleError).toHaveBeenCalledTimes(1)
 	consoleError?.mockClear()
-})
-
-test('a new user goes to onboarding', async () => {
-	const request = await setupRequest()
-	const response = await loader({ request, params: {}, context: {} })
-	expect(response.status).toBe(302)
-	expect(response.headers.get('location')).toBe('/onboarding/github')
 })
 
 test('when a user is logged in, it creates the connection', async () => {

@@ -8,7 +8,9 @@
     "react-router",
     "stream/consumers",
     "node:stream/consumers",
-    "node:test"
+    "node:test",
+    "console",
+    "node:console"
   ],
   "workbench.editorAssociations": {
     "*.db": "sqlite-viewer.view"

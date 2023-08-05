@@ -1,4 +1,4 @@
-import path from 'path'
+import path from 'node:path'
 
 const databaseFile = `./tests/prisma/data.${process.env.VITEST_POOL_ID || 0}.db`
 export const DATABASE_PATH = path.join(process.cwd(), databaseFile)
