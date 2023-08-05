@@ -1,21 +1,21 @@
-import path from 'path'
-import { fileURLToPath } from 'node:url'
-import express from 'express'
-import chokidar from 'chokidar'
-import compression from 'compression'
-import morgan from 'morgan'
-import address from 'address'
-import closeWithGrace from 'close-with-grace'
-import crypto from 'crypto'
-import { type RequestHandler, createRequestHandler } from '@remix-run/express'
+import { createRequestHandler, type RequestHandler } from '@remix-run/express'
 import {
-	type ServerBuild,
 	broadcastDevReady,
 	installGlobals,
+	type ServerBuild,
 } from '@remix-run/node'
-import getPort, { portNumbers } from 'get-port'
+import address from 'address'
 import chalk from 'chalk'
-import sourceMapSupport from 'source-map-support'
+import chokidar from 'chokidar'
+import closeWithGrace from 'close-with-grace'
+import compression from 'compression'
+import crypto from 'crypto'
+import express from 'express'
+import getPort, { portNumbers } from 'get-port'
+import morgan from 'morgan'
+import { fileURLToPath } from 'node:url'
+import path from 'path'
+import 'source-map-support/register'
 
 // @ts-ignore - this file may not exist if you haven't built yet, but it will
 // definitely exist by the time the dev or prod server actually runs.
@@ -24,7 +24,6 @@ const MODE = process.env.NODE_ENV
 
 const BUILD_PATH = '../build/index.js'
 
-sourceMapSupport.install()
 installGlobals()
 
 const build = remixBuild as unknown as ServerBuild

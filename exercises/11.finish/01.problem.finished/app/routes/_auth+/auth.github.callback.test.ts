@@ -1,11 +1,12 @@
-/**
- * @vitest-environment node
- */
 import { generateTOTP } from '@epic-web/totp'
 import { faker } from '@faker-js/faker'
 import { rest } from 'msw'
 import { createUser } from 'tests/db-utils.ts'
-import { mockGithubProfile, server } from 'tests/mocks/index.ts'
+import {
+	mockGithubProfile,
+	primaryGitHubEmail,
+	server,
+} from 'tests/mocks/index.ts'
 import { consoleError } from 'tests/setup/setup-test-env.ts'
 import { BASE_URL, getSessionCookieHeader } from 'tests/utils.ts'
 import { expect, test } from 'vitest'
@@ -95,7 +96,7 @@ test(`when a user is logged in and has already connected, it doesn't do anything
 })
 
 test('when a user exists with the same email, create connection and make session', async () => {
-	const email = mockGithubProfile.emails[0].toLowerCase()
+	const email = primaryGitHubEmail.email.toLowerCase()
 	const { userId } = await setupUser({ ...createUser(), email })
 	const request = await setupRequest()
 	const response = await loader({ request, params: {}, context: {} })
@@ -118,7 +119,7 @@ test('when a user exists with the same email, create connection and make session
 		},
 	})
 	expect(
-		connection,
+		!connection,
 		'the connection was not created in the database',
 	).toBeTruthy()
 

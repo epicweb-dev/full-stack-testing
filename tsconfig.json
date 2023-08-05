@@ -65,6 +65,30 @@
       "path": "exercises/03.e2e-authenticated/04.solution.2fa"
     },
     {
+      "path": "exercises/04.unit-test/01.problem.init"
+    },
+    {
+      "path": "exercises/04.unit-test/01.solution.init"
+    },
+    {
+      "path": "exercises/04.unit-test/02.problem.spies"
+    },
+    {
+      "path": "exercises/04.unit-test/02.solution.spies"
+    },
+    {
+      "path": "exercises/04.unit-test/03.problem.cleanup"
+    },
+    {
+      "path": "exercises/04.unit-test/03.solution.cleanup"
+    },
+    {
+      "path": "exercises/04.unit-test/04.problem.setup"
+    },
+    {
+      "path": "exercises/04.unit-test/04.solution.setup"
+    },
+    {
       "path": "exercises/11.finish/01.problem.finished"
     }
   ]

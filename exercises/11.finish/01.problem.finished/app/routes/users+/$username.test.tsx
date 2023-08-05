@@ -1,3 +1,6 @@
+/**
+ * @vitest-environment jsdom
+ */
 import { faker } from '@faker-js/faker'
 import { json } from '@remix-run/node'
 import { unstable_createRemixStub as createRemixStub } from '@remix-run/testing'

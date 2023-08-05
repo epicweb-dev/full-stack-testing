@@ -1,3 +1,6 @@
+/**
+ * @vitest-environment jsdom
+ */
 import { faker } from '@faker-js/faker'
 import { render, screen } from '@testing-library/react'
 import { expect, test } from 'vitest'
