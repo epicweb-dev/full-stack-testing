@@ -1,10 +1,10 @@
-// this *must* be imported first
 import './setup-env-vars.ts'
-
+import 'dotenv/config'
 import 'source-map-support/register'
+// we need these to be imported first 👆
+
 import { installGlobals } from '@remix-run/node'
 import { cleanup } from '@testing-library/react'
-import 'dotenv/config'
 import fs from 'fs'
 import {
 	afterAll,
@@ -51,5 +51,5 @@ afterEach(() => {
 		consoleError,
 		'make sure to call mockClear in any test you expect console.error to be called',
 	).not.toHaveBeenCalled()
-	consoleError?.mockRestore()
+	consoleError.mockRestore()
 })

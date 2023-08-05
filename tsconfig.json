@@ -89,6 +89,18 @@
       "path": "exercises/04.unit-test/04.solution.setup"
     },
     {
+      "path": "exercises/05.component-test/01.problem.init"
+    },
+    {
+      "path": "exercises/05.component-test/01.solution.init"
+    },
+    {
+      "path": "exercises/05.component-test/02.problem.cleanup"
+    },
+    {
+      "path": "exercises/05.component-test/02.solution.cleanup"
+    },
+    {
       "path": "exercises/11.finish/01.problem.finished"
     }
   ]

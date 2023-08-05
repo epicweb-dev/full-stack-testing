@@ -6,26 +6,26 @@ import { render, screen } from '@testing-library/react'
 import { expect, test } from 'vitest'
 import { ErrorList } from './forms.tsx'
 
-test('shows nothing when given an empty list', async () => {
+test('shows nothing when given an empty list', () => {
 	render(<ErrorList />)
 	expect(screen.queryAllByRole('listitem')).toHaveLength(0)
 })
 
-test('shows a single error', async () => {
+test('shows a single error', () => {
 	const errors = [faker.lorem.words(3)]
 	render(<ErrorList errors={errors} />)
 	const errorEls = screen.getAllByRole('listitem')
 	expect(errorEls.map(e => e.textContent)).toEqual(errors)
 })
 
-test('shows multiple errors', async () => {
+test('shows multiple errors', () => {
 	const errors = [faker.lorem.words(3), faker.lorem.words(3)]
 	render(<ErrorList errors={errors} />)
 	const errorEls = screen.getAllByRole('listitem')
 	expect(errorEls.map(e => e.textContent)).toEqual(errors)
 })
 
-test('can cope with falsy values', async () => {
+test('can cope with falsy values', () => {
 	const errors = [
 		faker.lorem.words(3),
 		null,
