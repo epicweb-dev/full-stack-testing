@@ -67,8 +67,6 @@ variable and how to fix it here for [windows][win-path] or
 
 ## Setup
 
-## Setup
-
 This is a pretty large project (it's actually many apps in one) so it can take
 several minutes to get everything set up the first time. Please have a strong
 network connection before running the setup and grab a snack.
