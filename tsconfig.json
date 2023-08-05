@@ -5,7 +5,40 @@
   ],
   "references": [
     {
-      "path": "exercises/01.start/01.problem.start"
+      "path": "exercises/01.e2e/01.problem.playwright"
+    },
+    {
+      "path": "exercises/01.e2e/01.solution.playwright"
+    },
+    {
+      "path": "exercises/01.e2e/02.problem.insert-user"
+    },
+    {
+      "path": "exercises/01.e2e/02.solution.insert-user"
+    },
+    {
+      "path": "exercises/01.e2e/03.problem.cleanup"
+    },
+    {
+      "path": "exercises/01.e2e/03.solution.cleanup"
+    },
+    {
+      "path": "exercises/01.e2e/04.problem.hooks"
+    },
+    {
+      "path": "exercises/01.e2e/04.solution.hooks"
+    },
+    {
+      "path": "exercises/02.e2e-mocking/01.problem.write-email"
+    },
+    {
+      "path": "exercises/02.e2e-mocking/01.solution.write-email"
+    },
+    {
+      "path": "exercises/02.e2e-mocking/02.problem.read-email"
+    },
+    {
+      "path": "exercises/02.e2e-mocking/02.solution.read-email"
     },
     {
       "path": "exercises/11.finish/01.problem.finished"

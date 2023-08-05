@@ -3,7 +3,7 @@ import { rest, passthrough, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import closeWithGrace from 'close-with-grace'
 import { faker } from '@faker-js/faker'
-import { writeEmail } from './utils.ts'
+import { requireHeader, writeEmail } from './utils.ts'
 
 const { json } = HttpResponse
 
@@ -43,6 +43,7 @@ const handlers = [
 		: null,
 
 	rest.post(`https://api.resend.com/emails`, async ({ request }) => {
+		requireHeader(request.headers, 'Authorization')
 		const body = await request.json()
 		console.info('🔶 mocked email contents:', body)
 

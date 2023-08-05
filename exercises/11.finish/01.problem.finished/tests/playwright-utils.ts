@@ -5,13 +5,7 @@ import { prisma } from '~/utils/db.server.ts'
 import { sessionStorage } from '~/utils/session.server.ts'
 import { createUser } from '../tests/db-utils.ts'
 
-export const dataCleanup = {
-	users: new Set<string>(),
-}
-
-export function deleteUserByUsername(username: string) {
-	return prisma.user.delete({ where: { username } })
-}
+const userIdsToDelete = new Set<string>()
 
 export async function insertNewUser({
 	username,
@@ -29,7 +23,7 @@ export async function insertNewUser({
 			password: { create: { hash: await getPasswordHash(password) } },
 		},
 	})
-	dataCleanup.users.add(user.id)
+	userIdsToDelete.add(user.id)
 	return user as typeof user & { name: string }
 }
 
@@ -120,17 +114,8 @@ export async function waitFor<ReturnValue>(
 }
 
 test.afterEach(async () => {
-	type Delegate = {
-		deleteMany: (opts: {
-			where: { id: { in: Array<string> } }
-		}) => Promise<unknown>
-	}
-	async function deleteAll(items: Set<string>, delegate: Delegate) {
-		if (items.size > 0) {
-			await delegate.deleteMany({
-				where: { id: { in: [...items] } },
-			})
-		}
-	}
-	await deleteAll(dataCleanup.users, prisma.user)
+	await prisma.user.deleteMany({
+		where: { id: { in: Array.from(userIdsToDelete) } },
+	})
+	userIdsToDelete.clear()
 })

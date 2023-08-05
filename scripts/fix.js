@@ -3,7 +3,7 @@
 
 import fs from 'fs'
 import path from 'path'
-import { fileURLToPath } from 'url'
+import { fileURLToPath } from 'node:url'
 
 function exists(dir) {
 	try {
@@ -31,9 +31,9 @@ const examples = (await readDir(here('../examples'))).map(dir =>
 const exercises = await readDir(here('../exercises'))
 const apps = (
 	await Promise.all([
-		...(
-			await readDir(here('../examples'))
-		).map(dir => here(`../examples/${dir}`)),
+		...(await readDir(here('../examples'))).map(dir =>
+			here(`../examples/${dir}`),
+		),
 		...exercises.flatMap(async exercise => {
 			const exerciseDir = here(`../exercises/${exercise}`)
 			// if it is just a file instead of a directory, skip it
