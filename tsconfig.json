@@ -41,6 +41,30 @@
       "path": "exercises/02.e2e-mocking/02.solution.read-email"
     },
     {
+      "path": "exercises/03.e2e-authenticated/01.problem.login"
+    },
+    {
+      "path": "exercises/03.e2e-authenticated/01.solution.login"
+    },
+    {
+      "path": "exercises/03.e2e-authenticated/02.problem.util"
+    },
+    {
+      "path": "exercises/03.e2e-authenticated/02.solution.util"
+    },
+    {
+      "path": "exercises/03.e2e-authenticated/03.problem.fixtures"
+    },
+    {
+      "path": "exercises/03.e2e-authenticated/03.solution.fixtures"
+    },
+    {
+      "path": "exercises/03.e2e-authenticated/04.problem.2fa"
+    },
+    {
+      "path": "exercises/03.e2e-authenticated/04.solution.2fa"
+    },
+    {
       "path": "exercises/11.finish/01.problem.finished"
     }
   ]

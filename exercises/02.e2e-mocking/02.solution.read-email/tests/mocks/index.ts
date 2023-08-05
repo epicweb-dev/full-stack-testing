@@ -1,17 +1,11 @@
-import { faker } from '@faker-js/faker'
-import closeWithGrace from 'close-with-grace'
-import fsExtra from 'fs-extra'
-import { HttpResponse, passthrough, rest } from 'msw'
-import { setupServer } from 'msw/node'
 import fs from 'node:fs'
-import path from 'node:path'
-import { fileURLToPath } from 'node:url'
-import { z } from 'zod'
+import { rest, passthrough, HttpResponse } from 'msw'
+import { setupServer } from 'msw/node'
+import closeWithGrace from 'close-with-grace'
+import { faker } from '@faker-js/faker'
+import { requireHeader, writeEmail } from './utils.ts'
 
 const { json } = HttpResponse
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url))
-const fixturesDirPath = path.join(__dirname, '..', 'fixtures')
 
 export const MOCK_ACCESS_TOKEN = '__MOCK_ACCESS_TOKEN__'
 const githubEmails = [
@@ -43,30 +37,17 @@ export const mockGithubProfile = {
 }
 
 const passthroughGitHub = !process.env.GITHUB_CLIENT_ID.startsWith('MOCK_')
-
-export const emailSchema = z.object({
-	to: z.string(),
-	from: z.string(),
-	subject: z.string(),
-	text: z.string(),
-	html: z.string(),
-})
-
 const handlers = [
 	process.env.REMIX_DEV_HTTP_ORIGIN
 		? rest.post(`${process.env.REMIX_DEV_HTTP_ORIGIN}ping`, passthrough)
 		: null,
 
 	rest.post(`https://api.resend.com/emails`, async ({ request }) => {
-		if (request.headers.get('Authorization')) {
-			throw new Error('Authorization header is required')
-		}
-		const email = emailSchema.parse(await request.json())
-		console.info('🔶 mocked email contents:', email)
+		requireHeader(request.headers, 'Authorization')
+		const body = await request.json()
+		console.info('🔶 mocked email contents:', body)
 
-		const dir = path.join(fixturesDirPath, 'email')
-		await fsExtra.ensureDir(dir)
-		await fsExtra.writeJSON(path.join(dir, `./${email.to}.json`), email)
+		const email = await writeEmail(body)
 
 		return json({
 			id: faker.string.uuid(),
