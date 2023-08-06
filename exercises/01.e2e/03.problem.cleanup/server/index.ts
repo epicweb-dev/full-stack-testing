@@ -15,7 +15,7 @@ import getPort, { portNumbers } from 'get-port'
 import morgan from 'morgan'
 import { fileURLToPath } from 'node:url'
 import path from 'node:path'
-import 'source-map-support/register'
+import 'source-map-support/register.js'
 
 // @ts-ignore - this file may not exist if you haven't built yet, but it will
 // definitely exist by the time the dev or prod server actually runs.

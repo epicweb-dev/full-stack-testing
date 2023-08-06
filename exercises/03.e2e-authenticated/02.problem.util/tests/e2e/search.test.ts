@@ -1,10 +1,9 @@
 import { expect, test } from '@playwright/test'
-import { insertNewUser } from '../db-utils.ts'
+import { createUser, insertNewUser } from '../db-utils.ts'
 
 test('Search from home page', async ({ page }) => {
-	const newUser = await insertNewUser({
-		username: '___very_unique_username___',
-	})
+	const username = `___search_${createUser().username}`.slice(0, 20)
+	const newUser = await insertNewUser({ username })
 	await page.goto('/')
 
 	await page.getByRole('searchbox', { name: /search/i }).fill(newUser.username)
