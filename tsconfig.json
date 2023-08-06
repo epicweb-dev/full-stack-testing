@@ -41,28 +41,28 @@
       "path": "exercises/02.e2e-mocking/02.solution.read-email"
     },
     {
-      "path": "exercises/03.e2e-authenticated/01.problem.login"
+      "path": "exercises/03.authenticated-e2e/01.problem.login"
     },
     {
-      "path": "exercises/03.e2e-authenticated/01.solution.login"
+      "path": "exercises/03.authenticated-e2e/01.solution.login"
     },
     {
-      "path": "exercises/03.e2e-authenticated/02.problem.util"
+      "path": "exercises/03.authenticated-e2e/02.problem.util"
     },
     {
-      "path": "exercises/03.e2e-authenticated/02.solution.util"
+      "path": "exercises/03.authenticated-e2e/02.solution.util"
     },
     {
-      "path": "exercises/03.e2e-authenticated/03.problem.fixtures"
+      "path": "exercises/03.authenticated-e2e/03.problem.fixtures"
     },
     {
-      "path": "exercises/03.e2e-authenticated/03.solution.fixtures"
+      "path": "exercises/03.authenticated-e2e/03.solution.fixtures"
     },
     {
-      "path": "exercises/03.e2e-authenticated/04.problem.2fa"
+      "path": "exercises/03.authenticated-e2e/04.problem.2fa"
     },
     {
-      "path": "exercises/03.e2e-authenticated/04.solution.2fa"
+      "path": "exercises/03.authenticated-e2e/04.solution.2fa"
     },
     {
       "path": "exercises/04.unit-test/01.problem.init"
@@ -131,10 +131,16 @@
       "path": "exercises/07.http-mocking/03.solution.setup"
     },
     {
-      "path": "exercises/08.db2/01.problem"
+      "path": "exercises/08.authenticated-integration/01.problem.create-session"
     },
     {
-      "path": "exercises/08.db2/01.solution"
+      "path": "exercises/08.authenticated-integration/01.solution.create-session"
+    },
+    {
+      "path": "exercises/08.authenticated-integration/02.problem.assert"
+    },
+    {
+      "path": "exercises/08.authenticated-integration/02.solution.assert"
     },
     {
       "path": "exercises/11.finish/01.problem.finished"

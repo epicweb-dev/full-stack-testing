@@ -19,6 +19,26 @@ function getSetCookie(headers: Headers) {
 }
 
 expect.extend({
+	toHaveRedirect(response: Response, redirectTo: string) {
+		const isRedirectStatusCode = response.status >= 300 && response.status < 400
+		if (!isRedirectStatusCode) {
+			return {
+				pass: false,
+				message: () =>
+					`Expected redirect to ${
+						this.isNot ? 'not ' : ''
+					}be ${redirectTo} but got ${response.status}`,
+			}
+		}
+		const location = response.headers.get('location')
+		return {
+			pass: location === redirectTo,
+			message: () =>
+				`Expected redirect to ${
+					this.isNot ? 'not ' : ''
+				}be ${redirectTo} but got ${location}`,
+		}
+	},
 	async toHaveSessionForUser(response: Response, userId: string) {
 		const setCookies = getSetCookie(response.headers)
 		const sessionSetCookie = setCookies.find(
@@ -101,6 +121,7 @@ expect.extend({
 })
 
 interface CustomMatchers<R = unknown> {
+	toHaveRedirect(redirectTo: string): R
 	toHaveSessionForUser(userId: string): Promise<R>
 	toSendToast(toast: OptionalToast): Promise<R>
 }

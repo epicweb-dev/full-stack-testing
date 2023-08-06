@@ -1,4 +1,5 @@
 import { faker } from '@faker-js/faker'
+import * as setCookieParser from 'set-cookie-parser'
 import 'tests/mocks/index.ts'
 import { expect, test } from 'vitest'
 import { sessionStorage } from '~/utils/session.server.ts'
@@ -15,11 +16,19 @@ test('a new user goes to onboarding', async () => {
 	url.searchParams.set('code', code)
 	const cookieSession = await sessionStorage.getSession()
 	cookieSession.set('oauth2:state', state)
+	const setCookieHeader = await sessionStorage.commitSession(cookieSession)
 	const request = new Request(url.toString(), {
 		method: 'GET',
-		headers: { cookie: await sessionStorage.commitSession(cookieSession) },
+		headers: { cookie: convertSetCookieToCookie(setCookieHeader) },
 	})
 	const response = await loader({ request, params: {}, context: {} })
 	expect(response.status).toBe(302)
 	expect(response.headers.get('location')).toBe('/onboarding/github')
 })
+
+function convertSetCookieToCookie(setCookie: string) {
+	const parsedCookie = setCookieParser.parseString(setCookie)
+	return new URLSearchParams({
+		[parsedCookie.name]: parsedCookie.value,
+	}).toString()
+}

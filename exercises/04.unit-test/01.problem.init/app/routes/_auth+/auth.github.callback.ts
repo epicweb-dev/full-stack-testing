@@ -28,6 +28,11 @@ const destroyRedirectTo = { 'set-cookie': destroyRedirectToHeader }
 export async function loader({ request }: DataFunctionArgs) {
 	const reqUrl = new URL(request.url)
 	const redirectTo = getRedirectCookieValue(request)
+
+	// normally you *really* want to avoid including test/dev code in your source
+	// but this is one of those cases where it's worth it to make the dev
+	// experience better. Just be extra careful! You'll want at least one
+	// integration test that tests the real thing.
 	if (process.env.GITHUB_CLIENT_ID.startsWith('MOCK_')) {
 		const cookieSession = await sessionStorage.getSession(
 			request.headers.get('cookie'),

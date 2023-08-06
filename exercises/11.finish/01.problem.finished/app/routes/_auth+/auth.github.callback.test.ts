@@ -8,7 +8,7 @@ import {
 	server,
 } from 'tests/mocks/index.ts'
 import { consoleError } from 'tests/setup/setup-test-env.ts'
-import { BASE_URL, getSessionCookieHeader } from 'tests/utils.ts'
+import { BASE_URL, convertSetCookieToCookie } from 'tests/utils.ts'
 import { expect, test } from 'vitest'
 import { sessionKey } from '~/utils/auth.server.ts'
 import { prisma } from '~/utils/db.server.ts'
@@ -22,8 +22,7 @@ const RESOURCE_URL_STRING = `${BASE_URL}${ROUTE_PATH}`
 test('a new user goes to onboarding', async () => {
 	const request = await setupRequest()
 	const response = await loader({ request, params: {}, context: {} })
-	expect(response.status).toBe(302)
-	expect(response.headers.get('location')).toBe('/onboarding/github')
+	expect(response).toHaveRedirect('/onboarding/github')
 })
 
 test('when auth fails, send the user to login with a toast', async () => {
@@ -37,8 +36,7 @@ test('when auth fails, send the user to login with a toast', async () => {
 		e => e,
 	)
 	invariant(response instanceof Response, 'response should be a Response')
-	expect(response.status).toBe(302)
-	expect(response.headers.get('location')).toBe('/login')
+	expect(response).toHaveRedirect('/login')
 	await expect(response).toSendToast(
 		expect.objectContaining({
 			title: 'Auth Failed',
@@ -50,11 +48,10 @@ test('when auth fails, send the user to login with a toast', async () => {
 })
 
 test('when a user is logged in, it creates the connection', async () => {
-	const { session } = await setupUser()
+	const session = await setupUser()
 	const request = await setupRequest({ session })
 	const response = await loader({ request, params: {}, context: {} })
-	expect(response.status).toBe(302)
-	expect(response.headers.get('location')).toBe('/settings/profile/connections')
+	expect(response).toHaveRedirect('/settings/profile/connections')
 	await expect(response).toSendToast(
 		expect.objectContaining({
 			title: 'Connected',
@@ -76,7 +73,7 @@ test('when a user is logged in, it creates the connection', async () => {
 })
 
 test(`when a user is logged in and has already connected, it doesn't do anything and just redirects the user back to the connections page`, async () => {
-	const { session } = await setupUser()
+	const session = await setupUser()
 	await prisma.gitHubConnection.create({
 		data: {
 			userId: session.userId,
@@ -85,8 +82,7 @@ test(`when a user is logged in and has already connected, it doesn't do anything
 	})
 	const request = await setupRequest({ session })
 	const response = await loader({ request, params: {}, context: {} })
-	expect(response.status).toBe(302)
-	expect(response.headers.get('location')).toBe('/settings/profile/connections')
+	expect(response).toHaveRedirect('/settings/profile/connections')
 	expect(response).toSendToast(
 		expect.objectContaining({
 			title: 'Already Connected',
@@ -101,8 +97,7 @@ test('when a user exists with the same email, create connection and make session
 	const request = await setupRequest()
 	const response = await loader({ request, params: {}, context: {} })
 
-	expect(response.status).toBe(302)
-	expect(response.headers.get('location')).toBe('/')
+	expect(response).toHaveRedirect('/')
 
 	await expect(response).toSendToast(
 		expect.objectContaining({
@@ -135,11 +130,10 @@ test('gives an error if the account is already connected to another user', async
 			},
 		},
 	})
-	const { session } = await setupUser()
+	const session = await setupUser()
 	const request = await setupRequest({ session })
 	const response = await loader({ request, params: {}, context: {} })
-	expect(response.status).toBe(302)
-	expect(response.headers.get('location')).toBe('/settings/profile/connections')
+	expect(response).toHaveRedirect('/settings/profile/connections')
 	await expect(response).toSendToast(
 		expect.objectContaining({
 			title: 'Already Connected',
@@ -160,8 +154,7 @@ test('if a user is not logged in, but the connection exists, make a session', as
 	})
 	const request = await setupRequest()
 	const response = await loader({ request, params: {}, context: {} })
-	expect(response.status).toBe(302)
-	expect(response.headers.get('location')).toBe('/')
+	expect(response).toHaveRedirect('/')
 	await expect(response).toHaveSessionForUser(userId)
 })
 
@@ -204,9 +197,10 @@ async function setupRequest({ session }: { session?: { id: string } } = {}) {
 	const cookieSession = await sessionStorage.getSession()
 	cookieSession.set('oauth2:state', state)
 	if (session) cookieSession.set(sessionKey, session.id)
+	const setCookieHeader = await sessionStorage.commitSession(cookieSession)
 	const request = new Request(url.toString(), {
 		method: 'GET',
-		headers: { cookie: await sessionStorage.commitSession(cookieSession) },
+		headers: { cookie: convertSetCookieToCookie(setCookieHeader) },
 	})
 	return request
 }
@@ -227,9 +221,5 @@ async function setupUser(userData = createUser()) {
 		},
 	})
 
-	return {
-		userId: session.userId,
-		session,
-		cookie: await getSessionCookieHeader(session),
-	}
+	return session
 }

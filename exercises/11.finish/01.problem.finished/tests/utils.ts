@@ -4,6 +4,13 @@ import { sessionStorage } from '~/utils/session.server.ts'
 
 export const BASE_URL = 'https://www.epicstack.dev'
 
+export function convertSetCookieToCookie(setCookie: string) {
+	const parsedCookie = setCookieParser.parseString(setCookie)
+	return new URLSearchParams({
+		[parsedCookie.name]: parsedCookie.value,
+	}).toString()
+}
+
 export async function getSessionSetCookieHeader(
 	session: { id: string },
 	existingCookie?: string,
@@ -12,13 +19,6 @@ export async function getSessionSetCookieHeader(
 	cookieSession.set(sessionKey, session.id)
 	const setCookieHeader = await sessionStorage.commitSession(cookieSession)
 	return setCookieHeader
-}
-
-export function convertSetCookieToCookie(setCookie: string) {
-	const parsedCookie = setCookieParser.parseString(setCookie)
-	return new URLSearchParams({
-		[parsedCookie.name]: parsedCookie.value,
-	}).toString()
 }
 
 export async function getSessionCookieHeader(
