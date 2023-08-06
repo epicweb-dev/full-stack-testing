@@ -113,6 +113,30 @@
       "path": "exercises/06.remix-component/02.solution.multiple-routes"
     },
     {
+      "path": "exercises/07.http-mocking/01.problem.start-server"
+    },
+    {
+      "path": "exercises/07.http-mocking/01.solution.start-server"
+    },
+    {
+      "path": "exercises/07.http-mocking/02.problem.override-mocks"
+    },
+    {
+      "path": "exercises/07.http-mocking/02.solution.override-mocks"
+    },
+    {
+      "path": "exercises/07.http-mocking/03.problem.setup"
+    },
+    {
+      "path": "exercises/07.http-mocking/03.solution.setup"
+    },
+    {
+      "path": "exercises/08.db2/01.problem"
+    },
+    {
+      "path": "exercises/08.db2/01.solution"
+    },
+    {
       "path": "exercises/11.finish/01.problem.finished"
     }
   ]

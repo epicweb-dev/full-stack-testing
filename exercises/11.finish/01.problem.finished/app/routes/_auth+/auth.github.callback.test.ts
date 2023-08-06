@@ -46,7 +46,7 @@ test('when auth fails, send the user to login with a toast', async () => {
 		}),
 	)
 	expect(consoleError).toHaveBeenCalledTimes(1)
-	consoleError?.mockClear()
+	consoleError.mockClear()
 })
 
 test('when a user is logged in, it creates the connection', async () => {
