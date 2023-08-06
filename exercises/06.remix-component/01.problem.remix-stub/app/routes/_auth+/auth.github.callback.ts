@@ -31,8 +31,8 @@ export async function loader({ request }: DataFunctionArgs) {
 
 	// normally you *really* want to avoid including test/dev code in your source
 	// but this is one of those cases where it's worth it to make the dev
-	// experience better. Just be extra careful! You'll want at least one
-	// integration test that tests the real thing.
+	// experience better. The fact is it's basically impossible to test these
+	// kinds of integrations.
 	if (process.env.GITHUB_CLIENT_ID.startsWith('MOCK_')) {
 		const cookieSession = await sessionStorage.getSession(
 			request.headers.get('cookie'),
