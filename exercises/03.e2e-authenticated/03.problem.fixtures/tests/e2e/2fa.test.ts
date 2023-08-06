@@ -1,6 +1,7 @@
 import { faker } from '@faker-js/faker'
 import { expect, test } from '@playwright/test'
-import { insertNewUser, loginPage } from '../playwright-utils.ts'
+import { insertNewUser } from '../db-utils.ts'
+import { loginPage } from '../playwright-utils.ts'
 
 test('Users can add 2FA to their account and use it when logging in', async ({
 	page,

@@ -3,13 +3,13 @@ import { createUser } from '../db-utils.ts'
 import { prisma } from '~/utils/db.server.ts'
 import { getPasswordHash } from '~/utils/auth.server.ts'
 
-const userIdsToDelete = new Set<string>()
+const insertedUsers = new Set<string>()
 
 test.afterEach(async () => {
 	await prisma.user.deleteMany({
-		where: { id: { in: Array.from(userIdsToDelete) } },
+		where: { id: { in: Array.from(insertedUsers) } },
 	})
-	userIdsToDelete.clear()
+	insertedUsers.clear()
 })
 
 test('Search from home page', async ({ page }) => {
@@ -50,5 +50,6 @@ export async function insertNewUser({ username }: { username: string }) {
 			password: { create: { hash: await getPasswordHash(username) } },
 		},
 	})
+	insertedUsers.add(user.id)
 	return user as typeof user & { name: string }
 }

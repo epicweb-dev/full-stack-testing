@@ -1,31 +1,9 @@
 import { test, type Page } from '@playwright/test'
 import * as cookie from 'cookie'
-import { getPasswordHash, sessionKey } from '~/utils/auth.server.ts'
+import { sessionKey } from '~/utils/auth.server.ts'
 import { prisma } from '~/utils/db.server.ts'
 import { sessionStorage } from '~/utils/session.server.ts'
-import { createUser } from '../tests/db-utils.ts'
-
-const userIdsToDelete = new Set<string>()
-
-export async function insertNewUser({
-	username,
-	password,
-}: { username?: string; password?: string } = {}) {
-	const userData = createUser()
-	username ??= userData.username
-	password ??= userData.username
-	const user = await prisma.user.create({
-		select: { id: true, name: true, username: true, email: true },
-		data: {
-			...userData,
-			username,
-			roles: { connect: { name: 'user' } },
-			password: { create: { hash: await getPasswordHash(password) } },
-		},
-	})
-	userIdsToDelete.add(user.id)
-	return user as typeof user & { name: string }
-}
+import { insertNewUser, insertedUsers } from '../tests/db-utils.ts'
 
 export async function loginPage({
 	page,
@@ -102,7 +80,7 @@ export async function waitFor<ReturnValue>(
 
 test.afterEach(async () => {
 	await prisma.user.deleteMany({
-		where: { id: { in: Array.from(userIdsToDelete) } },
+		where: { id: { in: Array.from(insertedUsers) } },
 	})
-	userIdsToDelete.clear()
+	insertedUsers.clear()
 })

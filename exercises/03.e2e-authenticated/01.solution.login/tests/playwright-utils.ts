@@ -1,29 +1,6 @@
 import { test } from '@playwright/test'
-import { getPasswordHash } from '~/utils/auth.server.ts'
 import { prisma } from '~/utils/db.server.ts'
-import { createUser } from '../tests/db-utils.ts'
-
-const userIdsToDelete = new Set<string>()
-
-export async function insertNewUser({
-	username,
-	password,
-}: { username?: string; password?: string } = {}) {
-	const userData = createUser()
-	username ??= userData.username
-	password ??= userData.username
-	const user = await prisma.user.create({
-		select: { id: true, name: true, username: true, email: true },
-		data: {
-			...userData,
-			username,
-			roles: { connect: { name: 'user' } },
-			password: { create: { hash: await getPasswordHash(password) } },
-		},
-	})
-	userIdsToDelete.add(user.id)
-	return user as typeof user & { name: string }
-}
+import { insertedUsers } from './db-utils.ts'
 
 /**
  * This allows you to wait for something (like an email to be available).
@@ -55,7 +32,7 @@ export async function waitFor<ReturnValue>(
 
 test.afterEach(async () => {
 	await prisma.user.deleteMany({
-		where: { id: { in: Array.from(userIdsToDelete) } },
+		where: { id: { in: Array.from(insertedUsers) } },
 	})
-	userIdsToDelete.clear()
+	insertedUsers.clear()
 })

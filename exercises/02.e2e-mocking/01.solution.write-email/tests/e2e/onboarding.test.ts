@@ -1,9 +1,9 @@
 import { faker } from '@faker-js/faker'
 import { expect, test } from '@playwright/test'
-import { createUser } from 'tests/db-utils.ts'
 import { prisma } from '~/utils/db.server.ts'
 import { invariant } from '~/utils/misc.tsx'
-import { insertNewUser, waitFor } from '../playwright-utils.ts'
+import { createUser, insertNewUser } from '../db-utils.ts'
+import { waitFor } from '../playwright-utils.ts'
 
 const urlRegex = /(?<url>https?:\/\/[^\s$.?#].[^\s]*)/
 function extractUrl(text: string) {
