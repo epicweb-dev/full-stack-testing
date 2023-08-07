@@ -1,5 +1,5 @@
+import { expect, test } from '@playwright/test'
 import { createUser, insertNewUser } from '../db-utils.ts'
-import { expect, test } from '../playwright-utils.ts'
 
 test('Search from home page', async ({ page }) => {
 	const username = `___search_${createUser().username}`.slice(0, 20)

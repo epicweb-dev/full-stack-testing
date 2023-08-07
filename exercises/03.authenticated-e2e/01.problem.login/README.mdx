@@ -1,1 +1,136 @@
 # Page login
+
+👨‍💼 We want to test the user 2FA functionality. Go ahead and follow the flow to
+get a sense for what we're trying to test:
+
+1. <LinkToApp to="/login">Login with a user</LinkToApp>
+   (username: `kody`, password: `kodylovesyou`)
+1. Go to <LinkToApp to="/settings/profile" />
+1. On the settings page,
+   <LinkToApp to="/settings/profile/two-factor">Click "Enable 2FA"</LinkToApp>
+1. On the 2FA page,
+   <LinkToApp to="/settings/profile/two-factor/verify">
+   	click "Enable 2FA"
+   </LinkToApp>
+1. Scan the QR code with an authentication app (1Password/Google Authenticator).
+   Or, you can check below for an alternative way to get the code.
+1. Paste the code into the input field and click "Submit"
+1. Go back to the <LinkToApp to="/settings/profile" /> page
+1. Click Logout
+1. <LinkToApp to="/login">Login with the same user</LinkToApp>
+1. You should be shown the verification page. Get the latest code and paste it
+   into the input field.
+1. You should be successfully logged in!
+
+<details>
+
+<summary>Alternative way to get the code</summary>
+
+If you can't scan the QR code, create a temporary file and stick this in it:
+
+```js
+import { generateTOTP } from '@epic-web/totp'
+
+// put the URL in this string:
+const otpUriString = `PASTE_THE_URL_HERE`
+// it should start with otpauth://totp/...
+
+const otpUri = new URL(otpUriString)
+const options = Object.fromEntries(otpUri.searchParams.entries())
+
+console.log(generateTOTP(options).otp)
+```
+
+</details>
+
+Phew! That's a lot of steps! Yeah, but E2E tests are intended to test common
+user flows. They're less valuable when they're split up into tiny pieces. And
+luckily for you, we've got Kellie 🧝‍♂️ who will do most of this for you if you
+don't want to do it yourself. That way you can focus most of your attention on
+the bits you're trying to learn.
+
+Before we can do any of that though, we don't want the test to actually go
+through the entire onboarding flow. That would be wasteful since we already have
+a test that verifies that flow. So instead, we're going to programmatically
+create a user and then log in with that user.
+
+The key bits of this involve:
+
+1. Create a new user (using your `insertNewUser` utility)
+2. Create a session for that user (`prisma.session.create`)
+3. Create a cookie for that session (`sessionStorage.getSession`)
+4. Get that cookie value from the `set-cookie` header
+5. Put that `cookie` value into the page via `page.context().addCookies`.
+
+## Setting the cookie in the browser
+
+Let's talk about step 5 first...
+
+Playwright has
+[an API](https://playwright.dev/docs/api/class-browsercontext#browser-context-add-cookies)
+for setting browser cookies. Here's a quick example:
+
+```ts
+await page.context().addCookies([
+	{
+		name: 'theme',
+		sameSite: 'Lax',
+		domain: 'localhost',
+		path: '/',
+		value: 'dark',
+	},
+])
+```
+
+Most of that should look relatively familiar. There are more configuration
+options you can find in the docs. You want this configuration to match the
+configuration you have for the cookie in the app. Remember, this is a bit like
+a mock, so you want to make sure it resembles the real deal as much as possible.
+
+You can set multiple cookies (just more objects in that array).
+
+## Parsing the `set-cookie` header
+
+Alright, let's talk about step 4. Check this out:
+
+```ts nocopy
+const result = await sessionStorage.commitSession(cookieSession)
+// result looks something like this: en_session=eyJ2ZXJpZmllZC10aW1lIjoxNjkxNDQ1NDI1NjcwLCJzZXNzaW9uSWQiOiJjbGwxZzF2emIwMDAxcGNqNjkyNTB1ZnRuIn0%3D.%2Fzc%2BhFmBg1wPNiYE5nqS1hcXsZJFZwPrLQUf7BGZD1Q; Path=/; HttpOnly; SameSite=Lax
+```
+
+Then the browser turns that into a `Cookie` header for its requests. So the
+browser will just send this bit in the headers:
+
+```txt nonumber nocopy nolang
+Cooke: en_session=eyJ2ZXJpZmllZC10aW1lIjoxNjkxNDQ1NDI1NjcwLCJzZXNzaW9uSWQiOiJjbGwxZzF2emIwMDAxcGNqNjkyNTB1ZnRuIn0%3D.%2Fzc%2BhFmBg1wPNiYE5nqS1hcXsZJFZwPrLQUf7BGZD1Q;
+```
+
+So we need to extract that value from the `set-cookie` header and put it into
+the browser's `Cookie` header. There's a library that can help us with this
+called [`set-cookie-parser`](https://npm.im/set-cookie-parser) (as the author of
+a library called "React Testing Library," I must say I approve of this obvious
+name 😆).
+
+```ts nocopy
+import * as setCookieParser from 'set-cookie-parser'
+
+const cookies = setCookieParser.parseString(
+	await sessionStorage.commitSession(cookieSession),
+)
+cookies.name // => en_session
+cookies.value // => eyJ2ZXJpZmllZC10aW1lIjoxNjkxNDQ1NDI1NjcwLCJzZXNzaW9uSWQiOiJjbGwxZzF2emIwMDAxcGNqNjkyNTB1ZnRuIn0%3D.%2Fzc%2BhFmBg1wPNiYE5nqS1hcXsZJFZwPrLQUf7BGZD1Q
+```
+
+👨‍💼 Alright, enough with that! Let's go!
+
+You'll just be working in <InlineFile file="test/e2e/2fa.test.ts" />, but you
+may want to reference <InlineFile file="app/utils/session.server.ts" /> for the
+cookie config and <InlineFile file="app/utils/auth.server.ts" /> for how to
+create the session and working with the cookie.
+
+```sh nonumber
+npx playwright test --ui
+```
+
+- [📜 `set-cookie-parser`](https://npm.im/set-cookie-parser)
+- [📜 Playwright `addCookies`](https://playwright.dev/docs/api/class-browsercontext#browser-context-add-cookies)

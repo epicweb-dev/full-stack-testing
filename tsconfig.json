@@ -47,22 +47,10 @@
       "path": "exercises/03.authenticated-e2e/01.solution.login"
     },
     {
-      "path": "exercises/03.authenticated-e2e/02.problem.util"
+      "path": "exercises/03.authenticated-e2e/02.problem.2fa"
     },
     {
-      "path": "exercises/03.authenticated-e2e/02.solution.util"
-    },
-    {
-      "path": "exercises/03.authenticated-e2e/03.problem.fixtures"
-    },
-    {
-      "path": "exercises/03.authenticated-e2e/03.solution.fixtures"
-    },
-    {
-      "path": "exercises/03.authenticated-e2e/04.problem.2fa"
-    },
-    {
-      "path": "exercises/03.authenticated-e2e/04.solution.2fa"
+      "path": "exercises/03.authenticated-e2e/02.solution.2fa"
     },
     {
       "path": "exercises/04.unit-test/01.problem.init"

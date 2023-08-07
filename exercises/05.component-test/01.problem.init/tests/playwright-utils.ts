@@ -1,30 +1,15 @@
-import { test as base, type Page } from '@playwright/test'
-import * as cookie from 'cookie'
+import { test, type Page } from '@playwright/test'
+import * as setCookieParser from 'set-cookie-parser'
 import { sessionKey } from '~/utils/auth.server.ts'
 import { prisma } from '~/utils/db.server.ts'
 import { sessionStorage } from '~/utils/session.server.ts'
 import { insertedUsers, insertNewUser } from './db-utils.ts'
 
-export const test = base.extend<{
-	login: (user?: { id: string }) => ReturnType<typeof loginPage>
-}>({
-	login: [
-		async ({ page, baseURL }, use) => {
-			await use(user => loginPage({ page, baseURL, user }))
-		},
-		{ auto: true },
-	],
-})
-
-export const { expect } = test
-
 export async function loginPage({
 	page,
-	baseURL = `http://localhost:${process.env.PORT}/`,
 	user: givenUser,
 }: {
 	page: Page
-	baseURL: string | undefined
 	user?: { id: string }
 }) {
 	const user = givenUser
@@ -48,16 +33,17 @@ export async function loginPage({
 
 	const cookieSession = await sessionStorage.getSession()
 	cookieSession.set(sessionKey, session.id)
-	const cookieValue = await sessionStorage.commitSession(cookieSession)
-	const { en_session } = cookie.parse(cookieValue)
+	const { value: cookieValue } = setCookieParser.parseString(
+		await sessionStorage.commitSession(cookieSession),
+	)
 	await page.context().addCookies([
 		{
 			name: 'en_session',
 			sameSite: 'Lax',
-			url: baseURL,
+			domain: 'localhost',
+			path: '/',
 			httpOnly: true,
-			secure: process.env.NODE_ENV === 'production',
-			value: en_session,
+			value: cookieValue,
 		},
 	])
 	return user as typeof user & { name: string }

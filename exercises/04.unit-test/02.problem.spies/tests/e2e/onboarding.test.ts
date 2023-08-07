@@ -3,7 +3,8 @@ import { requireEmail } from 'tests/mocks/utils.ts'
 import { prisma } from '~/utils/db.server.ts'
 import { invariant } from '~/utils/misc.tsx'
 import { createUser, insertNewUser } from '../db-utils.ts'
-import { expect, test, waitFor } from '../playwright-utils.ts'
+import { waitFor } from '../playwright-utils.ts'
+import { expect, test } from '@playwright/test'
 
 const urlRegex = /(?<url>https?:\/\/[^\s$.?#].[^\s]*)/
 function extractUrl(text: string) {

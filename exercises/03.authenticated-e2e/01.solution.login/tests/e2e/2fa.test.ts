@@ -1,18 +1,15 @@
 import { faker } from '@faker-js/faker'
 import { expect, test } from '@playwright/test'
-import * as cookie from 'cookie'
+import * as setCookieParser from 'set-cookie-parser'
 import { sessionKey } from '~/utils/auth.server.ts'
 import { prisma } from '~/utils/db.server.ts'
-import { sessionStorage } from '~/utils/session.server.ts'
 import { insertNewUser } from '../db-utils.ts'
 
 test('Users can add 2FA to their account and use it when logging in', async ({
 	page,
-	baseURL,
 }) => {
 	const password = faker.internet.password()
 	const user = await insertNewUser({ password })
-
 	const session = await prisma.session.create({
 		data: {
 			expirationDate: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30),
@@ -23,19 +20,19 @@ test('Users can add 2FA to their account and use it when logging in', async ({
 
 	const cookieSession = await sessionStorage.getSession()
 	cookieSession.set(sessionKey, session.id)
-	const cookieValue = await sessionStorage.commitSession(cookieSession)
-	const { en_session } = cookie.parse(cookieValue)
+	const { value: cookieValue } = setCookieParser.parseString(
+		await sessionStorage.commitSession(cookieSession),
+	)
 	await page.context().addCookies([
 		{
 			name: 'en_session',
 			sameSite: 'Lax',
-			url: baseURL,
+			domain: 'localhost',
+			path: '/',
 			httpOnly: true,
-			secure: process.env.NODE_ENV === 'production',
-			value: en_session,
+			value: cookieValue,
 		},
 	])
-
 	await page.goto('/settings/profile')
 
 	await page.getByRole('link', { name: /enable 2fa/i }).click()

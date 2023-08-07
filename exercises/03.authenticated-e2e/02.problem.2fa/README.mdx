@@ -1,0 +1,27 @@
+# Two Factor Auth
+
+👨‍💼 When a user enables two factor auth, they are presented with a special URI
+(Uniform Resource Identifier) with the `otpauth` protocol. It looks something
+like this:
+
+```txt nocopy nonumber
+otpauth://totp/localhost%3A4000:kody%40kcd.dev?secret=GVOOZGF2BP2FYKHJ&issuer=localhost%3A4000&algorithm=SHA1&digits=6&period=30
+```
+
+Because typing that URI in would be ridiculous, we display a QR code to the user
+so they can scan it in their authenticator app. But it's important that we
+display the URI as well in case they're unable to scan the QR code for some
+reason.
+
+That works out to our advantage (because it's probably not worth decoding the
+QR code for our tests).
+
+So in this test, we're going to find the `otpauth` URI and parse out the OTP
+configuration to generate a valid code and complete the two factor auth flow.
+
+You'll just be working in the <InlineFile file="tests/e2e/2fa.test.ts" /> file
+for this one. Enjoy!
+
+```sh nonumber
+npx playwright test --ui
+```
