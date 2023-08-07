@@ -1,1 +1,49 @@
 # Authenticated E2E
+
+Honestly, end to end testing would be pretty simple if we didn't have to think
+about user authentication. However, most apps we build have aspects of it that
+require a specific user (and normally the most important parts of our app do),
+so we do need to think about user authentication in our tests.
+
+A pretty naïve way to do this is to simply make a utility out of our onboarding
+test and run that before every test that needs to have an authenticated user.
+However, this leads to two problems:
+
+1. Tests take however long onboarding takes + however long the test itself takes.
+2. A failure in onboarding will cause all tests that depend on it to fail which
+   can make debugging failures a bit more difficult.
+
+We already know that onboarding is working (provided the onboarding test
+passes), so it's just unnecessary work to run it before every test. Instead,
+thanks to the fact that our tests are running in a node.js environment _and_ we
+have access to all our application code, we can actually skip the onboarding
+process and just create a user directly in the database. Then all we need to do
+is simulate the same authentication process that we do in our app.
+
+In most apps, this involves setting a cookie in the playwright page. You'll use
+Playwright's `addCookies` API for this.
+[📜 Learn more about cookies](https://playwright.dev/docs/api/class-browsercontext#browser-context-add-cookies).
+
+This is not exactly a "mock," but if you squint, it kinda could be. We're just
+doing steps in our test that are impossible for users to do. And that would be
+really bad if we didn't already verify that the user can do those steps
+manually as well.
+
+Because doing this is so common, we normally make a utility to do it for us.
+
+In Playwright, you can definitely call functions in your test code. But there's
+also a feature called "fixtures" (I know, it's a bit of an overloaded term) that
+allows you to make utility functions that hook into the test. We'll be using
+that capability to make our utility easy to use.
+[📜 Learn more about fixtures](https://playwright.dev/docs/test-fixtures).
+
+## Two Factor Auth
+
+When it comes to supporting two factor auth you may worry that you need to
+somehow integrate with a 2FA service in order to generate codes. However, we
+already have code we can reuse from our app to generate codes, provided we have
+the verification secret. Which we can get from the application when setting up
+2FA or by asking the database for it directly.
+
+Once you have that, then you simply pass along the options to `generateTOTP`
+from `@epic-web/totp` and poof, you get an `otp` you can use for 2FA.
