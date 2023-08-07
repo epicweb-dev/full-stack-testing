@@ -22,9 +22,13 @@ test('a new user goes to onboarding', async () => {
 		headers: { cookie: convertSetCookieToCookie(setCookieHeader) },
 	})
 	const response = await loader({ request, params: {}, context: {} })
-	expect(response.status).toBe(302)
-	expect(response.headers.get('location')).toBe('/onboarding/github')
+	assertRedirect(response, '/onboarding/github')
 })
+
+function assertRedirect(response: Response, redirectTo: string) {
+	expect(response.status).toBe(302)
+	expect(response.headers.get('location')).toBe(redirectTo)
+}
 
 function convertSetCookieToCookie(setCookie: string) {
 	const parsedCookie = setCookieParser.parseString(setCookie)

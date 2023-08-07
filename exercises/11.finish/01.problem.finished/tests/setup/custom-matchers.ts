@@ -10,14 +10,6 @@ import { sessionKey } from '~/utils/auth.server.ts'
 import { prisma } from '~/utils/db.server.ts'
 import { sessionStorage } from '~/utils/session.server.ts'
 
-function getSetCookie(headers: Headers) {
-	// this is a sort of polyfill for headers.getSetCookie
-	// https://github.com/microsoft/TypeScript/issues/55270
-	// https://github.com/remix-run/remix/issues/7067
-	// @ts-expect-error see the two issues above
-	return headers.getAll('set-cookie') as Array<string>
-}
-
 expect.extend({
 	toHaveRedirect(response: Response, redirectTo: string) {
 		const isRedirectStatusCode = response.status >= 300 && response.status < 400
@@ -129,4 +121,12 @@ interface CustomMatchers<R = unknown> {
 declare module 'vitest' {
 	interface Assertion<T = any> extends CustomMatchers<T> {}
 	interface AsymmetricMatchersContaining extends CustomMatchers {}
+}
+
+function getSetCookie(headers: Headers) {
+	// this is a sort of polyfill for headers.getSetCookie
+	// https://github.com/microsoft/TypeScript/issues/55270
+	// https://github.com/remix-run/remix/issues/7067
+	// @ts-expect-error see the two issues above
+	return headers.getAll('set-cookie') as Array<string>
 }

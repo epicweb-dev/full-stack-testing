@@ -14,8 +14,7 @@ const RESOURCE_URL_STRING = `${BASE_URL}${ROUTE_PATH}`
 test('a new user goes to onboarding', async () => {
 	const request = await setupRequest()
 	const response = await loader({ request, params: {}, context: {} })
-	expect(response.status).toBe(302)
-	expect(response.headers.get('location')).toBe('/onboarding/github')
+	assertRedirect(response, '/onboarding/github')
 })
 
 test('when auth fails, send the user to login with a toast', async () => {
@@ -29,8 +28,7 @@ test('when auth fails, send the user to login with a toast', async () => {
 		e => e,
 	)
 	invariant(response instanceof Response, 'response should be a Response')
-	expect(response.status).toBe(302)
-	expect(response.headers.get('location')).toBe('/login')
+	assertRedirect(response, '/login')
 	assertToastSent(response)
 	expect(consoleError).toHaveBeenCalledTimes(1)
 	consoleError.mockClear()
@@ -60,6 +58,11 @@ function assertToastSent(response: Response) {
 	expect(parsedCookie).toEqual(
 		expect.arrayContaining([expect.stringContaining('en_toast')]),
 	)
+}
+
+function assertRedirect(response: Response, redirectTo: string) {
+	expect(response.status).toBe(302)
+	expect(response.headers.get('location')).toBe(redirectTo)
 }
 
 function convertSetCookieToCookie(setCookie: string) {
