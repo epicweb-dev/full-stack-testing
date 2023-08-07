@@ -14,6 +14,12 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const fixturesDirPath = path.join(__dirname, '..', 'fixtures')
 
 export const MOCK_ACCESS_TOKEN = '__MOCK_ACCESS_TOKEN__'
+export const primaryGitHubEmail = {
+	email: faker.internet.email(),
+	verified: true,
+	primary: true,
+	visibility: 'public',
+}
 const githubEmails = [
 	{
 		email: faker.internet.email(),
@@ -27,12 +33,7 @@ const githubEmails = [
 		primary: false,
 		visibility: null,
 	},
-	{
-		email: faker.internet.email(),
-		verified: true,
-		primary: true,
-		visibility: 'public',
-	},
+	primaryGitHubEmail,
 ]
 export const mockGithubProfile = {
 	login: faker.internet.userName(),
@@ -44,7 +45,7 @@ export const mockGithubProfile = {
 
 const passthroughGitHub = !process.env.GITHUB_CLIENT_ID.startsWith('MOCK_')
 
-export const emailSchema = z.object({
+const EmailSchema = z.object({
 	to: z.string(),
 	from: z.string(),
 	subject: z.string(),
@@ -58,10 +59,10 @@ const handlers = [
 		: null,
 
 	rest.post(`https://api.resend.com/emails`, async ({ request }) => {
-		if (request.headers.get('Authorization')) {
+		if (!request.headers.get('Authorization')) {
 			throw new Error('Authorization header is required')
 		}
-		const email = emailSchema.parse(await request.json())
+		const email = EmailSchema.parse(await request.json())
 		console.info('🔶 mocked email contents:', email)
 
 		const dir = path.join(fixturesDirPath, 'email')

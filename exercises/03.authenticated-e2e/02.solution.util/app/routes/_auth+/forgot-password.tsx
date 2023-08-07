@@ -14,11 +14,11 @@ import { ErrorList, Field } from '~/components/forms.tsx'
 import { StatusButton } from '~/components/ui/status-button.tsx'
 import { prisma } from '~/utils/db.server.ts'
 import { sendEmail } from '~/utils/email.server.ts'
-import { emailSchema, usernameSchema } from '~/utils/user-validation.ts'
+import { EmailSchema, usernameSchema } from '~/utils/user-validation.ts'
 import { prepareVerification } from './verify.tsx'
 
 const ForgotPasswordSchema = z.object({
-	usernameOrEmail: z.union([emailSchema, usernameSchema]),
+	usernameOrEmail: z.union([EmailSchema, usernameSchema]),
 })
 
 export async function action({ request }: DataFunctionArgs) {

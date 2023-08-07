@@ -20,7 +20,7 @@ export async function createFixture(
 	return fsExtra.writeJSON(path.join(dir, `./${name}.json`), data)
 }
 
-export const emailSchema = z.object({
+export const EmailSchema = z.object({
 	to: z.string(),
 	from: z.string(),
 	subject: z.string(),
@@ -29,7 +29,7 @@ export const emailSchema = z.object({
 })
 
 export async function writeEmail(rawEmail: unknown) {
-	const email = emailSchema.parse(rawEmail)
+	const email = EmailSchema.parse(rawEmail)
 	await createFixture('email', email.to, email)
 	return email
 }
@@ -43,7 +43,7 @@ export async function requireEmail(recipient: string) {
 export async function readEmail(recipient: string) {
 	try {
 		const email = await readFixture('email', recipient)
-		return emailSchema.parse(email)
+		return EmailSchema.parse(email)
 	} catch (error) {
 		console.error(`Error reading email`, error)
 		return null

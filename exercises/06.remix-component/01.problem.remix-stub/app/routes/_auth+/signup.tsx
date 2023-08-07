@@ -15,11 +15,11 @@ import { StatusButton } from '~/components/ui/status-button.tsx'
 import { prisma } from '~/utils/db.server.ts'
 import { sendEmail } from '~/utils/email.server.ts'
 import { useIsPending } from '~/utils/misc.tsx'
-import { emailSchema } from '~/utils/user-validation.ts'
+import { EmailSchema } from '~/utils/user-validation.ts'
 import { prepareVerification } from './verify.tsx'
 
 const SignupSchema = z.object({
-	email: emailSchema,
+	email: EmailSchema,
 })
 
 export async function action({ request }: DataFunctionArgs) {

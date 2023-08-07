@@ -17,7 +17,7 @@ import { prisma } from '~/utils/db.server.ts'
 import { sendEmail } from '~/utils/email.server.ts'
 import { invariant, useIsPending } from '~/utils/misc.tsx'
 import { redirectWithToast } from '~/utils/toast.server.ts'
-import { emailSchema } from '~/utils/user-validation.ts'
+import { EmailSchema } from '~/utils/user-validation.ts'
 import { verifySessionStorage } from '~/utils/verification.server.ts'
 
 export const handle = {
@@ -75,7 +75,7 @@ export async function handleVerification({
 }
 
 const ChangeEmailSchema = z.object({
-	email: emailSchema,
+	email: EmailSchema,
 })
 
 export async function loader({ request }: DataFunctionArgs) {

@@ -18,7 +18,7 @@ export const nameSchema = z
 	.string()
 	.min(3, { message: 'Name is too short' })
 	.max(40, { message: 'Name is too long' })
-export const emailSchema = z
+export const EmailSchema = z
 	.string()
 	.email({ message: 'Email is invalid' })
 	.min(3, { message: 'Email is too short' })

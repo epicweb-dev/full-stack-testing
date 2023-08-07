@@ -20,7 +20,7 @@ export async function createFixture(
 	return fsExtra.writeJSON(path.join(dir, `./${name}.json`), data)
 }
 
-export const emailSchema = z.object({
+export const EmailSchema = z.object({
 	to: z.string(),
 	from: z.string(),
 	subject: z.string(),
@@ -29,7 +29,7 @@ export const emailSchema = z.object({
 })
 
 export async function writeEmail(rawEmail: unknown) {
-	const email = emailSchema.parse(rawEmail)
+	const email = EmailSchema.parse(rawEmail)
 	await createFixture('email', email.to, email)
 	return email
 }
@@ -37,7 +37,7 @@ export async function writeEmail(rawEmail: unknown) {
 // 🐨 create and export a requireEmail function here which accepts a recipient
 // and looks them up in the email fixtures directory. If the email doesn't
 // exist, then throw an error. Otherwise, return the email.
-// 💰 tip, you can use the readFixture function above to help.
+// 💰 tip, you can use the readFixture function above to help (our subdir is "email")
 // 💯 extra credit: parse it to make it type safe
 
 export function requireHeader(headers: Headers, header: string) {

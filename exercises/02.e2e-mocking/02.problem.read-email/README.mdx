@@ -1,1 +1,12 @@
 # Read Email
+
+👨‍💼 Now we can read the email in our test and let the rest of it proceed
+properly. First, you should go to <InlineFile file="tests/mocks/utils.ts" /> to
+add a `requireEmail` utility function. Then you'll go
+to <InlineFile file="tests/e2e/onboarding.test.ts" /> and use that.
+
+Once you've done that, we should be good to go!
+
+```sh nonumber
+npx playwright test --ui
+```

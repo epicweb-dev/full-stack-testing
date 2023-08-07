@@ -1,1 +1,20 @@
 # Write Email
+
+👨‍💼 We've got a couple new tests! Kellie 🧝‍♂️ wrote them for us. It's testing our
+onboarding flow. However, one of them is busted. Because we have no way of
+knowing the verification code that's been emailed because that's just logged
+to the console. We need to somehow communicate that email to our tests so they
+can use the link in there to verify the account.
+
+First, lets have you update the mock we have set up
+in <InlineFile file="tests/mocks/index.ts" /> to write the email to a file. Then
+in the next step you can use that file to read the email and get the
+verification link.
+
+You'll know it's working when you've run the test and even though it's not
+passing yet, you should get a new json file in `tests/fixtures/emails` for the
+email that was sent.
+
+```sh nonumber
+npx playwright test --ui
+```
