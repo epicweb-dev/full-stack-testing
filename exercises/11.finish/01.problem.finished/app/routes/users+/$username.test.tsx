@@ -5,11 +5,11 @@ import { faker } from '@faker-js/faker'
 import { unstable_createRemixStub as createRemixStub } from '@remix-run/testing'
 import { render, screen } from '@testing-library/react'
 import { test } from 'vitest'
-import { default as UsernameRoute, loader } from './$username.tsx'
-import { loader as rootLoader } from '~/root.tsx'
 import { getUserImages, insertNewUser } from 'tests/db-utils.ts'
-import { prisma } from '~/utils/db.server.ts'
 import { getSessionCookieHeader } from 'tests/utils.ts'
+import { loader as rootLoader } from '~/root.tsx'
+import { prisma } from '~/utils/db.server.ts'
+import { default as UsernameRoute, loader } from './$username.tsx'
 
 test('The user profile when not logged in as self', async () => {
 	const user = await insertNewUser()

@@ -3,9 +3,9 @@ import 'dotenv/config'
 import 'source-map-support/register.js'
 // we need these to be imported first 👆
 
+import fs from 'node:fs'
 import { installGlobals } from '@remix-run/node'
 import { cleanup } from '@testing-library/react'
-import fs from 'node:fs'
 import {
 	afterAll,
 	afterEach,

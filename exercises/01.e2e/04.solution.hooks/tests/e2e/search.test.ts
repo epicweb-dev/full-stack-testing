@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test'
-import { createUser } from '../db-utils.ts'
-import { prisma } from '~/utils/db.server.ts'
 import { getPasswordHash } from '~/utils/auth.server.ts'
+import { prisma } from '~/utils/db.server.ts'
+import { createUser } from '../db-utils.ts'
 
 const insertedUsers = new Set<string>()
 

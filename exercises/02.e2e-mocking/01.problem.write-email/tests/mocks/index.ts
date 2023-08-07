@@ -1,10 +1,10 @@
+import fs from 'node:fs'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { faker } from '@faker-js/faker'
 import closeWithGrace from 'close-with-grace'
 import { HttpResponse, passthrough, rest } from 'msw'
 import { setupServer } from 'msw/node'
-import fs from 'node:fs'
-import path from 'node:path'
-import { fileURLToPath } from 'node:url'
 
 const { json } = HttpResponse
 

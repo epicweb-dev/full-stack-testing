@@ -14,8 +14,12 @@ import { ErrorList, Field } from '~/components/forms.tsx'
 import { Spacer } from '~/components/spacer.tsx'
 import { StatusButton } from '~/components/ui/status-button.tsx'
 import { handleVerification as handleChangeEmailVerification } from '~/routes/settings+/profile.change-email.tsx'
+import { requireUserId } from '~/utils/auth.server.ts'
 import { prisma } from '~/utils/db.server.ts'
 import { getDomainUrl, useIsPending } from '~/utils/misc.tsx'
+import { redirectWithToast } from '~/utils/toast.server.ts'
+import { checkboxSchema } from '~/utils/zod-extensions.ts'
+import { twoFAVerificationType } from '../settings+/profile.two-factor.tsx'
 import { type twoFAVerifyVerificationType } from '../settings+/profile.two-factor.verify.tsx'
 import {
 	handleVerification as handleLoginTwoFactorVerification,
@@ -23,10 +27,6 @@ import {
 } from './login.tsx'
 import { handleVerification as handleOnboardingVerification } from './onboarding.tsx'
 import { handleVerification as handleResetPasswordVerification } from './reset-password.tsx'
-import { requireUserId } from '~/utils/auth.server.ts'
-import { twoFAVerificationType } from '../settings+/profile.two-factor.tsx'
-import { redirectWithToast } from '~/utils/toast.server.ts'
-import { checkboxSchema } from '~/utils/zod-extensions.ts'
 
 export const codeQueryParam = 'code'
 export const targetQueryParam = 'target'

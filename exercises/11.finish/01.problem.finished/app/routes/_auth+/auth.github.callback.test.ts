@@ -1,6 +1,7 @@
 import { generateTOTP } from '@epic-web/totp'
 import { faker } from '@faker-js/faker'
 import { rest } from 'msw'
+import { expect, test } from 'vitest'
 import { createUser } from 'tests/db-utils.ts'
 import {
 	mockGithubProfile,
@@ -9,7 +10,6 @@ import {
 } from 'tests/mocks/index.ts'
 import { consoleError } from 'tests/setup/setup-test-env.ts'
 import { BASE_URL, convertSetCookieToCookie } from 'tests/utils.ts'
-import { expect, test } from 'vitest'
 import { sessionKey } from '~/utils/auth.server.ts'
 import { prisma } from '~/utils/db.server.ts'
 import { invariant } from '~/utils/misc.tsx'

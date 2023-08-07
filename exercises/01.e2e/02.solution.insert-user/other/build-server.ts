@@ -1,8 +1,8 @@
-import fsExtra from 'fs-extra'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { globSync } from 'glob'
 import esbuild from 'esbuild'
+import fsExtra from 'fs-extra'
+import { globSync } from 'glob'
 
 const pkg = fsExtra.readJsonSync(path.join(process.cwd(), 'package.json'))
 

@@ -6,8 +6,8 @@ import { json } from '@remix-run/node'
 import { unstable_createRemixStub as createRemixStub } from '@remix-run/testing'
 import { render, screen } from '@testing-library/react'
 import { test } from 'vitest'
-import { default as UsernameRoute, type loader } from './$username.tsx'
 import { type loader as rootLoader } from '~/root.tsx'
+import { default as UsernameRoute, type loader } from './$username.tsx'
 
 function createFakeUser() {
 	const user = {

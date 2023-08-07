@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker'
 import { expect, test } from 'vitest'
-import { getErrorMessage } from './misc.tsx'
 import { consoleError } from 'tests/setup/setup-test-env.ts'
+import { getErrorMessage } from './misc.tsx'
 
 test('Error object returns message', () => {
 	const message = faker.lorem.words(2)

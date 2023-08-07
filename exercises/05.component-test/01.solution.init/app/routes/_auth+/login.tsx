@@ -22,12 +22,12 @@ import {
 import { prisma } from '~/utils/db.server.ts'
 import { combineResponseInits, invariant, useIsPending } from '~/utils/misc.tsx'
 import { sessionStorage } from '~/utils/session.server.ts'
+import { redirectWithToast } from '~/utils/toast.server.ts'
 import { passwordSchema, usernameSchema } from '~/utils/user-validation.ts'
 import { verifySessionStorage } from '~/utils/verification.server.ts'
 import { checkboxSchema } from '~/utils/zod-extensions.ts'
 import { twoFAVerificationType } from '../settings+/profile.two-factor.tsx'
 import { getRedirectToUrl, type VerifyFunctionArgs } from './verify.tsx'
-import { redirectWithToast } from '~/utils/toast.server.ts'
 
 const verifiedTimeKey = 'verified-time'
 const unverifiedSessionIdKey = 'unverified-session-id'

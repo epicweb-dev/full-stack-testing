@@ -1,8 +1,8 @@
 import fs from 'node:fs'
+import { faker } from '@faker-js/faker'
+import closeWithGrace from 'close-with-grace'
 import { rest, passthrough, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
-import closeWithGrace from 'close-with-grace'
-import { faker } from '@faker-js/faker'
 import { requireHeader, writeEmail } from './utils.ts'
 
 const { json } = HttpResponse
