@@ -1,12 +1,51 @@
 # Playwright
 
+👨‍💼 One of the most important features of our app is the search functionality
+you'll find on <LinkToApp to="/users" />. So we're going to put our first test
+there. Here's what we're going to test:
+
+- Go to the home page
+- Type "kody" in the search input at the top and hit search
+- Verify we went to the user's page and that kody appears as an item in the list
+  of results
+- Type something we know shouldn't show any results
+- Verify no results are displayed
+
+We also want to make sure that if they type in a search term that doesn't match
+any user we display the right message.
+
+<callout-info>
+	In this exercise, we're going to rely on the fact that we have a user in our
+	seeded database called "Kody". But you really don't want to do that! We'll
+	improve upon this in the next step.
+</callout-info>
+
 It could help to have the <InlineFile file="app/routes/users+/index.tsx" /> file
-open as a reference as you try to write the test.
+open as a reference as you try to write the test. That said, Kody 🐨 will be in
+the <InlineFile file="tests/e2e/search.test.ts" /> file to guide you
+step-by-step here.
 
-Write test
+🧝‍♂️ I've already configured Playwright for us. You'll find the config
+in <InlineFile file="playwright.config.ts" />. If you want to learn more about
+the configuration options, knock yourself out with [this reference]().
 
-Run
+To start running the test, open up a terminal in the playground directory and
+run:
 
 ```sh nonumber
 npx playwright test --ui
 ```
+
+This will start your dev server and open up the playwright UI. If you've not
+seen it before, definitely take some time to learn about all the options in the
+UI before getting started.
+
+TODO: fill in these URLs (and the playwright one above too)
+
+- [📜 Playwright `goto`]()
+- [📜 Playwright `getByRole`]()
+- [📜 Playwright `waitForURL`]()
+- [📜 Playwright `getByText`]()
+- [📜 Playwright `toBeVisible`]()
+- [📜 Playwright `fill`]()
+- [📜 Playwright `click`]()

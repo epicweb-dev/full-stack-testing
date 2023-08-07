@@ -42,8 +42,25 @@ function debounce(fn, delay) {
 	}
 }
 
-function run() {
-	$({ stdio: 'inherit', cwd: workshopRoot })`node ./scripts/fix.js`
+let running = false
+
+async function run() {
+	if (running) {
+		console.log('still running...')
+		return
+	}
+	running = true
+	try {
+		await $({
+			stdio: 'inherit',
+			cwd: workshopRoot,
+			env: { SKIP_DB_FIX: true, ...process.env },
+		})`node ./scripts/fix.js`
+	} catch (error) {
+		throw error
+	} finally {
+		running = false
+	}
 }
 
 console.log(`watching ${watchPath}`)

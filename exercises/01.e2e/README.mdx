@@ -1,3 +1,156 @@
 # End-to-End
 
-TODO: write this
+Whether you know it or not, you are already testing your application. Whenever
+run your app after making a change, you are testing it. For example:
+
+- You change the color of a button, you run the app, you see if the button is
+  the new color.
+- You change the checkout flow, run the app, and see if the checkout flow is
+  the new one.
+
+We call this **manual testing** and it works well when you're just getting
+started with a project or feature, but the problem is after a while you realize
+that it's impossible ensure your app is working with every change you make.
+Especially when you make a change that affects multiple parts of the app. In
+fact, we often affect parts of the app with our changes without realizing it,
+so even if you were to test every change, you would still miss things.
+
+Whenever we run into manual processes in the tech world, we often find it is
+more fun (and efficient/profitable) to write software that automates the
+process. What if instead of clicking around the app to test it, we could
+write a little script that does this for us. Then when we make a change, we
+simply run the script and it will tell us if the app is working or not.
+
+I like to think of these scripts as "thousands of little Kent's" running around
+checking that I didn't break anything. That's the beauty of software development
+in general.
+
+One challenge with automating any process is ensuring that you are actually
+automating the process or improving upon it. Normally this isn't too big of a
+problem, but in the testing world, it's actually a bit of a challenge:
+
+<callout-warning>
+	You're using a computer program to make certain that a human can use your app.
+</callout-warning>
+
+You're not trying to make sure that the **computer** can use your app, but a
+human. But you're using a computer to do it. You will find yourself fighting
+against this reality constantly as you write automated tests.
+
+So, whenever you're trying to decide how to write a test, take a step back and
+think how you would do it if you were giving a list of instructions to a human
+tester instead of a script to a computer. Remember:
+
+> The more your tests resemble the way your software is used, the more
+> confidence they can give you. - [@kentcdodds](https://twitter.com/kentcdodds/status/977018512689455106)
+
+And confidence is what we're going for when we're writing tests. Also, it's
+important to know who is _using_ your software (and who is not) so you know how
+they use it. For more on this, read
+["Avoid the Test User"](https://kentcdodds.com/blog/avoid-the-test-user).
+
+## What is a Test?
+
+<callout-success>
+	A test is code that throws an error when something is wrong.
+</callout-success>
+
+For example:
+
+```ts
+// here's the thing we want to test 👇
+const sum = (a, b) => a + b
+
+// here's the test 👇
+const expected = 3
+const actual = sum(1, 2)
+if (actual !== expected) {
+	throw new Error(`The sum was ${actual} but it should have been ${expected}`)
+}
+```
+
+That's it. That's a test. Modern testing frameworks do a lot to make writing and
+running tests easier, but that's the gist of it.
+
+For an in depth look at this, read
+[But really, what is a JavaScript test?](https://kentcdodds.com/blog/but-really-what-is-a-javascript-test)
+
+## What is End to End Testing?
+
+There are various tools and strategies for testing your application. Each has
+their own benefits and drawbacks. We're going to start with the End to End
+testing strategy because it does the best job representing how your app is
+actually used.
+
+"End to End" is referring to the fact that we're testing the app from the
+user's experience all the way to our backend components. If you're just getting
+started with testing, it may feel obvious, but there are lower level tests where
+you often test individual components or even make fake versions of things. We'll
+discuss these in more detail later.
+
+<callout-success>
+	Think about the way you're current manually testing your app. An "End to End
+	test" is just doing that with an automation tool.
+</callout-success>
+
+## Playwright
+
+We'll use a testing tool called [Playwright](https://playwright.dev/) to write
+our tests. Playwright is a browser automation framework that allows you control
+the browser and interact with it in ways that are very similar to your users.
+
+[The Playwright Docs](https://playwright.dev/docs/intro) do a good job
+demonstrating how to get started with Playwright. Most of the time you spend
+with playwright will be in writing tests, so I suggest you familiarize yourself
+with the [writing tests](https://playwright.dev/docs/writing-tests) docs page.
+
+Here's an example from the playwright docs:
+
+```ts
+import { test, expect } from '@playwright/test'
+
+test('has title', async ({ page }) => {
+	await page.goto('https://playwright.dev/')
+
+	// Expect a title "to contain" a substring.
+	await expect(page).toHaveTitle(/Playwright/)
+})
+
+test('get started link', async ({ page }) => {
+	await page.goto('https://playwright.dev/')
+
+	// Click the get started link.
+	await page.getByRole('link', { name: 'Get started' }).click()
+
+	// Expects the URL to contain intro.
+	await expect(page).toHaveURL(/.*intro/)
+})
+```
+
+A few important notes about that test:
+
+1. `page.goto` is like the user entering a URL in the address bar and hitting
+   "enter". Because that's annoying, we can skip the full URL and just provide a
+   pathname by configuring a
+   [`baseURL`](https://playwright.dev/docs/test-webserver#adding-a-baseurl) in
+   the playwright config. With that setup, you can simply do `page.goto('/')` to
+   go to the root of your app.
+2. `page.getByRole` is called a [locator](https://playwright.dev/docs/locators).
+   It's your primary mechanism for finding elements on the page to interact
+   with. Playwright has several queries/locator functions, and many are based on
+   [Testing Library](https://testing-library.com/)
+   (by [me](https://kentcdodds.com) 👋).
+   ["Roles"](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles)
+   are a built-in feature of the browser used primarily by assistive
+   technologies. Most of the time, the roles are implicit (you're not usually
+   supposed to use the `role` attribute). By querying using roles, you're also
+   testing (a **part** of) your application's accessibility to people using
+   these technologies.
+
+### Playwright UI
+
+Playwright has a really handy feature called
+[UI Mode](https://playwright.dev/docs/release-notes#introducing-ui-mode-preview)
+which allows you to see what Playwright is doing in the browser and review each
+step of the test. You'll want to spend a little bit of time getting familiar
+with the features of UI mode.
