@@ -1,1 +1,15 @@
 # Insert User
+
+🦉 Making your tests rely on seed data is sometimes required, but most of the
+time doing this will lead to a brittle test suite. For example, what if during
+your development, you deleted the seed data we relied on in the test. That could
+lead to hours of debugging the broken test for you. Definitely potential for a
+"works on their machine why not mine?" scenario.
+
+Instead your tests should be as self-contained as possible, and this means
+creating the data you need for your tests to run when they run.
+
+👨‍💼 So in this exercise, we want you to update the test to actually create a user
+in the database at the start of the test. This will allow you to search for that
+specific user rather than just assuming we'll have a user with a specific
+username.

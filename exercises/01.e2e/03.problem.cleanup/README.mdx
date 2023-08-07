@@ -1,1 +1,25 @@
 # Cleanup
+
+🦉 Test isolation is no joke. When you don't have test isolation, you can easily
+get into a situation where one test is affecting the results of another test.
+Running all the tests together can have a different outcome than running them
+individually. This is a nightmare to debug.
+
+Test isolation means that each test is independent of the others. Each test
+should be able to run in any order, and the results should be the same. In
+practice this means you need to have each test handle its own setup and cleanup.
+
+👨‍💼 Go ahead and try running the test a few times. It probably works, but it may
+not. This is possible because we're not ensuring the username we create is
+unique enough. It's possible a user with the name `sandy_dandy` exists and would
+show up in a search result for a user with `sandy_dan` as their username. It's
+unlikely you'll run into this, but let's make it even less likely.
+
+Secondly, we're not cleaning up after ourselves. We're creating a user, but
+we're not deleting it. This means that if you did run the test a few times, you
+should find more and more users in your database. This is annoying at best, and
+can break other tests at worst.
+
+So we'd like you to address both of these problems. Kody 🐨 will be
+in <InlineFile file="tests/e2e/search.test.ts" /> to help you make this
+adjustment.

@@ -4,7 +4,15 @@ import { prisma } from '~/utils/db.server.ts'
 import { createUser } from '../db-utils.ts'
 
 test('Search from home page', async ({ page }) => {
-	const newUser = await insertNewUser()
+	const userData = createUser()
+	const newUser = await prisma.user.create({
+		select: { id: true, name: true, username: true, email: true },
+		data: {
+			...userData,
+			roles: { connect: { name: 'user' } },
+			password: { create: { hash: await getPasswordHash(userData.username) } },
+		},
+	})
 	await page.goto('/')
 
 	await page.getByRole('searchbox', { name: /search/i }).fill(newUser.username)
@@ -27,16 +35,3 @@ test('Search from home page', async ({ page }) => {
 	await expect(userList.getByRole('listitem')).not.toBeVisible()
 	await expect(page.getByText(/no users found/i)).toBeVisible()
 })
-
-export async function insertNewUser() {
-	const userData = createUser()
-	const user = await prisma.user.create({
-		select: { id: true, name: true, username: true, email: true },
-		data: {
-			...userData,
-			roles: { connect: { name: 'user' } },
-			password: { create: { hash: await getPasswordHash(userData.username) } },
-		},
-	})
-	return user
-}
