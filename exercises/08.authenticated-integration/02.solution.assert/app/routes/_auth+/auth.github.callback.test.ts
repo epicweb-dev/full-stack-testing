@@ -4,11 +4,8 @@ import { rest } from 'msw'
 import * as setCookieParser from 'set-cookie-parser'
 import { expect, test } from 'vitest'
 import { createUser } from 'tests/db-utils.ts'
-import {
-	mockGithubProfile,
-	primaryGitHubEmail,
-	server,
-} from 'tests/mocks/index.ts'
+import { mockGithubProfile, primaryGitHubEmail } from 'tests/mocks/github.ts'
+import { server } from 'tests/mocks/index.ts'
 import { consoleError } from 'tests/setup/setup-test-env.ts'
 import { sessionKey } from '~/utils/auth.server.ts'
 import { prisma } from '~/utils/db.server.ts'

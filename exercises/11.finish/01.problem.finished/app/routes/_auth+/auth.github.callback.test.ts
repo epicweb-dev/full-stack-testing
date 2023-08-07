@@ -3,11 +3,8 @@ import { faker } from '@faker-js/faker'
 import { rest } from 'msw'
 import { expect, test } from 'vitest'
 import { createUser } from 'tests/db-utils.ts'
-import {
-	mockGithubProfile,
-	primaryGitHubEmail,
-	server,
-} from 'tests/mocks/index.ts'
+import { mockGithubProfile, primaryGitHubEmail } from 'tests/mocks/github.ts'
+import { server } from 'tests/mocks/index.ts'
 import { consoleError } from 'tests/setup/setup-test-env.ts'
 import { BASE_URL, convertSetCookieToCookie } from 'tests/utils.ts'
 import { sessionKey } from '~/utils/auth.server.ts'
