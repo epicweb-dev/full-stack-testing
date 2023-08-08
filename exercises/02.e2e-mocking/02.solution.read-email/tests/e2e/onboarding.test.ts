@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker'
 import { expect, test } from '@playwright/test'
-import { requireEmail } from 'tests/mocks/utils.ts'
+import { requireEmail } from 'tests/mocks/resend.ts'
 import { prisma } from '~/utils/db.server.ts'
 import { invariant } from '~/utils/misc.tsx'
 import { createUser, insertNewUser } from '../db-utils.ts'

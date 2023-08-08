@@ -46,10 +46,10 @@ test('onboarding with link', async ({ page }) => {
 	await expect(page.getByText(/check your email/i)).toBeVisible()
 
 	const email = (await waitFor(() => {
-		// 🐨 once you've implemented your requireEmail function in the mock utils
+		// 🐨 once you've implemented your requireEmail function in the resend mock
 		// use it here to get the email that was set to the onboardingData.email
 		throw new Error('Not yet implemented')
-	})) as { to: string; from: string; subject: string; text: string }
+	})) as any
 
 	expect(email.to).toBe(onboardingData.email.toLowerCase())
 	expect(email.from).toBe('hello@epicstack.dev')

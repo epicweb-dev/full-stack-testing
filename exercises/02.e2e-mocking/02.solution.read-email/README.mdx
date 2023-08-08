@@ -6,7 +6,12 @@ future built-into MSW ([#1617](https://github.com/mswjs/msw/pull/1617)), but
 even when we have that, writing the email to the file system is kind of handy
 for us.
 
-🧝‍♂️ I'm going to write another test in `tests/e2e/2fa.test.ts` which will test
-our two factor auth process. It'll just go far enough to click "enable 2FA"
-because from there we're going to need you to do some magic to make it work. You
-can <DiffLink>check the changes</DiffLink> if you want.
+🧝‍♂️ I'm going to create some utilities out of what you just did to make it easier
+for us to create and read fixtures like this in the future. I'll put them in
+`tests/mocks/utils.ts`.
+
+Also, I'll write another test in `tests/e2e/2fa.test.ts` which will test our two
+factor auth process. It'll just go far enough to click "enable 2FA" because from
+there we're going to need you to do some magic to make it work. You can do this
+all yourself if you have time, or just <DiffLink>check the changes</DiffLink>
+if you want.

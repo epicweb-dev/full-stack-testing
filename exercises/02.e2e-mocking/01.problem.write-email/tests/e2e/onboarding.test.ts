@@ -48,7 +48,7 @@ test('onboarding with link', async ({ page }) => {
 	// we'll fix this soon.
 	const email = (await waitFor(() => {
 		throw new Error('Not yet implemented')
-	})) as { to: string; from: string; subject: string; text: string }
+	})) as any
 
 	expect(email.to).toBe(onboardingData.email.toLowerCase())
 	expect(email.from).toBe('hello@epicstack.dev')
