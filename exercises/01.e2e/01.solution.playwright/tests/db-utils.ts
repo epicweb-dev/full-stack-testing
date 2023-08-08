@@ -2,8 +2,6 @@ import fs from 'node:fs'
 import { faker } from '@faker-js/faker'
 import bcrypt from 'bcryptjs'
 import { UniqueEnforcer } from 'enforce-unique'
-import { getPasswordHash } from '~/utils/auth.server.ts'
-import { prisma } from '~/utils/db.server.ts'
 
 const uniqueUsernameEnforcer = new UniqueEnforcer()
 
@@ -36,28 +34,6 @@ export function createPassword(password: string = faker.internet.password()) {
 	return {
 		hash: bcrypt.hashSync(password, 10),
 	}
-}
-
-export const insertedUsers = new Set<string>()
-
-export async function insertNewUser({
-	username,
-	password,
-}: { username?: string; password?: string } = {}) {
-	const userData = createUser()
-	username ??= userData.username
-	password ??= userData.username
-	const user = await prisma.user.create({
-		select: { id: true, name: true, username: true, email: true },
-		data: {
-			...userData,
-			username,
-			roles: { connect: { name: 'user' } },
-			password: { create: { hash: await getPasswordHash(password) } },
-		},
-	})
-	insertedUsers.add(user.id)
-	return user as typeof user & { name: string }
 }
 
 let noteImages: Array<Awaited<ReturnType<typeof img>>> | undefined

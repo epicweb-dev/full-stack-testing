@@ -1,7 +1,8 @@
 /**
  * @vitest-environment jsdom
  */
-import { act, renderHook } from '@testing-library/react'
+// 🐨 bring in act and renderHook from @testing-library/react
+// 🐨 bring in expect, test, and vi from vitest
 import { expect, test, vi } from 'vitest'
 import { useDoubleCheck } from './misc.tsx'
 

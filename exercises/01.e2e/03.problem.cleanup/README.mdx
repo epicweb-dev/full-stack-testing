@@ -9,21 +9,20 @@ Test isolation means that each test is independent of the others. Each test
 should be able to run in any order, and the results should be the same. In
 practice this means you need to have each test handle its own setup and cleanup.
 
-👨‍💼 Go ahead and try running the test a few times. It probably works, but it may
-not. This is possible because we're not ensuring the username we create is
-unique enough. It's possible a user with the name `sandy_dandy` exists and would
-show up in a search result for a user with `sandy_dan` as their username. It's
-unlikely you'll run into this, but let's make it even less likely.
+👨‍💼 Go ahead and try running the test a few times. It probably works, but you may
+notice something funny if you open the app and go to the user's page. After
+running the test a few times, you should find more and more users on the users
+page! This is annoying at best, and can break other tests at worst.
 
-Secondly, we're not cleaning up after ourselves. We're creating a user, but
-we're not deleting it. This means that if you did run the test a few times, you
-should find more and more users in your database. This is annoying at best, and
-can break other tests at worst.
-
-So we'd like you to address both of these problems. Kody 🐨 will be
-in <InlineFile file="tests/e2e/search.test.ts" /> to help you make this
-adjustment.
+The solution to this is simple. We just need to delete the user we created! Make
+this adjustment and try again.
 
 ```sh nonumber
 npx playwright test --ui
+```
+
+You can reseed the database to get rid of the old ones if you want.
+
+```sh nonumber
+npx prisma db seed
 ```

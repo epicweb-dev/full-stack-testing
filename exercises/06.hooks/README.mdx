@@ -30,6 +30,9 @@ function useCounter(initialCount) {
 ```
 
 ```tsx filename=use-counter.test.tsx
+/**
+ * @vitest-environment jsdom
+ */
 import { renderHook, act } from '@testing-library/react'
 import { expect, test } from 'vitest'
 import { useCounter } from './use-counter'
@@ -84,11 +87,17 @@ An alternative to using `renderHook` is to write your own `TestComponent`.
 Here's how we would do that with the example above:
 
 ```tsx filename=use-counter.test.tsx
+/**
+ * @vitest-environment jsdom
+ */
 import { renderHook, screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
+import userEventDefault from '@testing-library/user-event'
 import { useState } from 'react'
 import { expect, test } from 'vitest'
 import { useCounter } from './use-counter'
+
+// https://github.com/testing-library/user-event/issues/1146
+const userEvent = userEventDefault.default ?? userEventDefault
 
 test('increments and decrements', async () => {
 	function TestComponent() {

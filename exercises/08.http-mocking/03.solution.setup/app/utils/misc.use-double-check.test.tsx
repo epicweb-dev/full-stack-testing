@@ -8,8 +8,7 @@ import { expect, test } from 'vitest'
 import { useDoubleCheck } from './misc.tsx'
 
 // https://github.com/testing-library/user-event/issues/1146
-const userEvent =
-	userEventDefault as unknown as (typeof userEventDefault)['default']
+const userEvent = userEventDefault.default ?? userEventDefault
 
 function TestComponent() {
 	const [defaultPrevented, setDefaultPrevented] = useState<
@@ -40,11 +39,11 @@ test('prevents default on the first click, and does not on the second', async ()
 	expect(status.textContent).toBe('Default Prevented: idle')
 	expect(button.textContent).toBe('Click me')
 
-	await user.click(screen.getByRole('button'))
+	await user.click(button)
 	expect(button.textContent).toBe('You sure?')
 	expect(status.textContent).toBe('Default Prevented: yes')
 
-	await user.click(screen.getByRole('button'))
+	await user.click(button)
 	expect(button.textContent).toBe('You sure?')
 	expect(status.textContent).toBe('Default Prevented: no')
 })
@@ -56,7 +55,7 @@ test('blurring the button starts things over', async () => {
 	const status = screen.getByRole('status')
 	const button = screen.getByRole('button')
 
-	await user.click(screen.getByRole('button'))
+	await user.click(button)
 	expect(button.textContent).toBe('You sure?')
 	expect(status.textContent).toBe('Default Prevented: yes')
 
@@ -74,7 +73,7 @@ test('hitting "escape" on the input starts things over', async () => {
 	const status = screen.getByRole('status')
 	const button = screen.getByRole('button')
 
-	await user.click(screen.getByRole('button'))
+	await user.click(button)
 	expect(button.textContent).toBe('You sure?')
 	expect(status.textContent).toBe('Default Prevented: yes')
 

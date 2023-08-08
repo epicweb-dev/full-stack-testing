@@ -3,9 +3,38 @@
 👨‍💼 We've got ourselves a hook we want to test! The `useDoubleCheck`
 in <InlineFile file="app/utils/misc.tsx" />.
 
+If you want to see it in action, check
+out <InlineFile file="app/routes/settings+/profile.two-factor.disable.tsx" />.
+
+Here's a quick example:
+
+```tsx
+function MyComponent() {
+	const dc = useDoubleCheck()
+	return (
+		<Form method="POST" action="/feed/lions">
+			<button
+				{...dc.getButtonProps({
+					// put custom props here,
+					// like an onClick, etc...
+				})}
+			>
+				{dc.doubleCheck ? 'Are you sure?' : 'Feed the lions'}
+			</button>
+		</Form>
+	)
+}
+```
+
+The first time it's clicked, it calls `preventDefault` on the event and updates
+the `doubleClick` value. The second time it's clicked, it submits the form.
+
+In both cases, any custom `onClick` handler will be called (which can then check
+the `event.defaultPrevented` value to see if the event was prevented).
+
 I want you to try both `renderHook` and `TestComponent` for this exercise.
-Sometimes you just have to do it both ways and see which you dislike the least
-(and then choose the other one of course 😅).
+Sometimes you just have to do it both ways and see which you dislike the least.
+😅
 
 Let's start with `renderHook`. Here's a reminder of how to use that API:
 
@@ -33,5 +62,26 @@ Remember the warning before:
 	referencing stale values and your tests won't work reliably.
 </callout-danger>
 
+## `vi.fn`
+
+👨‍💼 In this exercise, you're going to need to use a mock function to pass as the
+custom `onClick` handler to make sure it's called when the button is clicked.
+
+Here's how you use `vi.fn` to create a mock function:
+
+```ts
+const myClickHandler = vi.fn()
+
+// ... pass the mock function just like you would a regular function
+
+expect(myClickHandler).not.toHaveBeenCalled()
+// or
+expect(myClickHandler).toHaveBeenCalledTimes(1)
+// or
+expect(myClickHandler).toHaveBeenCalledWith('some', 'arguments')
+// etc.
+```
+
 - [📜 `renderHook`](https://testing-library.com/docs/react-testing-library/api#renderhook)
 - [📜 `act`](https://testing-library.com/docs/react-testing-library/api#act)
+- [📜 `vi.fn`](https://vitest.dev/api/vi.html#vi-fn)

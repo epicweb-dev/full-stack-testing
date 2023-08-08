@@ -1,6 +1,6 @@
 import 'dotenv/config'
-import '~/utils/env.server.ts'
 import 'source-map-support/register.js'
+import '~/utils/env.server.ts'
 // we need these to be imported first 👆
 
 import { installGlobals } from '@remix-run/node'

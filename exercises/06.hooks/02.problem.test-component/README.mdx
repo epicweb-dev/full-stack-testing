@@ -1,1 +1,49 @@
 # Test Component
+
+👨‍💼 Let's try the Test Component approach. In this, you create a component that
+uses the hook the way you would expect it to be used, then you render and test
+that. Here's our example from earlier:
+
+```tsx filename=use-counter.test.tsx
+/**
+ * @vitest-environment jsdom
+ */
+import { renderHook, screen } from '@testing-library/react'
+import userEventDefault from '@testing-library/user-event'
+import { useState } from 'react'
+import { expect, test } from 'vitest'
+import { useCounter } from './use-counter'
+
+// https://github.com/testing-library/user-event/issues/1146
+const userEvent = userEventDefault.default ?? userEventDefault
+
+test('increments and decrements', async () => {
+	function TestComponent() {
+		const { count, increment, decrement } = useCounter(0)
+		return (
+			<div>
+				<output>{count}</output>
+				<button onClick={increment}>+</button>
+				<button onClick={decrement}>-</button>
+			</div>
+		)
+	}
+
+	render(<TestComponent />)
+
+	expect(screen.getByRole('status').textContent).toBe(0)
+	await userEvent.click(screen.getByRole('button', { name: '+' }))
+	expect(screen.getByRole('status').textContent).toBe(1)
+	await userEvent.click(screen.getByRole('button', { name: '-' }))
+	expect(result.current.count).toBe(0)
+})
+```
+
+In this example, you don't have to worry about `act` or `result.current`. You
+interact with the test component just like any other component you're testing.
+
+The key point is that you render everything you need to know about into the DOM
+so it can be selected and asserted. You can still pass mock functions and things
+as props as needed, but that's not always necessary.
+
+So, let's add another test that uses a custom `TestComponent`!
