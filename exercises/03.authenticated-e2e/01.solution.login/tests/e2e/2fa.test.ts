@@ -3,6 +3,7 @@ import { expect, test } from '@playwright/test'
 import * as setCookieParser from 'set-cookie-parser'
 import { sessionKey } from '~/utils/auth.server.ts'
 import { prisma } from '~/utils/db.server.ts'
+import { sessionStorage } from '~/utils/session.server.ts'
 import { insertNewUser } from '../db-utils.ts'
 
 test('Users can add 2FA to their account and use it when logging in', async ({
