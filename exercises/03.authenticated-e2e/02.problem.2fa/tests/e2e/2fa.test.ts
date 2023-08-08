@@ -40,7 +40,7 @@ test('Users can add 2FA to their account and use it when logging in', async ({
 	// 📜 https://playwright.dev/docs/api/class-elementhandle#element-handle-inner-text
 
 	// 🐨 Get the options from the otpUriString
-	// 💰 you can use Object.fromEntries(new URL(otpUri.searchParams))
+	// 💰 you can use Object.fromEntries(new URL(otpUri).searchParams)
 
 	// 🐨 get an otp by calling generateTOTP with the options you got from the URI
 	// 💰 it'll give you back an object with an "otp" property.
