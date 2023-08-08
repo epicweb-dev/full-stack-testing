@@ -33,19 +33,10 @@ export async function loginPage({
 
 	const cookieSession = await sessionStorage.getSession()
 	cookieSession.set(sessionKey, session.id)
-	const { value: cookieValue } = setCookieParser.parseString(
+	const cookieConfig = setCookieParser.parseString(
 		await sessionStorage.commitSession(cookieSession),
-	)
-	await page.context().addCookies([
-		{
-			name: 'en_session',
-			sameSite: 'Lax',
-			domain: 'localhost',
-			path: '/',
-			httpOnly: true,
-			value: cookieValue,
-		},
-	])
+	) as any
+	await page.context().addCookies([{ ...cookieConfig, domain: 'localhost' }])
 	return user as typeof user & { name: string }
 }
 

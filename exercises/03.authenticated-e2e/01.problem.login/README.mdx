@@ -114,11 +114,13 @@ name 😆).
 ```ts nocopy
 import * as setCookieParser from 'set-cookie-parser'
 
-const cookies = setCookieParser.parseString(
+const cookie = setCookieParser.parseString(
 	await sessionStorage.commitSession(cookieSession),
 )
-cookies.name // => en_session
-cookies.value // => eyJ2ZXJpZmllZC10aW1lIjoxNjkxNDQ1NDI1NjcwLCJzZXNzaW9uSWQiOiJjbGwxZzF2emIwMDAxcGNqNjkyNTB1ZnRuIn0%3D.%2Fzc%2BhFmBg1wPNiYE5nqS1hcXsZJFZwPrLQUf7BGZD1Q
+cookie.name // => en_session
+cookie.value // => eyJ2ZXJpZmllZC10aW1lIjoxNjkxNDQ1NDI1NjcwLCJzZXNzaW9uSWQiOiJjbGwxZzF2emIwMDAxcGNqNjkyNTB1ZnRuIn0%3D.%2Fzc%2BhFmBg1wPNiYE5nqS1hcXsZJFZwPrLQUf7BGZD1Q
+cookie.sameSite // => Lax
+// etc.
 ```
 
 👨‍💼 Alright, enough with that! Let's go!

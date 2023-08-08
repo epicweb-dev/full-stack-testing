@@ -22,11 +22,16 @@ test('Users can add 2FA to their account and use it when logging in', async ({
 	// 🐨 set the sessionKey on the cookieSession to the session.id
 	// 🐨 commit the cookieSession using sessionStorage.commitSession
 	// 🐨 parse the setCookie header using setCookieParser.parseString
-	// 💰 const { value: cookieValue } = setCookieParser.parseString(...)
+	// 💰 const cookieConfig = setCookieParser.parseString(...)
 
 	// 🐨 add the cookie to the browser context using page.context().addCookies
-	// The options should be similar to what you'll find in the session.server.ts file.
-	// 💰 make sure to set the value to cookieValue and the domain to 'localhost'!
+	// by passing the cookieConfig to addCookies (note, you need to add the domain!)
+	// so you can use {...cookieConfig, domain: 'localhost'}
+
+	// 🦺 The cookieConfig type can't be specific enough to satisfy the
+	// requirements of addCookies. If you'd like to parse the cookieConfig with
+	// zod to make it more type safe, be my guest, but I don't think it's necessary
+	// in this case. Simply add `as any` to the cookieConfig and you'll be good to go.
 
 	await page.goto('/settings/profile')
 
