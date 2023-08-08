@@ -31,16 +31,19 @@ Playwright's queries were inspired by Testing Library's queries 🎉.
 
 Here's the simplest example of a test using Testing Library:
 
-```tsx filename=app.test.tsx
+```tsx filename=counter.tsx
 import * as React from 'react'
-import { render, screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
 
-function Counter() {
+export function Counter() {
 	const [count, setCount] = React.useState(0)
 	const increment = () => setCount(c => c + 1)
 	return <button onClick={increment}>Count: {count}</button>
 }
+```
+
+```tsx filename=counter.test.tsx
+import { expect, test } from 'vitest'
+import { Counter } from './counter.tsx'
 
 test('counter increments when clicked', async () => {
 	render(<Counter />)
@@ -70,4 +73,20 @@ challenges with running in a simulated environment like we do.
 What you should know is that in order to simulate a browser environment, we use
 a library called [`jsdom`](https://npm.im/jsdom). This library has many known
 limitations and differences from real browsers. However, it has the benefit of
-being lighter weight than a full browser.
+being lighter weight than a full browser and therefore it starts up much faster.
+So it's well suited for lower level tests like the one's we'll be using it for
+today.
+
+That said, we don't want it to be set up by default for all our vitest tests,
+so we enable it on a per-test basis using the `@vitest-environment` comment
+pragma at the top of our UI test files:
+
+```tsx filename=some-file.test.tsx
+/**
+ * @vitest-environment jsdom
+ */
+```
+
+Adding this to a test file tells vitest to initialize `jsdom` in the global
+environment before running our test file (so we can safely use `document`, etc.
+in our tests).

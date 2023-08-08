@@ -1,0 +1,141 @@
+# Hooks
+
+In React, we have a primitive that's even lower level than a component: a hook.
+
+A hook is a function that uses other hooks. That's it. That's the definition of
+a hook. But what makes it special regarding testing is if you try to call a hook
+outside of a React component, React doesn't know what to do with it and will
+error out on you.
+
+But sometimes it can be really useful to test a hook in isolation for all the
+same reasons we want to write lower-level tests. Primarily, if there's some
+complex logic going on in the hook, it can be nice to test it directly rather
+than indirectly through a component.
+
+So `@testing-library/react` has a special function called
+[`renderHook`](https://testing-library.com/docs/react-testing-library/api#renderhook)
+that allows you to test a hook in isolation. Here's an example:
+
+```tsx filename=use-counter.tsx
+import { useState } from 'react'
+
+function useCounter(initialCount) {
+	const [count, setCount] = useState(initialCount)
+
+	const increment = () => setCount(c => c + 1)
+	const decrement = () => setCount(c => c - 1)
+
+	return { count, increment, decrement }
+}
+```
+
+```tsx filename=use-counter.test.tsx
+import { renderHook, act } from '@testing-library/react'
+import { expect, test } from 'vitest'
+import { useCounter } from './use-counter'
+
+test('increments and decrements', () => {
+	const { result } = renderHook(() => useCounter(0))
+
+	expect(result.current.count).toBe(0)
+	act(() => result.current.increment())
+	expect(result.current.count).toBe(1)
+	act(() => result.current.decrement())
+	expect(result.current.count).toBe(0)
+})
+```
+
+Check out
+[the `renderHook` docs](https://testing-library.com/docs/react-testing-library/api#renderhook)
+if you want more info on the docs
+
+## `result.current`
+
+Due to the nature of JavaScript, it's _very important_ you always reference all
+values off of `result.current` rather than doing what may seem more natural and
+destructuring values off of `result.current` and using those. This is because
+`result.current` is a reference to the current value of the hook. If you
+destructure values off of it, then you're creating a new reference to the
+values. This means that if you call a function that mutates the values, then
+your destructured values will be out of date.
+
+This is a common mistake that people make when testing hooks with this utility.
+
+<callout-danger>
+	So be sure to always reference values off of `result.current`.
+</callout-danger>
+
+## Act
+
+What's this `act` thing? To be short, it's a way to tell React that you're
+performing an action that will cause a state change. This way, when you're done
+with your action, React can flush all the state changes and re-render the
+component. This is important because React is asynchronous, so if you don't tell
+React that you're done with your action, it won't know when to flush the state
+changes and re-render the component. If it doesn't re-render, then your next
+line of code will be testing the old state, not the new state.
+
+If you're interested in a deeper dive on `act`, read
+[Fix the "not wrapped in act(...)" warning](https://kentcdodds.com/blog/fix-the-not-wrapped-in-act-warning).
+
+## Test Components
+
+An alternative to using `renderHook` is to write your own `TestComponent`.
+Here's how we would do that with the example above:
+
+```tsx filename=use-counter.test.tsx
+import { renderHook, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import { useState } from 'react'
+import { expect, test } from 'vitest'
+import { useCounter } from './use-counter'
+
+test('increments and decrements', async () => {
+	function TestComponent() {
+		const { count, increment, decrement } = useCounter(0)
+		return (
+			<div>
+				<output>{count}</output>
+				<button onClick={increment}>+</button>
+				<button onClick={decrement}>-</button>
+			</div>
+		)
+	}
+
+	render(<TestComponent />)
+
+	expect(screen.getByRole('status').textContent).toBe(0)
+	await userEvent.click(screen.getByRole('button', { name: '+' }))
+	expect(screen.getByRole('status').textContent).toBe(1)
+	await userEvent.click(screen.getByRole('button', { name: '-' }))
+	expect(result.current.count).toBe(0)
+})
+```
+
+Interestingly, the TestComponent is actually what `renderHook` does, though it's
+more generic and doesn't render any React elements. Making your own
+`TestComponent` comes with the benefit of you being able to help use the
+component in the way it's intended to be used by consumers of the hook. In some
+cases this makes the test easier to understand.
+
+## User Event
+
+You may have noticed in our test component example that we're using
+[`userEvent`](https://testing-library.com/docs/user-event/intro) to trigger
+the increment and decrement. And we don't have to wrap those calls in `act`.
+This is because `userEvent` will fire browser events in a way that simulates
+a user interaction. This is a great way to test your components because it
+ensures that your components are working as expected when a user interacts with
+them.
+
+The reason we don't need to wrap these in `act` is because `userEvent` actually
+just calls
+[`fireEvent`](https://testing-library.com/docs/dom-testing-library/api-events),
+(a lower-level utility you rarely need) which in a React context is
+automatically wrapped in `act` for you. So you never need to worry about
+wrapping `fireEvent` or `userEvent` in `act` yourself. Incidentally, `render` is
+also wrapped in `act`. So in fact you very _rarely_ need to use `act` directly.
+
+- [📜 `renderHook`](https://testing-library.com/docs/react-testing-library/api#renderhook)
+- [📜 `act`](https://testing-library.com/docs/react-testing-library/api#act)
+- [📜 `userEvent`](https://testing-library.com/docs/user-event/intro)

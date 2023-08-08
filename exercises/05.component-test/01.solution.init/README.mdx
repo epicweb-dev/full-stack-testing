@@ -1,1 +1,55 @@
 # Testing Library
+
+👨‍💼 Super! We've got our first UI test. While we already have a way to test some
+UI stuff with Playwright, it's good for us to be able to test more fine-grained
+components like this instead of writing a million full-app tests to cover all
+the edge cases of all our components.
+
+🦉 One of the cool things about these lower-level tests is we get to measure how
+much of our code is run when the tests are running. This can help us direct our
+efforts to where they're needed most and help us find gaps. You can enable this
+by using the `--coverage` flag:
+
+```sh nonumber
+npx vitest --coverage --no-watch
+```
+
+If you run this, it'll output a coverage report to the terminal. It'll also
+create a `coverage` folder with a bunch of HTML files in it. If you open
+`coverage/index.html`, you'll be shown an interactive report of which lines of
+code were run and which weren't. You can click on the file names to see the
+individual files. Try to find the coverage report for the file
+`app/components/forms.tsx`. Yikes, that's a lot of red 😅
+
+The coverage report consists of four metrics:
+
+- **Statements**: The percent of statements that were run (at least once). A
+  statement is a piece of code that performs a specific action, like a function
+  call or a variable declaration.
+- **Branches**: The percent of branches that were run (at least once). A branch
+  is one part of a conditional statement, like an if statement or a ternary.
+- **Functions**: The percent of functions that were run (at least once).
+- **Lines**: The percent of lines that were run (at least once).
+
+There's a bit of overlap in some of these, but altogether they can be combined
+into a single code coverage score. Read
+[How to know what to test](https://kentcdodds.com/blog/how-to-know-what-to-test)
+for more on why you should be careful focusing too much on targeting 100% code
+coverage.
+
+For more on configuring the coverage report, check out the
+[Vitest docs](https://vitest.dev/guide/coverage.html).
+
+---
+
+🧝‍♂️ The rest of the tests will be pretty similar to what you just did, so I'm
+going to write them for you. Feel free to write them yourself though if you want
+the extra practice. Here are the test titles to give you an idea:
+
+- `shows a single error`
+- `shows multiple errors`
+- `can cope with falsy values`
+- `adds id to the ul`
+
+But there's a problem with these tests I'll need you to work out in the next
+step.

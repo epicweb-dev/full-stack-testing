@@ -2,3 +2,68 @@
 
 👨‍💼 We have a component that renders a list of error messages. Let's write
 one test that verifies this renders properly.
+
+As a reminder, here's an example of a test with `@testing-library/react`:
+
+```tsx
+/**
+ * @vitest-environment jsdom
+ */
+import { expect, test } from 'vitest'
+import { Counter } from './counter.tsx'
+
+test('counter increments when clicked', async () => {
+	render(<Counter />)
+	const button = screen.getByRole('button', { name: /count:/i })
+	expect(button.textContent).toBe('Count: 0')
+	await userEvent.click(button)
+	expect(button.textContent).toBe('Count: 1')
+})
+```
+
+Let's start with the most basic use case:
+
+- `shows nothing when given an empty list`
+
+## Asserting non-existence
+
+Before you jump in on this one, you should know that Testing Library consists of
+a number of utilities that help you find elements in the DOM. The most common
+one is `getByRole`, which we've used in the example above. But there are several
+others you can use. You can read about them in detail in the
+[Testing Library "About Queries" documentation](https://testing-library.com/docs/queries/about).
+
+In this exercise, we need to discover how to find elements that _don't_ exist in
+the DOM. And since we're looking for multiple elements, we can use the
+[`queryByRole`](https://testing-library.com/docs/queries/byrole) method. This
+method will return an empty array if no elements are found (which is what we're
+looking for).
+
+In fact, the only situation where you ever use `queryBy*` or `queryAllBy*`
+queries is when you're trying to assert on non-existence of elements. Otherwise,
+you should be using the other variants (`get*` or `find*`). For more details,
+[refer to the docs](https://testing-library.com/docs/queries/about).
+
+## Utilities
+
+Testing Library comes with a few utilities you may find handy when developing
+your tests. If you ever want to know what the DOM looks like at any time, you
+can run `screen.debug()` and it will log out the current DOM (formatted and with
+syntax highlighting).
+
+And if you want to play around with that DOM in a real browser, you
+`screen.logTestingPlaygroundURL()` and it will log a URL you can use to open up
+the current DOM in [testing-playground.com](https://testing-playground.com).
+This can be pretty handy when you're trying to figure out how to write a query
+to find an element.
+
+## Let's get started!
+
+Now, let's get started in <InlineFile file="app/components/forms.error-list.test.tsx" />!
+
+```sh nonumber
+npx vitest error-list
+```
+
+- [📜 Testing Library "About Queries" documentation](https://testing-library.com/docs/queries/about)
+- [📜 vitest `toHaveLength`]()

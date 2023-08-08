@@ -1,0 +1,37 @@
+# Render Hook
+
+👨‍💼 We've got ourselves a hook we want to test! The `useDoubleCheck`
+in <InlineFile file="app/utils/misc.tsx" />.
+
+I want you to try both `renderHook` and `TestComponent` for this exercise.
+Sometimes you just have to do it both ways and see which you dislike the least
+(and then choose the other one of course 😅).
+
+Let's start with `renderHook`. Here's a reminder of how to use that API:
+
+```tsx filename=use-counter.test.tsx
+import { renderHook, act } from '@testing-library/react'
+import { expect, test } from 'vitest'
+import { useCounter } from './use-counter'
+
+test('increments and decrements', () => {
+	const { result } = renderHook(() => useCounter(0))
+
+	expect(result.current.count).toBe(0)
+	act(() => result.current.increment())
+	expect(result.current.count).toBe(1)
+	act(() => result.current.decrement())
+	expect(result.current.count).toBe(0)
+})
+```
+
+Remember the warning before:
+
+<callout-danger>
+	Be sure to always reference values off of `result.current`. Do not destructure
+	values off of `result.current` and then reference them. This will lead you to
+	referencing stale values and your tests won't work reliably.
+</callout-danger>
+
+- [📜 `renderHook`](https://testing-library.com/docs/react-testing-library/api#renderhook)
+- [📜 `act`](https://testing-library.com/docs/react-testing-library/api#act)

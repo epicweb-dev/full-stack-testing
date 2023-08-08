@@ -95,49 +95,61 @@
       "path": "exercises/05.component-test/02.solution.cleanup"
     },
     {
-      "path": "exercises/06.remix-component/01.problem.remix-stub"
+      "path": "exercises/06.hooks/01.problem.render-hook"
     },
     {
-      "path": "exercises/06.remix-component/01.solution.remix-stub"
+      "path": "exercises/06.hooks/01.solution.render-hook"
     },
     {
-      "path": "exercises/06.remix-component/02.problem.multiple-routes"
+      "path": "exercises/06.hooks/02.problem.test-component"
     },
     {
-      "path": "exercises/06.remix-component/02.solution.multiple-routes"
+      "path": "exercises/06.hooks/02.solution.test-component"
     },
     {
-      "path": "exercises/07.http-mocking/01.problem.start-server"
+      "path": "exercises/07.remix-component/01.problem.remix-stub"
     },
     {
-      "path": "exercises/07.http-mocking/01.solution.start-server"
+      "path": "exercises/07.remix-component/01.solution.remix-stub"
     },
     {
-      "path": "exercises/07.http-mocking/02.problem.override-mocks"
+      "path": "exercises/07.remix-component/02.problem.multiple-routes"
     },
     {
-      "path": "exercises/07.http-mocking/02.solution.override-mocks"
+      "path": "exercises/07.remix-component/02.solution.multiple-routes"
     },
     {
-      "path": "exercises/07.http-mocking/03.problem.setup"
+      "path": "exercises/08.http-mocking/01.problem.start-server"
     },
     {
-      "path": "exercises/07.http-mocking/03.solution.setup"
+      "path": "exercises/08.http-mocking/01.solution.start-server"
     },
     {
-      "path": "exercises/08.authenticated-integration/01.problem.create-session"
+      "path": "exercises/08.http-mocking/02.problem.override-mocks"
     },
     {
-      "path": "exercises/08.authenticated-integration/01.solution.create-session"
+      "path": "exercises/08.http-mocking/02.solution.override-mocks"
     },
     {
-      "path": "exercises/08.authenticated-integration/02.problem.assert"
+      "path": "exercises/08.http-mocking/03.problem.setup"
     },
     {
-      "path": "exercises/08.authenticated-integration/02.solution.assert"
+      "path": "exercises/08.http-mocking/03.solution.setup"
     },
     {
-      "path": "exercises/11.finish/01.problem.finished"
+      "path": "exercises/09.authenticated-integration/01.problem.create-session"
+    },
+    {
+      "path": "exercises/09.authenticated-integration/01.solution.create-session"
+    },
+    {
+      "path": "exercises/09.authenticated-integration/02.problem.assert"
+    },
+    {
+      "path": "exercises/09.authenticated-integration/02.solution.assert"
+    },
+    {
+      "path": "exercises/12.finish/01.problem.finished"
     }
   ]
 }

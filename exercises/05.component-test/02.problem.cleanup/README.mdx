@@ -1,1 +1,38 @@
-# Test
+# Cleanup
+
+👨‍💼 So, Kellie 🧝‍♂️ put together the rest of the tests for our component, but we've
+got a bit of an issue... The tests look fine, but they're not passing. 😱
+
+What's more, if you run the tests individually, they pass! It's only when you
+run them together that they fail. 😭
+
+But you know what that means right? It means that we've got a cleanup issue. 🧹
+🤦‍♂️
+
+Something you should know about Testing Library's `render` function is that it
+wants to help you write code that follows our guiding principle:
+
+> The more your tests resemble the way your software is used, the more
+> confidence they can give you. - [@kentcdodds](https://twitter.com/kentcdodds/status/977018512689455106)
+
+Well, when our UI components run, they're put into the `document.body`. So
+that's what `render` does. The problem is that we never tell it to remove those
+elements from the `document.body` when we're done. And `screen` queries are
+looking for everything that's rendered on the screen.
+
+So when the first test runs, it sticks stuff in the body, then the next test
+runs and sticks more stuff in the body and when `screen` looks for the list
+items it finds the old ones too!
+
+Normally, Testing Library actually adds a `afterEach` hook to automatically
+cleanup after itself so you don't have to think about this. But we've opted to
+not use global test variables and instead those have to be imported, so Testing
+Library doesn't do that automatically.
+
+Whether we should just switch to global test variables is debatable, but the
+fact is we're not so we need to set up the cleanup ourselves.
+
+Luckily, it's really easy. I'll let Kody guide you through it.
+
+- [📜 React Testing Library `cleanup`](https://testing-library.com/docs/react-testing-library/api/#cleanup)
+- [📜 vitest `afterEach`](https://vitest.dev/api/#aftereach)
