@@ -1,1 +1,73 @@
 # Component Testing
+
+When building React components we want to focus on our two users:
+
+1. The end user who's typing in the fields and clicking the buttons
+2. The developer user who's rendering our component with props
+
+We want to avoid a "third" user I call the
+["Test User"](https://kentcdodds.com/blog/avoid-the-test-user) (which we've
+mentioned earlier). So we want to avoid mocking out React and other hooks if we
+can help it. We'll do that by using the `render` function from
+`@testing-library/react`.
+
+[`@testing-library/react`](https://testing-library.com/react) is the de-facto
+standard library for testing React components. It's based on
+`@testing-library/dom` which is the basis of testing library implementations for
+other frameworks as well.
+I'm actually the author of Testing Library! I wrote it when preparing a workshop
+like this. It's a set of utilities that allow you to embrace our testing
+philosophy:
+
+> The more your tests resemble the way your software is used, the more
+> confidence they can give you. - [@kentcdodds](https://twitter.com/kentcdodds/status/977018512689455106)
+
+So, if this is your first time using `@testing-library/react`, I recommend
+having the documentation open and ready to reference as you go through this
+and the next exercise (especially
+[the page about queries](https://testing-library.com/docs/queries/about)). Much
+of it will feel familiar to what we did in the Playwright exercises because
+Playwright's queries were inspired by Testing Library's queries 🎉.
+
+Here's the simplest example of a test using Testing Library:
+
+```tsx filename=app.test.tsx
+import * as React from 'react'
+import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+
+function Counter() {
+	const [count, setCount] = React.useState(0)
+	const increment = () => setCount(c => c + 1)
+	return <button onClick={increment}>Count: {count}</button>
+}
+
+test('counter increments when clicked', async () => {
+	render(<Counter />)
+	const button = screen.getByRole('button', { name: /count:/i })
+	expect(button.textContent).toBe('Count: 0')
+	await userEvent.click(button)
+	expect(button.textContent).toBe('Count: 1')
+})
+```
+
+If you've not used `@testing-library/react` before, I recommend you check out
+[the Quick start Example in the docs](https://testing-library.com/docs/react-testing-library/example-intro)
+which should give you a pretty good idea of how to use it effectively.
+
+If you've used Testing Library in the past, you may be interested in reading
+[Common mistakes with React Testing Library](https://kentcdodds.com/blog/common-mistakes-with-react-testing-library)
+as you may be making them yourself (don't feel bad, they're common 😅).
+
+## Simulated DOM
+
+Vitest runs in Node.js, but our components run in a browser. You can actually
+[run vitest in the browser](https://vitest.dev/guide/browser.html), but it's
+still experimental so we're not going to learn that today, but the
+documentation page about it is a good read if you want to understand the
+challenges with running in a simulated environment like we do.
+
+What you should know is that in order to simulate a browser environment, we use
+a library called [`jsdom`](https://npm.im/jsdom). This library has many known
+limitations and differences from real browsers. However, it has the benefit of
+being lighter weight than a full browser.

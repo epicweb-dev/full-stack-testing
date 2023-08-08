@@ -1,1 +1,100 @@
 # Testing Remix
+
+When our components are rendered, they are using a
+[context provider](https://react.dev/learn/passing-data-deeply-with-context)
+from Remix. When we try to render our components in our test, things like
+`useLoaderData` and `<Link>` will expect to have that context available. The
+tricky bit with Remix is that so much of what you're doing relies on the routing
+layer which often involves loaders and actions.
+
+So, the Remix team is working on a great solution for this called
+`createRemixStub` which allows you to create a mini-Remix app that you can
+render in your test and have all the routes you need for testing the component.
+This is a work in progress, but should be released quite soon. As that is the
+case, there is no documentation and the API we use has an `unstable_` prefix.
+However, it's unlikely to experience many (or even any) breaking changes before
+the release. Here are your "docs" for that:
+
+```tsx filename=app/routes/counter.test.tsx
+import { useLoaderData } from '@remix-run/react'
+import { db } from 'utils/db.server'
+
+export async function loader() {
+	return json({ count: await db.getCount() })
+}
+
+export async function action() {
+	await db.incrementCount()
+	return redirect('/counter')
+}
+
+export default function Counter() {
+	const data = useLoaderData<typeof loader>()
+	return (
+		<Form method="post">
+			<button type="submit">Count: {data.count}</button>
+		</Form>
+	)
+}
+```
+
+```tsx filename=app/counter.test.tsx
+import * as React from 'react'
+import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import { json, redirect } from '@remix-run/node'
+import { unstable_createRemixStub as createRemixStub } from '@remix-run/testing'
+import Counter from './counter'
+
+test('counter increments when clicked', async () => {
+	let count = 0
+	const App = createRemixStub([
+		{
+			path: '/counter',
+			element: Counter,
+			loader: () => json({ count }),
+			action: () => {
+				count = count + 1
+				return redirect('/counter')
+			},
+		},
+	])
+	const button = screen.getByRole('button', { name: /count:/i })
+	expect(button).toHaveTextContent('Count: 0')
+	await userEvent.click(button)
+	expect(button).toHaveTextContent('Count: 1')
+})
+```
+
+It's pretty neat that we can test the UI component with some mocked backend
+logic, however, I'm often interested in testing the component holistically, so
+we can actually import and use the original `action` and `loader` from the route
+as well:
+
+```tsx filename=app/counter.test.tsx
+import * as React from 'react'
+import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+// 👇 import the loader and action
+import Counter, { loader, action } from './counter'
+import { unstable_createRemixStub as createRemixStub } from '@remix-run/testing'
+
+test('counter increments when clicked', async () => {
+	const App = createRemixStub([
+		{
+			path: '/counter',
+			element: Counter,
+			// 👇 use the original loader and action
+			loader,
+			action,
+		},
+	])
+	const button = screen.getByRole('button', { name: /count:/i })
+	expect(button).toHaveTextContent('Count: 0')
+	await userEvent.click(button)
+	expect(button).toHaveTextContent('Count: 1')
+})
+```
+
+The trick here is to make sure you've got a database working in your test, which
+we'll cover more in the next exercise.
