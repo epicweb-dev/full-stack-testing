@@ -102,7 +102,7 @@ Then the browser turns that into a `Cookie` header for its requests. So the
 browser will just send this bit in the headers:
 
 ```txt nonumber nocopy nolang
-Cooke: en_session=eyJ2ZXJpZmllZC10aW1lIjoxNjkxNDQ1NDI1NjcwLCJzZXNzaW9uSWQiOiJjbGwxZzF2emIwMDAxcGNqNjkyNTB1ZnRuIn0%3D.%2Fzc%2BhFmBg1wPNiYE5nqS1hcXsZJFZwPrLQUf7BGZD1Q;
+Cookie: en_session=eyJ2ZXJpZmllZC10aW1lIjoxNjkxNDQ1NDI1NjcwLCJzZXNzaW9uSWQiOiJjbGwxZzF2emIwMDAxcGNqNjkyNTB1ZnRuIn0%3D.%2Fzc%2BhFmBg1wPNiYE5nqS1hcXsZJFZwPrLQUf7BGZD1Q;
 ```
 
 So we need to extract that value from the `set-cookie` header and put it into
