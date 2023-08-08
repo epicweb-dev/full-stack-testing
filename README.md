@@ -44,7 +44,16 @@
 Here are some resources you can read before taking the workshop to get you up to
 speed on some of the tools and concepts we'll be covering:
 
-- TODO: add resources
+- [Playwright](https://playwright.dev)
+- [Vitest](https://vitest.dev/)
+- [Testing Library](https://testing-library.com)
+- [Testing Library Queries](https://testing-library.com/docs/queries/about)
+- [But really, what is a JavaScript test?](https://kentcdodds.com/blog/but-really-what-is-a-javascript-test)
+- [But really, what is a JavaScript mock?](https://kentcdodds.com/blog/but-really-what-is-a-javascript-mock)
+- [Testing Implementation Details](https://kentcdodds.com/blog/testing-implementation-details)
+- [Avoid the Test User](https://kentcdodds.com/blog/avoid-the-test-user)
+- [Common mistakes with React Testing Library](https://kentcdodds.com/blog/common-mistakes-with-react-testing-library)
+- [Common Testing Mistakes](https://kentcdodds.com/blog/common-testing-mistakes)
 
 ## System Requirements
 
