@@ -49,13 +49,12 @@ test('Users can add 2FA to their account and use it when logging in', async ({
 	// 🐨 fill in the textbox with the name "Code" and click the submit button
 	// 🐨 verify 2fa is enabled (💰 check for the text "You have enabled two-factor authentication" and/or the link "Disable 2FA").
 
-	// 🐨 logout and go through the login process again
-	// 💰 here's how you do that:
-	// await page.goto('/login')
-	// await expect(page).toHaveURL(`/login`)
-	// await page.getByRole('textbox', { name: /username/i }).fill(user.username)
-	// await page.getByLabel(/^password$/i).fill(password)
-	// await page.getByRole('button', { name: /log in/i }).click()
+	// 🐨 logout
+	// 💰 click on the user avatar in the top corner (labeled by user.name) and
+	// then click the "logout" button
+
+	// 🐨 go through the login process again
+	// 💰 If you want a reference, check the "login as existing user" test in onboarding.test.ts
 
 	// 🐨 when you're presented with the 2fa screen, call generateTOTP again with
 	// the same options as before.
