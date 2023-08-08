@@ -1,1 +1,54 @@
 # Initial Tests
+
+👨‍💼 Kellie 🧝‍♂️ has already configured vitest for us
+in <InlineFile file="vitest.config.ts"/>. Feel free to check
+[the vitest docs](https://vitest.dev/config/) if you'd like to learn more about
+the configuration options. It's pretty minimal which is nice.
+
+We've got a utility we use in various places throughout the app that would be
+nice to have a test for. It's our `getErrorMessage` utility. It's simple and
+pure (mostly 😈), so it's a good start for our unit testing journey. Here's how
+it's typically used:
+
+```ts
+// Error object returns message
+getErrorMessage(new Error('Oh no, there was an error'))
+// "Oh no, there was an error"
+
+// String returns itself
+getErrorMessage('This is another error')
+// "This is another error"
+
+// undefined falls back to Unknown
+getErrorMessage(undefined)
+// "Unknown Error"
+```
+
+So let's write some tests for each of these cases. This may not look like much,
+but we've got a bit of a curve ball on that last one that'll make this an
+especially interesting exercise. Stay tuned!
+
+As a reminder, here's the format of a test in Vitest:
+
+```ts
+import { test, expect } from 'vitest'
+import { validatePassword } from './validatePassword'
+
+test('returns false for passwords shorter than 8 characters', () => {
+	expect(validatePassword('1234567')).toBe(false)
+})
+
+// more tests
+```
+
+Kody's 🐨 going to take the day off for this one. We think you can write these
+tests on your own! If you get stuck, you can
+always <DiffLink>check the diff</DiffLink>.
+
+<InlineFile file="app/utils/misc.error-message.test.ts">
+	Click here to create the test file
+</InlineFile>
+
+```sh nonumber
+npx vitest
+```

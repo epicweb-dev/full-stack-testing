@@ -1,1 +1,10 @@
 # Spies (mocks)
+
+👨‍💼 Great! Now our test output is cleaner! But do you remember our user search
+E2E test where we were doing the cleanup at the end of the test? Remember the
+problem that caused?
+
+The problem it caused was if the test failed, the cleanup never ran. We reached
+for playwright's `test.afterEach` to solve this. We've got a similar problem
+here with our cleanup and we can solve it in a similar way with vitest. We'll do
+that next.

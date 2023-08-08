@@ -1,0 +1,45 @@
+# Setup Env
+
+Remember our guiding testing principle?
+
+> The more your tests resemble the way your software is used, the more
+> confidence they can give you. - [@kentcdodds](https://twitter.com/kentcdodds/status/977018512689455106)
+
+Well, when we run this code, we've got a few things going on in our environment
+we should be simulating. Here's some of that setup code:
+
+```ts
+import 'dotenv/config'
+import 'source-map-support/register.js'
+
+import { installGlobals } from '@remix-run/node'
+
+installGlobals()
+```
+
+You'll find similar setup in our <InlineFile file="server/index.ts" />. So we
+should have this run in every one of our tests files right?
+
+While you could easily create a file and import it in every test file, it's
+better to use
+[the vitest `setupFiles` config](https://vitest.dev/config/#setupfiles) because
+it's just much more convenient this way.
+
+Additionally, because we want our `console.error` code to be handled the same
+in every one our tests, we can move our console error stuff to our setup file
+as well.
+
+<InlineFile file="tests/setup/setup-test-env.ts">
+	Click here to create the setup file.
+</InlineFile>
+
+Put all that stuff from the code sample above in that file and also move the
+`consoleError` spy stuff in there (💰 you'll need to export the `consoleError`)
+as well so it can be accessible by any test that wants to clear the mock.
+
+Once you've done that, then go update <InlineFile file="vitest.config.ts" />
+with the new `setupFiles` config.
+
+```sh nonumber
+npx vitest
+```

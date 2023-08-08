@@ -1,1 +1,109 @@
 # Unit Testing
+
+Sometimes you have complicated utility functions that necessitate their own
+test. This could be due to a few reasons:
+
+- It's really complex and has many edge cases
+- It's widely used and would therefore be disastrous if it broke
+
+Let's take a password validation function as an example:
+
+```ts
+export function validatePassword(password: string): boolean {
+	if (password.length < 8) {
+		return false
+	}
+
+	if (!/[A-Z]/.test(password)) {
+		return false
+	}
+
+	if (!/[a-z]/.test(password)) {
+		return false
+	}
+
+	if (!/[0-9]/.test(password)) {
+		return false
+	}
+
+	return true
+}
+```
+
+We could definitely bring up the login form to test every edge case here, but
+it would be more efficient to write smaller tests that focus on the
+`validatePassword` function itself. For example:
+
+```ts
+import { test, expect } from 'vitest'
+import { validatePassword } from './validatePassword'
+
+test('returns false for passwords shorter than 8 characters', () => {
+	expect(validatePassword('1234567')).toBe(false)
+})
+
+test('returns false for passwords without uppercase letters', () => {
+	expect(validatePassword('12345678')).toBe(false)
+})
+
+test('returns false for passwords without lowercase letters', () => {
+	expect(validatePassword('12345678')).toBe(false)
+})
+
+test('returns false for passwords without numbers', () => {
+	expect(validatePassword('abcdefgh')).toBe(false)
+})
+
+test('returns true for valid passwords', () => {
+	expect(validatePassword('12345678Aa')).toBe(true)
+})
+```
+
+The neat thing about this is that the tests will run _much_ faster because they
+don't each have to spawn an entire browser and load our app. And the lower level
+testing tools also typically have a more powerful watch mode. Speaking of lower
+level testing tools...
+
+## Mocking
+
+Testing pure functions (functions that don't have side effects) is often much
+more straightforward. But if you have a really complex bit of logic that can't
+be reasonably broken down into smaller functions, you can still test at this
+lower level by mocking the functions and modules it uses.
+
+There are different kinds of mocks. You can mock functions, modules, browser
+APIs, and fetch requests. We're going to cover mocking functions in this
+exercise.
+
+## Vitest
+
+[Vitest](https://vitest.dev) is a testing framework modeled (forked) after the
+popular [Jest](https://jestjs.io) testing framework. Both are terrific testing
+tools. We're using Vitest in the Epic Stack because it has better ESM support.
+
+The above example is a Vitest test and should be fairly familiar for anyone who
+has written a test in JavaScript in the last half decade or more. I suggest
+you keep [📜 the Vitest API docs](https://vitest.dev/api/) open in a tab for
+reference as you work through the exercises.
+
+<callout-warning>
+	It's useful to know that vitest will run your test files in separate processes
+	so they can be run in parallel by default. This can present problems in some
+	cases, but they're the good kind of problems that help us keep our tests
+	isolated anyway. We'll deal with that later.
+</callout-warning>
+
+### Watch mode
+
+Vitest's command line interface (a "CLI" is the thing you run in the terminal)
+has a cool watch mode that will automatically re-run your tests when you save
+your files.
+
+## Remix
+
+One of the neat things about Remix `action`s and `loader`s is that they accept
+a standard `request` object and return a standard `response` object (though in
+some cases they `throw` a `response` object). However, they are not typically
+"pure" functions because they often perform fetch requests or communicate with
+a database. So mocking HTTP requests or establishing a test database is often
+necessary (we'll do that later).

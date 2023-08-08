@@ -1,1 +1,51 @@
 # Spies (mocks)
+
+👨‍💼 We're calling `console.error` in our source code, and we don't want to change
+that. We just want to make that do something different in our tests and check
+that it was called properly.
+
+To do this, we're going to use a feature from vitest called a "spy". A spy is
+a function that records how it was called. And we can also change its
+implementation. We can create a spy using
+[the `vi.spyOn` utility](https://vitest.dev/api/vi.html#vi-spyon). Here's a
+slightly modified example from their docs:
+
+```ts
+let apples = 0
+const cart = {
+	getApples: () => 13,
+}
+
+const spy = vi.spyOn(cart, 'getApples')
+spy.mockImplementation(() => apples)
+
+apples = 1
+
+expect(cart.getApples()).toBe(1)
+
+expect(spy).toHaveBeenCalledTimes(1)
+
+// then you can clean things up like so:
+spy.mockRestore()
+expect(cart.getApples()).toBe(13)
+```
+
+So we're spying on `cart.getApples`, and we're changing its implementation to
+return the value of `apples`. Then we change the value of `apples` and call
+`cart.getApples`. Without the spy, it would return `13`, but with the spy, it
+returns `1`.
+
+Then we check that the spy was called once. It's typically important to assert
+on the number of times you expect your function to be called, because if it's
+called more or less than that, it's probably a bug.
+
+So for this part of the exercise, could you add a spy to the test so we don't
+get the error in the console? Make sure to clean up!
+
+You can test it out by adding a `console.error` call to the test before making
+the assertion or removing it from the source. It's always a good idea to
+[Make Your Test Fail](https://kentcdodds.com/blog/make-your-test-fail)!
+
+```sh nonumber
+npx vitest
+```

@@ -1,1 +1,15 @@
 # Initial Tests
+
+👨‍💼 Great! Did you notice the issue? In that last test, you've got an error log:
+
+```txt nocopy nonumber nolang
+stderr | app/utils/misc.error-message.test.ts > undefined falls back to Unknown
+Unable to get error message for error undefined
+```
+
+This is useful during debugging, but _very_ annoying when running the tests. We
+want to keep our logs as clean as possible to make it easier to spot real
+issues. In fact, the log is an important part of the functionality of our util,
+so we should probably assert that it's being called.
+
+So it's time for us to learn about spying... 🕵️‍♀️

@@ -1,0 +1,45 @@
+# Hooks
+
+👨‍💼 So we've got some cleanup at the end of our test and that's going to be
+problematic if that test fails. Vitest has the same concept of `before`/`after`
+`Each`/`All` as Playwright:
+
+```ts
+import { beforeEach, afterEach, beforeAll, afterAll } from 'vitest'
+
+beforeAll(async () => {
+	// do something before all tests
+})
+
+afterAll(async () => {
+	// do something after all tests
+})
+
+beforeEach(async () => {
+	// do something before each test
+})
+
+afterEach(async () => {
+	// do something after each test
+})
+```
+
+<callout-muted class="aside">
+	Of course those functions don't have to be `async` if you aren't doing
+	anything asynchronous in them
+</callout-muted>
+
+🦉 As mentioned, I typically prefer to not do setup in testing hooks, but this
+is an exception. There are in fact, no tests where I want the real
+`console.error` to be called. So by using a `beforeEach` hook, we can mock the
+`console.error` for every test and restore it after it's finished. Additionally,
+it would be a good idea
+
+Sadly, this is going to require a bit more work than what we were doing before,
+but it'll be better this way, I promise.
+
+Oh, also, that `mockRestore()` idea is such a good idea generally that there's
+even a configuration option to do it by default. So we can remove that call and
+add that in <InlineFile file="vitest.config.ts" />. This will actually ensure
+our cleanup of the mock functions always run after each test which is exactly
+what we want.

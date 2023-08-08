@@ -16,6 +16,10 @@ test('undefined falls back to Unknown', () => {
 	const consoleError = vi.spyOn(console, 'error')
 	consoleError.mockImplementation(() => {})
 	expect(getErrorMessage(undefined)).toBe('Unknown Error')
+	expect(consoleError).toHaveBeenCalledWith(
+		'Unable to get error message for error',
+		undefined,
+	)
 	expect(consoleError).toHaveBeenCalledTimes(1)
 	consoleError.mockRestore()
 })

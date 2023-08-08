@@ -47,5 +47,4 @@ afterEach(() => {
 		consoleError,
 		'make sure to call mockClear in any test you expect console.error to be called',
 	).not.toHaveBeenCalled()
-	consoleError.mockRestore()
 })

@@ -1,0 +1,17 @@
+# Assert After Each
+
+👨‍💼 So we're silencing `console.error`. That's a bit dangerous because it means
+if there's a legit `console.error` we weren't expecting, we wouldn't see it.
+The solution to this is pretty simple: we can use `afterEach` to assert that
+`console.error` was never called!
+
+But that's a problem for our test where we're _expecting_ it to be called right?
+
+So this means we'll want to
+[clear the mock](https://vitest.dev/api/mock.html#mockclear) in any test we're
+expecting `console.error` to be called. That way, when we get to `afterEach`, it
+won't have any calls to consider.
+
+- [📜 vitest `mockClear()`](https://vitest.dev/api/mock.html#mockclear)
+- [📜 vitest `.not`](https://vitest.dev/api/expect.html#not)
+- [📜 vitest `.toHaveBeenCalled()`](https://vitest.dev/api/expect.html#tohavebeencalled)
