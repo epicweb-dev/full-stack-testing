@@ -4,11 +4,10 @@ RUN apt-get update && apt-get install -y git
 
 ENV KCDSHOP_CONTEXT_CWD="/myapp/workshop-content"
 ENV KCDSHOP_DEPLOYED="true"
+ENV KCDSHOP_DISABLE_WATCHER="true"
 ENV FLY="true"
 ENV PORT="8080"
 ENV NODE_ENV="production"
-ENV KCDSHOP_VERBOSE_LOG="true"
-ENV KCDSHOP_DISABLE_WATCHER="true"
 
 WORKDIR /myapp
 
@@ -19,6 +18,5 @@ RUN npm install --omit=dev
 CMD node ./setup-swap.js && \
     rm -rf ${KCDSHOP_CONTEXT_CWD} && \
     git clone https://github.com/epicweb-dev/full-stack-testing ${KCDSHOP_CONTEXT_CWD} && \
-    node ./pre-compile-mdx.js && \
     cd ${KCDSHOP_CONTEXT_CWD} && \
     npx kcdshop start
