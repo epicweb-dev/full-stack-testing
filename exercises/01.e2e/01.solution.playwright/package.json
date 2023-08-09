@@ -25,7 +25,7 @@
     "@conform-to/react": "^0.7.3",
     "@conform-to/zod": "^0.7.3",
     "@epic-web/totp": "1.0.4",
-    "@kentcdodds/workshop-app": "^2.18.0",
+    "@kentcdodds/workshop-app": "^2.18.1",
     "@paralleldrive/cuid2": "^2.2.1",
     "@prisma/client": "^5.1.1",
     "@radix-ui/react-alert-dialog": "^1.0.4",
