@@ -221,6 +221,7 @@ async function getNewestStat(fileOrDirPath, exclude) {
 		// NOTE: this may be surprising, but we exclude the directory itself because
 		// we want to compare the contents of the directory, not the directory itself
 		if (!newestStat) return currentStat
+		if (!currentStat) return newestStat
 		return currentStat.mtimeMs > newestStat.mtimeMs ? currentStat : newestStat
 	}, null)
 }

@@ -1,0 +1,106 @@
+# Test Database
+
+Most of the application we build involve a database of some kind. How you handle
+this in your testing depends largely on how you access your data. In this
+application, we are using SQLite. This means we can very easily create a special
+instance of our database for testing purposes.
+
+If you're using another database like Postgres then you can likely follow a
+similar approach to what we're going to do. If you're accessing all your data
+from APIs then you'll likely spend a lot more time mocking things out using
+[MSW](https://mswjs.io/).
+
+## Isolation
+
+We've already discussed the importance of isolation, but at this level of
+testing, things are a little different. In our end-to-end tests, we decided to
+run our tests on the same database as our development server. This comes with
+a number of nice benefits, but it also means we need to make sure we delete any
+data we create to avoid polluting our development database with tons of test
+data.
+
+When we're using SQLite and at this level of testing though, it's actually a bit
+easier because we can spin up and down a SQLite database pretty quickly. The
+biggest trick is making sure we run the migrations on the database, but what we
+can do is make a "template" empty database file where all the migrations and key
+seed data have already been applied and then make a copy of that file for each
+test.
+
+<callout-warning className="aside">
+	You may be wondering why we don't just use an in-memory database with sqlite.
+	Unfortunately, [Prisma does not support that
+	feature](https://github.com/prisma/prisma/issues/732) 😢 But that's actually
+	ok because often you have migrations and seed data you want in the database
+	anyway, so what we're going to do will be better in some cases.
+</callout-warning>
+
+With this in place, you may think we don't really need to worry as much about
+removing old data because the file will get deleted when the test is done
+anyway. However, it's still important to keep things clean between tests because
+there are some situations where it may be worthwhile to run all our tests in
+the same process (and therefore on the same database), and individual test files
+can have multiple tests in them, all of which will hit the same database.
+
+So while it may seem like test isolation isn't as much of a concern at this
+level, it definitely still is. However it is quite a bit easier since we start
+from a clean slate, we can just delete all the data in the database after each
+test. No need to manually track the data we create.
+
+## Setup
+
+One important aspect of setting up a test database is you need to make sure your
+environment is setup before your tests run. In Vitest, you do this using the
+[`globalSetup`](https://vitest.dev/config/#globalsetup) configuration. We also
+often need to have something run before/after each/all test which we'll do in
+the [`setupFiles`](https://vitest.dev/config/#setupfiles) configuration we have
+already.
+
+Most of the time, the connection string is controlled by an environment
+variable. So that's one of the concerns we'll be working with a fair bit in this
+exercise.
+
+## Module import gotcha
+
+Often our database utilities initialize themselves as soon as they're imported.
+This is why it's important to run our setup before running the tests. But it
+will definitely be something you'll need to worry about in this exercise, so I
+want to call out that in JavaScript **import order matters.** It doesn't always
+make a difference, but the order in which you import things will affect the
+order modules are evaluated. This is why we typically
+[make our modules pure](https://kentcdodds.com/blog/pure-modules).
+
+However, in the case of database connections it's just easier to initialize
+things at import time so you'll want to be aware of that in this exercise. Just
+remember:
+
+```ts nocopy
+import { one } from 'module-one'
+import { two } from 'module-two'
+```
+
+Is different from:
+
+```ts nocopy
+import { two } from 'module-two'
+import { one } from 'module-one'
+```
+
+And if you need to evaluate some code before a module is evaluated you have two options:
+
+```ts nocopy
+import { one } from 'module-one'
+
+console.log('do stuff')
+
+const { two } = await import('module-two')
+```
+
+Or put the stuff you need to do in another module and import it earlier:
+
+```ts nocopy
+import { one } from 'module-one'
+import './do-stuff'
+import { two } from 'module-two'
+```
+
+We'll be doing a bit of both in this exercise.

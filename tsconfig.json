@@ -167,7 +167,34 @@
       "path": "exercises/10.custom-assertions/02.solution.setup"
     },
     {
-      "path": "exercises/12.finish/01.problem.finished"
+      "path": "exercises/11.test-db/01.problem.isolated"
+    },
+    {
+      "path": "exercises/11.test-db/01.solution.isolated"
+    },
+    {
+      "path": "exercises/11.test-db/02.problem.minimal-seed"
+    },
+    {
+      "path": "exercises/11.test-db/02.solution.minimal-seed"
+    },
+    {
+      "path": "exercises/11.test-db/03.problem.individual"
+    },
+    {
+      "path": "exercises/11.test-db/03.solution.individual"
+    },
+    {
+      "path": "exercises/11.test-db/04.problem.test-setup"
+    },
+    {
+      "path": "exercises/11.test-db/04.solution.test-setup"
+    },
+    {
+      "path": "exercises/11.test-db/05.problem.global-setup"
+    },
+    {
+      "path": "exercises/11.test-db/05.solution.global-setup"
     }
   ]
 }

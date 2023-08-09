@@ -59,7 +59,6 @@ test('when auth fails, send the user to login with a toast', async () => {
 	// was called once and make sure to call mockClear on it.
 })
 
-// we're going to improve this later
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function assertToastSent(response: Response) {
 	const setCookie = response.headers.get('set-cookie')

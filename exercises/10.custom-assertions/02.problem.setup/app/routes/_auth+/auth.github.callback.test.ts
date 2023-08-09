@@ -220,7 +220,6 @@ async function setupUser(userData = createUser()) {
 	return session
 }
 
-// we're going to improve this later
 function assertToastSent(response: Response) {
 	const setCookie = response.headers.get('set-cookie')
 	invariant(setCookie, 'set-cookie header should be set')

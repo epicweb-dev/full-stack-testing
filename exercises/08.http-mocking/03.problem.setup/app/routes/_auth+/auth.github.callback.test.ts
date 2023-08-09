@@ -66,7 +66,6 @@ test('when auth fails, send the user to login with a toast', async () => {
 // 🐨 create a setupRequest function here that does all the stuff we were doing
 // in the tests and returns the request object.
 
-// we're going to improve this later
 function assertToastSent(response: Response) {
 	const setCookie = response.headers.get('set-cookie')
 	invariant(setCookie, 'set-cookie header should be set')

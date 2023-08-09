@@ -11,7 +11,7 @@ tsconfig.tsbuildinfo
 
 # normally you don't commit your database, but we're doing it here for the workshop
 # /prisma/data.db
-/prisma/data.db-journal
+*.db-journal
 /tests/prisma
 
 /test-results/
