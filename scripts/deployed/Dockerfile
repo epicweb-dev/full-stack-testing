@@ -7,6 +7,7 @@ ENV KCDSHOP_DEPLOYED="true"
 ENV FLY="true"
 ENV PORT="8080"
 ENV NODE_ENV="production"
+ENV KCDSHOP_VERBOSE_LOG="true"
 
 WORKDIR /myapp
 
