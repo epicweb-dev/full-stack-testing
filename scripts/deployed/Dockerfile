@@ -17,6 +17,6 @@ RUN npm install --omit=dev
 CMD node ./setup-swap.js && \
     rm -rf ${KCDSHOP_CONTEXT_CWD} && \
     git clone https://github.com/epicweb-dev/full-stack-testing ${KCDSHOP_CONTEXT_CWD} && \
-    cd ${KCDSHOP_CONTEXT_CWD} && \
     node ./pre-compile-mdx.js && \
+    cd ${KCDSHOP_CONTEXT_CWD} && \
     npx kcdshop start
