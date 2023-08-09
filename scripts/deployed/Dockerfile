@@ -18,4 +18,5 @@ CMD node ./setup-swap.js && \
     rm -rf ${KCDSHOP_CONTEXT_CWD} && \
     git clone https://github.com/epicweb-dev/full-stack-testing ${KCDSHOP_CONTEXT_CWD} && \
     cd ${KCDSHOP_CONTEXT_CWD} && \
+    node ./pre-compile-mdx.js && \
     npx kcdshop start
