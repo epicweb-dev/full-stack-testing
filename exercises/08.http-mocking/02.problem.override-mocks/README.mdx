@@ -1,1 +1,43 @@
 # Override Mocks
+
+👨‍💼 Now we need to test what happens if authentication with GitHub fails. We need
+to keep our default mocks as the happy-path, but we can override our mocks for
+a specific test. We just need to make sure we call `server.resetHandlers()` so
+after the test is finished the other tests are unaffected.
+
+As a reminder, here's a bit from the example we showed earlier:
+
+```ts
+import { rest, HttpResponse } from 'msw'
+
+const { json } = HttpResponse
+
+// ...
+
+afterEach(() => {
+	// Resets all runtime request handlers added via `server.use`
+	server.resetHandlers()
+})
+
+// ...
+
+test('handles 500 errors from the API', () => {
+	server.use(
+		// Adds a runtime request handler for posting a new book review.
+		rest.get('https://example.com/book/:bookId', () => {
+			return json({ error: 'Something went wrong' }, { status: 500 })
+		}),
+	)
+
+	// Performing a "GET /book/:bookId" request
+	// will get the mocked response from our runtime request handler.
+})
+
+// ...
+```
+
+That should be enough to get you going.
+
+```sh nonumber
+npx vitest auth.github
+```

@@ -1,1 +1,28 @@
 # Start Mock Server
+
+👨‍💼 We're going to test our "Login with GitHub" integration. We've already
+implemented the HTTP mocks in <InlineFile file="tests/mocks/github.ts" />. But
+we're not actually loading those mocks yet. So we need you to update the tests
+to load and start the mocks server.
+
+Additionally, we're going to have you create the request and call the loader.
+You may want to review the loader
+in <InlineFile file="app/routes/_auth+/auth.github.callback.ts" />. You'll
+notice it expects a few things on the request object. Here's a quick summary of
+what's required:
+
+1. The `request.url` should be `https://www.epicstack.dev/auth/github/callback`
+1. search param called `state` (can just be a random string)
+1. search param called `code` (can just be a random string)
+1. A header called `cookie` which includes the `sessionStorage` with
+   `oauth2:state` set to the same value as the `state` search param.
+1. Method `GET`
+
+🧝‍♂️ Because `sessionStorage.commitSession()` returns a `set-cookie` header for a
+response, and you need a `cookie` header for a request, I've made a utility for
+you that does the conversion for you. You'll find it at the bottom of the test
+file. It's called `convertSetCookieToCookie`.
+
+```sh nonumber
+npx vitest auth.github
+```

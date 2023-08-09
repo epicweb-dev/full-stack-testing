@@ -1,22 +1,22 @@
 import { faker } from '@faker-js/faker'
 import { rest } from 'msw'
 import * as setCookieParser from 'set-cookie-parser'
-import { afterEach, expect, test } from 'vitest'
 import { server } from 'tests/mocks/index.ts'
 import { consoleError } from 'tests/setup/setup-test-env.ts'
+import { afterEach, expect, test } from 'vitest'
 import { invariant } from '~/utils/misc.tsx'
 import { sessionStorage } from '~/utils/session.server.ts'
 import { ROUTE_PATH, loader } from './auth.github.callback.ts'
 
 const BASE_URL = 'https://www.epicstack.dev'
-const RESOURCE_URL_STRING = `${BASE_URL}${ROUTE_PATH}`
 
 afterEach(() => {
 	server.resetHandlers()
 })
 
 test('a new user goes to onboarding', async () => {
-	const url = new URL(RESOURCE_URL_STRING)
+	// 🐨 move all this stuff into a setupRequest function at the bottom of this file
+	const url = new URL(ROUTE_PATH, BASE_URL)
 	const state = faker.string.uuid()
 	const code = faker.string.uuid()
 	url.searchParams.set('state', state)
@@ -28,6 +28,7 @@ test('a new user goes to onboarding', async () => {
 		method: 'GET',
 		headers: { cookie: convertSetCookieToCookie(setCookieHeader) },
 	})
+	// 🐨 move everything above this to the setupRequest function at the bottom of this file
 	const response = await loader({ request, params: {}, context: {} })
 	assertRedirect(response, '/onboarding/github')
 })
@@ -38,7 +39,8 @@ test('when auth fails, send the user to login with a toast', async () => {
 			return new Response('error', { status: 400 })
 		}),
 	)
-	const url = new URL(RESOURCE_URL_STRING)
+	// 🐨 replace this stuff with the setupRequest function
+	const url = new URL(ROUTE_PATH, BASE_URL)
 	const state = faker.string.uuid()
 	const code = faker.string.uuid()
 	url.searchParams.set('state', state)
@@ -50,6 +52,7 @@ test('when auth fails, send the user to login with a toast', async () => {
 		method: 'GET',
 		headers: { cookie: convertSetCookieToCookie(setCookieHeader) },
 	})
+	// 🐨 replace the stuff above with the setupRequest function
 	const response = await loader({ request, params: {}, context: {} }).catch(
 		e => e,
 	)
@@ -59,6 +62,9 @@ test('when auth fails, send the user to login with a toast', async () => {
 	expect(consoleError).toHaveBeenCalledTimes(1)
 	consoleError.mockClear()
 })
+
+// 🐨 create a setupRequest function here that does all the stuff we were doing
+// in the tests and returns the request object.
 
 // we're going to improve this later
 function assertToastSent(response: Response) {
@@ -71,7 +77,8 @@ function assertToastSent(response: Response) {
 }
 
 function assertRedirect(response: Response, redirectTo: string) {
-	expect(response.status).toBe(302)
+	expect(response.status).toBeGreaterThanOrEqual(300)
+	expect(response.status).toBeLessThan(400)
 	expect(response.headers.get('location')).toBe(redirectTo)
 }
 

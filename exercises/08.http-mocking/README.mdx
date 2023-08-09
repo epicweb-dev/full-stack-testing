@@ -1,1 +1,97 @@
 # HTTP Mocking
+
+Remember our guiding principle for testing?
+
+> The more your tests resemble the way your software is used, the more
+> confidence they can give you. - [@kentcdodds](https://twitter.com/kentcdodds/status/977018512689455106)
+
+Making fake versions of things is the opposite of that. But as we've discussed
+a few times already, sometimes you just can't avoid this. Often you _have_ to
+fake things out. If you haven't already read
+[The Merits of Mocking](https://kentcdodds.com/blog/the-merits-of-mocking), then
+make sure you get that on your reading list.
+
+In the case of third party integrations you typically do want to mock these. For
+a few reasons:
+
+1. If their system goes down, your tests will be completely broken.
+1. During development, you're reliant on their progress if they're actively
+   working on their end of the integration.
+1. You can't work offline if you're reliant on their system.
+
+That said you should have some sort of process for verifying the integration
+works. Some folks say you shouldn't include other people's code in your tests
+because they're outside of your control. I disagree. The point of tests is to
+tell you whether things broke, not whether only _your_ stuff broke. The user
+doesn't care whose stuff broke after all.
+
+However, the problem with including third party services in your tests is that
+those kinds of tests are often extremely flaky which leads to developers not
+trusting the tests and pushing forward anyway.
+
+It's much better to have an established process (or production monitoring) to
+identify when the integration is broken. That way you can safely mock for local
+development and testing while still being confident it will work in production.
+
+## One-off mocks
+
+We've already gone through HTTP mocks a few times in these workshops. But now
+we're going to add another element to this and that is one-off HTTP mocks. With
+MSW, you have your established mocks which should resemble the API as closely
+as possible. But often you want to test what happens when things are in a bad
+state. For example, what happens when the API returns a 500 error? Or maybe you
+want to test a specific return type.
+
+MSW has support for this using the `server.use` API. Here's an example modified
+from the MSW docks:
+
+```ts
+import { rest, HttpResponse } from 'msw'
+import { setupServer } from 'msw/node'
+
+const { json } = HttpResponse
+
+const server = setupServer(
+	rest.get('https://example.com/book/:bookId', () => {
+		return json({ title: 'Lord of the Rings' })
+	}),
+)
+
+beforeAll(() => {
+	server.listen()
+})
+
+afterEach(() => {
+	// Resets all runtime request handlers added via `server.use`
+	server.resetHandlers()
+})
+
+afterAll(() => {
+	server.close()
+})
+
+test('handles 500 errors from the API', () => {
+	server.use(
+		// Adds a runtime request handler for posting a new book review.
+		rest.get('https://example.com/book/:bookId', () => {
+			return json({ error: 'Something went wrong' }, { status: 500 })
+		}),
+	)
+
+	// Performing a "GET /book/:bookId" request
+	// will get the mocked response from our runtime request handler.
+})
+
+test('asserts another scenario', () => {
+	// Since we call `server.resetHandlers()` after each test,
+	// this test suite will use the default GET /book/:bookId response.
+})
+```
+
+This allows specific tests to override the existing handlers so we can test
+specific scenarios.
+
+So your default handlers can just have the happy path and then you can add
+specific handlers for specific tests. The `server.resetHandlers` bit in the
+`afterEach` is what's responsible for this. It resets the handlers to the
+default handlers (our "happy path").

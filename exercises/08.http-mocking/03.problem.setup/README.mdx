@@ -1,1 +1,188 @@
 # Setup Functions
+
+🦉 I want to talk with you about something. You can read more about this in a
+blog post titled
+[Avoid Nesting when you're Testing](https://kentcdodds.com/blog/avoid-nesting-when-youre-testing)
+which is where these examples came from.
+
+You may have see tests like this in the past (don't look too closely, just
+here to give you an idea of the shape of these kinds of tests):
+
+```tsx
+import { render } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import * as React from 'react'
+
+import Login from '../login'
+
+describe('Login', () => {
+	let utils,
+		handleSubmit,
+		user,
+		changeUsernameInput,
+		changePasswordInput,
+		clickSubmit
+
+	beforeEach(() => {
+		handleSubmit = jest.fn()
+		user = { username: 'michelle', password: 'smith' }
+		utils = render(<Login onSubmit={handleSubmit} />)
+		changeUsernameInput = value =>
+			userEvent.type(utils.getByLabelText(/username/i), value)
+		changePasswordInput = value =>
+			userEvent.type(utils.getByLabelText(/password/i), value)
+		clickSubmit = () => userEvent.click(utils.getByText(/submit/i))
+	})
+
+	describe('when username and password is provided', () => {
+		beforeEach(() => {
+			changeUsernameInput(user.username)
+			changePasswordInput(user.password)
+		})
+
+		describe('when the submit button is clicked', () => {
+			beforeEach(() => {
+				clickSubmit()
+			})
+
+			it('should call onSubmit with the username and password', () => {
+				expect(handleSubmit).toHaveBeenCalledTimes(1)
+				expect(handleSubmit).toHaveBeenCalledWith(user)
+			})
+		})
+	})
+
+	describe('when the password is not provided', () => {
+		beforeEach(() => {
+			changeUsernameInput(user.username)
+		})
+
+		describe('when the submit button is clicked', () => {
+			let errorMessage
+			beforeEach(() => {
+				clickSubmit()
+				errorMessage = utils.getByRole('alert')
+			})
+
+			it('should show an error message', () => {
+				expect(errorMessage).toHaveTextContent(/password is required/i)
+			})
+		})
+	})
+
+	describe('when the username is not provided', () => {
+		beforeEach(() => {
+			changePasswordInput(user.password)
+		})
+
+		describe('when the submit button is clicked', () => {
+			let errorMessage
+			beforeEach(() => {
+				clickSubmit()
+				errorMessage = utils.getByRole('alert')
+			})
+
+			it('should show an error message', () => {
+				expect(errorMessage).toHaveTextContent(/username is required/i)
+			})
+		})
+	})
+})
+```
+
+Personally, I find this kind of test extremely hard to work with. The number of
+nested blocks and shared variables makes it hard to follow the flow of the test
+and understand what's going on.
+
+The point is there's some shared setup that needs to happen for each test. But
+using test hooks and function scope for variables to do so is very confusing.
+We can do better:
+
+```tsx
+import { render } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import * as React from 'react'
+
+import Login from '../login'
+
+// here we have a bunch of setup functions that compose together for our test cases
+// I only recommend doing this when you have a lot of tests that do the same thing.
+// I'm including it here only as an example. These tests don't necessitate this
+// much abstraction. Read more: https://kcd.im/aha-testing
+function setup() {
+	const handleSubmit = jest.fn()
+	const utils = render(<Login onSubmit={handleSubmit} />)
+	const user = { username: 'michelle', password: 'smith' }
+	const changeUsernameInput = value =>
+		userEvent.type(utils.getByLabelText(/username/i), value)
+	const changePasswordInput = value =>
+		userEvent.type(utils.getByLabelText(/password/i), value)
+	const clickSubmit = () => userEvent.click(utils.getByText(/submit/i))
+	return {
+		...utils,
+		handleSubmit,
+		user,
+		changeUsernameInput,
+		changePasswordInput,
+		clickSubmit,
+	}
+}
+
+function setupSuccessCase() {
+	const utils = setup()
+	utils.changeUsernameInput(utils.user.username)
+	utils.changePasswordInput(utils.user.password)
+	utils.clickSubmit()
+	return utils
+}
+
+function setupWithNoPassword() {
+	const utils = setup()
+	utils.changeUsernameInput(utils.user.username)
+	utils.clickSubmit()
+	const errorMessage = utils.getByRole('alert')
+	return { ...utils, errorMessage }
+}
+
+function setupWithNoUsername() {
+	const utils = setup()
+	utils.changePasswordInput(utils.user.password)
+	utils.clickSubmit()
+	const errorMessage = utils.getByRole('alert')
+	return { ...utils, errorMessage }
+}
+
+test('calls onSubmit with the username and password', () => {
+	const { handleSubmit, user } = setupSuccessCase()
+	expect(handleSubmit).toHaveBeenCalledTimes(1)
+	expect(handleSubmit).toHaveBeenCalledWith(user)
+})
+
+test('shows an error message when submit is clicked and no username is provided', () => {
+	const { handleSubmit, errorMessage } = setupWithNoUsername()
+	expect(errorMessage).toHaveTextContent(/username is required/i)
+	expect(handleSubmit).not.toHaveBeenCalled()
+})
+
+test('shows an error message when password is not provided', () => {
+	const { handleSubmit, errorMessage } = setupWithNoPassword()
+	expect(errorMessage).toHaveTextContent(/password is required/i)
+	expect(handleSubmit).not.toHaveBeenCalled()
+})
+```
+
+To me, this is _much_ easier to understand. It may be a little overkill for the
+purpose of the example, but the point is if you have shared setup you can use
+regular JavaScript mechanisms (functions!) rather than complicated wiring
+together of hooks.
+
+I call these functions simply "setup functions". But they're similar to the idea
+of "Object Mother" or a "Test Object Factory". You can read even more about
+these ideas in my blog post titled
+[AHA Testing](https://kentcdodds.com/blog/aha-testing).
+
+👨‍💼 Great, with that context, could you make a setup function for creating our
+request object please?
+
+Don't overthink this one. We're literally just moving some code into a function,
+but it's important enough that we want to make you do it anyway.

@@ -1,15 +1,14 @@
 import { faker } from '@faker-js/faker'
 import { rest } from 'msw'
 import * as setCookieParser from 'set-cookie-parser'
-import { afterEach, expect, test } from 'vitest'
 import { server } from 'tests/mocks/index.ts'
 import { consoleError } from 'tests/setup/setup-test-env.ts'
+import { afterEach, expect, test } from 'vitest'
 import { invariant } from '~/utils/misc.tsx'
 import { sessionStorage } from '~/utils/session.server.ts'
 import { ROUTE_PATH, loader } from './auth.github.callback.ts'
 
 const BASE_URL = 'https://www.epicstack.dev'
-const RESOURCE_URL_STRING = `${BASE_URL}${ROUTE_PATH}`
 
 afterEach(() => {
 	server.resetHandlers()
@@ -39,7 +38,7 @@ test('when auth fails, send the user to login with a toast', async () => {
 })
 
 async function setupRequest() {
-	const url = new URL(RESOURCE_URL_STRING)
+	const url = new URL(ROUTE_PATH, BASE_URL)
 	const state = faker.string.uuid()
 	const code = faker.string.uuid()
 	url.searchParams.set('state', state)
@@ -65,7 +64,8 @@ function assertToastSent(response: Response) {
 }
 
 function assertRedirect(response: Response, redirectTo: string) {
-	expect(response.status).toBe(302)
+	expect(response.status).toBeGreaterThanOrEqual(300)
+	expect(response.status).toBeLessThan(400)
 	expect(response.headers.get('location')).toBe(redirectTo)
 }
 

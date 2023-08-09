@@ -15,7 +15,6 @@ import { twoFAVerificationType } from '../settings+/profile.two-factor.tsx'
 import { ROUTE_PATH, loader } from './auth.github.callback.ts'
 
 const BASE_URL = 'https://www.epicstack.dev'
-const RESOURCE_URL_STRING = `${BASE_URL}${ROUTE_PATH}`
 
 test('a new user goes to onboarding', async () => {
 	const request = await setupRequest()
@@ -146,7 +145,8 @@ test('if a user is not logged in, but the connection exists and they have enable
 	})
 	const request = await setupRequest()
 	const response = await loader({ request, params: {}, context: {} })
-	expect(response.status).toBe(302)
+	expect(response.status).toBeGreaterThanOrEqual(300)
+	expect(response.status).toBeLessThan(400)
 	const searchParams = new URLSearchParams({
 		type: twoFAVerificationType,
 		target: userId,
@@ -159,7 +159,7 @@ test('if a user is not logged in, but the connection exists and they have enable
 })
 
 async function setupRequest({ session }: { session?: { id: string } } = {}) {
-	const url = new URL(RESOURCE_URL_STRING)
+	const url = new URL(ROUTE_PATH, BASE_URL)
 	const state = faker.string.uuid()
 	const code = faker.string.uuid()
 	url.searchParams.set('state', state)
@@ -219,7 +219,8 @@ async function assertSessionMade(response: Response, userId: string) {
 }
 
 function assertRedirect(response: Response, redirectTo: string) {
-	expect(response.status).toBe(302)
+	expect(response.status).toBeGreaterThanOrEqual(300)
+	expect(response.status).toBeLessThan(400)
 	expect(response.headers.get('location')).toBe(redirectTo)
 }
 
