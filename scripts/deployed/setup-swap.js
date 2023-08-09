@@ -1,36 +1,20 @@
 #!/usr/bin/env node
 
 import { $ } from 'execa'
-import { writeFile } from 'node:fs/promises'
+import { writeFile, stat } from 'node:fs/promises'
 
-function logError(message, error) {
-	const errorMessage =
-		error && error.message
-			? error.message
-			: 'No additional information available'
-	console.error(`${message}: ${errorMessage}`)
+const swapExists = await stat('/swapfile').catch(() => false)
+
+console.log('setting up swapfile...')
+
+if (swapExists) {
+	console.log('swapfile already exists')
+} else {
+	await $`fallocate -l 128M /swapfile`
+	await $`chmod 0600 /swapfile`
+	await $`mkswap /swapfile`
+	await writeFile('/proc/sys/vm/swappiness', '10')
+	await $`swapon /swapfile`
+	await writeFile('/proc/sys/vm/overcommit_memory', '1')
+	console.log('swapfile setup complete')
 }
-
-async function setupSwapfile() {
-	console.log('setting up swapfile...')
-
-	try {
-		await $`fallocate -l 512M /swapfile`
-		await $`chmod 0600 /swapfile`
-		await $`mkswap /swapfile`
-	} catch (error) {
-		return logError('Error while setting up swapfile', error)
-	}
-
-	try {
-		await writeFile('/proc/sys/vm/swappiness', '10')
-		await $`swapon /swapfile`
-		await writeFile('/proc/sys/vm/overcommit_memory', '1')
-	} catch (error) {
-		return logError('Error while configuring system settings', error)
-	}
-
-	console.log('swapfile setup completed successfully')
-}
-
-await setupSwapfile()
