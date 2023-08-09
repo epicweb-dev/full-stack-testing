@@ -98,3 +98,15 @@ test('counter increments when clicked', async () => {
 
 The trick here is to make sure you've got a database working in your test, which
 we'll cover more in the next exercise.
+
+## Stubs
+
+A stub is kind of like a mock in that it's a fake version of something. However,
+a stub is a bit more lightweight and doesn't have the same assertions that a
+mock does. A stub is just a function that returns a value. You can use a stub to
+replace a function that you don't want to run in your test, or to return a
+specific value that you want to test against. But it's not like a mock function
+that you can say `expect(fn).toHaveBeenCalledTimes(1)` for example.
+
+In our case, the Remix stub is just a fake version of Remix's context providers
+so our components can render without errors and with preset values we specify.

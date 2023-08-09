@@ -17,8 +17,7 @@ test('hook: prevents default on the first click, and does not on the second', ()
 	const click1 = new MouseEvent('click', {
 		bubbles: true,
 		cancelable: true,
-	})
-	// @ts-expect-error the types here are different :(
+	}) as unknown as React.MouseEvent<HTMLButtonElement>
 	act(() => result.current.getButtonProps({ onClick: myClick }).onClick(click1))
 	expect(myClick).toHaveBeenCalledWith(click1)
 	expect(myClick).toHaveBeenCalledTimes(1)
@@ -28,8 +27,7 @@ test('hook: prevents default on the first click, and does not on the second', ()
 	const click2 = new MouseEvent('click', {
 		bubbles: true,
 		cancelable: true,
-	})
-	// @ts-expect-error the types here are different :(
+	}) as unknown as React.MouseEvent<HTMLButtonElement>
 	act(() => result.current.getButtonProps({ onClick: myClick }).onClick(click2))
 	expect(myClick).toHaveBeenCalledWith(click2)
 	expect(myClick).toHaveBeenCalledTimes(1)

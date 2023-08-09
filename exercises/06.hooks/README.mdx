@@ -99,24 +99,26 @@ import { useCounter } from './use-counter'
 // https://github.com/testing-library/user-event/issues/1146
 const userEvent = userEventDefault.default ?? userEventDefault
 
+function TestComponent() {
+	const { count, increment, decrement } = useCounter(0)
+	return (
+		<div>
+			<output>{count}</output>
+			<button onClick={increment}>+</button>
+			<button onClick={decrement}>-</button>
+		</div>
+	)
+}
+
 test('increments and decrements', async () => {
-	function TestComponent() {
-		const { count, increment, decrement } = useCounter(0)
-		return (
-			<div>
-				<output>{count}</output>
-				<button onClick={increment}>+</button>
-				<button onClick={decrement}>-</button>
-			</div>
-		)
-	}
+	const user = userEvent.setup()
 
 	render(<TestComponent />)
 
 	expect(screen.getByRole('status').textContent).toBe(0)
-	await userEvent.click(screen.getByRole('button', { name: '+' }))
+	await user.click(screen.getByRole('button', { name: '+' }))
 	expect(screen.getByRole('status').textContent).toBe(1)
-	await userEvent.click(screen.getByRole('button', { name: '-' }))
+	await user.click(screen.getByRole('button', { name: '-' }))
 	expect(result.current.count).toBe(0)
 })
 ```

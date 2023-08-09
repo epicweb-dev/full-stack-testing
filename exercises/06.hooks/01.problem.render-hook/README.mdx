@@ -82,6 +82,26 @@ expect(myClickHandler).toHaveBeenCalledWith('some', 'arguments')
 // etc.
 ```
 
+## `MouseEvent`
+
+👨‍💼 Another thing you will need in this exercise is an event you can call
+`onClick` with. Because we're not rendering a component, we can't just click a
+button to call the click handler. We need to call it ourselves with our own:
+
+```ts
+const clickEvent = new MouseEvent('click', { bubbles: true, cancelable: true })
+```
+
+Regarding TypeScript, sadly, our hook expects a `React.MouseEvent` which we have
+no way of creating ourselves. So you're going to need to cast it like this:
+
+```ts
+const clickEvent = new MouseEvent('click', {
+	bubbles: true,
+	cancelable: true,
+}) as unknown as React.MouseEvent<HTMLButtonElement>
+```
+
 - [📜 `renderHook`](https://testing-library.com/docs/react-testing-library/api#renderhook)
 - [📜 `act`](https://testing-library.com/docs/react-testing-library/api#act)
 - [📜 `vi.fn`](https://vitest.dev/api/vi.html#vi-fn)

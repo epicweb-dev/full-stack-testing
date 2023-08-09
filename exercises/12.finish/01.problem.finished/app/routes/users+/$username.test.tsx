@@ -73,7 +73,7 @@ test('The user profile when logged in as self', async () => {
 			},
 			children: [
 				{
-					path: '/users/:username',
+					path: 'users/:username',
 					element: <UsernameRoute />,
 					loader: async args => {
 						// add the cookie header to the request

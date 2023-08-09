@@ -17,24 +17,25 @@ import { useCounter } from './use-counter'
 // https://github.com/testing-library/user-event/issues/1146
 const userEvent = userEventDefault.default ?? userEventDefault
 
-test('increments and decrements', async () => {
-	function TestComponent() {
-		const { count, increment, decrement } = useCounter(0)
-		return (
-			<div>
-				<output>{count}</output>
-				<button onClick={increment}>+</button>
-				<button onClick={decrement}>-</button>
-			</div>
-		)
-	}
+function TestComponent() {
+	const { count, increment, decrement } = useCounter(0)
+	return (
+		<div>
+			<output>{count}</output>
+			<button onClick={increment}>+</button>
+			<button onClick={decrement}>-</button>
+		</div>
+	)
+}
 
+test('increments and decrements', async () => {
+	const user = userEvent.setup()
 	render(<TestComponent />)
 
 	expect(screen.getByRole('status').textContent).toBe(0)
-	await userEvent.click(screen.getByRole('button', { name: '+' }))
+	await user.click(screen.getByRole('button', { name: '+' }))
 	expect(screen.getByRole('status').textContent).toBe(1)
-	await userEvent.click(screen.getByRole('button', { name: '-' }))
+	await user.click(screen.getByRole('button', { name: '-' }))
 	expect(result.current.count).toBe(0)
 })
 ```
@@ -46,4 +47,7 @@ The key point is that you render everything you need to know about into the DOM
 so it can be selected and asserted. You can still pass mock functions and things
 as props as needed, but that's not always necessary.
 
-So, let's add another test that uses a custom `TestComponent`!
+So, let's add another test that uses a custom `TestComponent`! We're going to
+be a lot less hand-holdy for this step because the test component can be
+whatever you want it to be so long as you're able to perform the actions and
+find the elements that will help you know things are working as you expect.

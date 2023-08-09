@@ -1,0 +1,53 @@
+# Remix Stub
+
+👨‍💼 Our user profile page has some logic for what to display depending on who's
+looking at it. If you're looking at your own page, it shows a button for logout
+and edit profile. If you're looking at someone else's page, it shows a button to
+view their notes.
+
+Go ahead and try with Kody's account: <LinkToApp to="/users/kody" />
+
+Login with Kody: <LinkToApp to="/login" /> (`kody` / `kodylovesyou`) then open
+it up again.
+
+We want to test that out, but the problem is those components rely on
+`useLoaderData`, so we need to mock that out.
+
+So we're going to render our username route, but we also need to provide a
+`loader` so the `useLoaderData` hook has something to return. And we can do
+something to make it match the type of the real loader. Here's an example of how
+to do that:
+
+```tsx
+import { json } from '@remix-run/node'
+import { unstable_createRemixStub as createRemixStub } from '@remix-run/testing'
+import { render, screen } from '@testing-library/react'
+import { default as RouteComponent, type loader } from './some-route'
+
+// ...
+
+const App = createRemixStub([
+	{
+		path: '/some-path',
+		element: <RouteComponent />,
+		loader(): Awaited<ReturnType<typeof loader>> {
+			return json({
+				// we have to return the right types or TypeScript will be upset!
+			})
+		},
+	},
+])
+
+render(<App initialEntries={['/some-path']} />)
+
+// ...
+```
+
+That can help us make sure that our fake version of a loader matches up with the
+real one.
+
+🧝‍♂️ I already started this test, but rendering the `<UsernameRoute />` component
+doesn't work since we use `useLoaderData` in it which requires a remix stub. So
+you're going to need to do that part.
+
+👨‍💼 That should be enough to get you going!

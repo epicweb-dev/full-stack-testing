@@ -65,14 +65,13 @@ test('The user profile when logged in as self', async () => {
 			},
 			children: [
 				{
-					path: '/users/:username',
+					path: 'users/:username',
 					element: <UsernameRoute />,
 					loader(): Awaited<ReturnType<typeof loader>> {
-						const data = {
+						return json({
 							user,
 							userJoinedDisplay: user.createdAt.toLocaleDateString(),
-						}
-						return json(data)
+						})
 					},
 				},
 			],

@@ -1,1 +1,39 @@
 # Multiple Routes
+
+👨‍💼 Our route's loader data isn't the only thing our UsernameRoute depends on.
+It also depends on the root route. When we call `useOptionalUser` in the
+component, that's referencing the root route's loader data. But we're not
+including the root route in our stub.
+
+That works fine for our first test, but if we want to test how the page looks
+when the user's logged in, we're going to need to provide the user in the root
+route which means we need to provide the root route. And we also need to make
+sure the parent-child relationship is set up correctly.
+
+Interestingly, the `createRemixStub` API resembles the react-router API for
+[`createBrowserRouter`](https://reactrouter.com/en/main/routers/create-browser-router).
+Here's what that looks like (from their docs):
+
+```ts
+const router = createBrowserRouter([
+	{
+		path: '/',
+		element: <Root />,
+		loader: rootLoader,
+		children: [
+			{
+				path: 'team',
+				element: <Team />,
+				loader: teamLoader,
+			},
+		],
+	},
+])
+```
+
+That's pretty much exactly what the stub API is as well. So let's add another
+test that uses the root route as the parent of the username route so we can
+provide the root loader data.
+
+🧝‍♂️ I already got it started for you. It's not working because we don't have the
+root route as a parent there. Your job is to add that bit.
