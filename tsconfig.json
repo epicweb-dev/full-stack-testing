@@ -47,10 +47,10 @@
       "path": "exercises/03.authenticated-e2e/01.solution.login"
     },
     {
-      "path": "exercises/03.authenticated-e2e/02.problem.2fa"
+      "path": "exercises/03.authenticated-e2e/02.problem.two-factor"
     },
     {
-      "path": "exercises/03.authenticated-e2e/02.solution.2fa"
+      "path": "exercises/03.authenticated-e2e/02.solution.two-factor"
     },
     {
       "path": "exercises/04.unit-test/01.problem.init"
@@ -107,10 +107,10 @@
       "path": "exercises/06.hooks/02.solution.test-component"
     },
     {
-      "path": "exercises/07.remix-component/01.problem.remix-stub"
+      "path": "exercises/07.remix-component/01.problem.stub-remix"
     },
     {
-      "path": "exercises/07.remix-component/01.solution.remix-stub"
+      "path": "exercises/07.remix-component/01.solution.stub-remix"
     },
     {
       "path": "exercises/07.remix-component/02.problem.multiple-routes"
