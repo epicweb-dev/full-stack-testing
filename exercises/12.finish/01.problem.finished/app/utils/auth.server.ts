@@ -9,6 +9,8 @@ import { combineHeaders, downloadFile } from './misc.tsx'
 import { sessionStorage } from './session.server.ts'
 
 export const SESSION_EXPIRATION_TIME = 1000 * 60 * 60 * 24 * 30
+export const getSessionExpirationDate = () =>
+	new Date(Date.now() + SESSION_EXPIRATION_TIME)
 
 export const sessionKey = 'sessionId'
 
@@ -105,7 +107,7 @@ export async function login({
 	const session = await prisma.session.create({
 		select: { id: true, expirationDate: true, userId: true },
 		data: {
-			expirationDate: new Date(Date.now() + SESSION_EXPIRATION_TIME),
+			expirationDate: getSessionExpirationDate(),
 			userId: user.id,
 		},
 	})
@@ -147,7 +149,7 @@ export async function signup({
 
 	const session = await prisma.session.create({
 		data: {
-			expirationDate: new Date(Date.now() + SESSION_EXPIRATION_TIME),
+			expirationDate: getSessionExpirationDate(),
 			user: {
 				create: {
 					email: email.toLowerCase(),
@@ -183,7 +185,7 @@ export async function signupWithGitHub({
 }) {
 	const session = await prisma.session.create({
 		data: {
-			expirationDate: new Date(Date.now() + SESSION_EXPIRATION_TIME),
+			expirationDate: getSessionExpirationDate(),
 			user: {
 				create: {
 					email: email.toLowerCase(),

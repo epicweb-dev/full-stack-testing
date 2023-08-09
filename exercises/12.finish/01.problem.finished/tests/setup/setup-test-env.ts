@@ -1,6 +1,7 @@
 import './setup-env-vars.ts'
 import 'dotenv/config'
 import 'source-map-support/register.js'
+import '~/utils/env.server.ts'
 // we need these to be imported first 👆
 
 import fs from 'node:fs'
@@ -15,7 +16,6 @@ import {
 	type SpyInstance,
 } from 'vitest'
 import { prisma } from '~/utils/db.server.ts'
-import '~/utils/env.server.ts'
 import { server } from '../mocks/index.ts'
 import './custom-matchers.ts'
 import { BASE_DATABASE_PATH, DATABASE_PATH } from './paths.ts'

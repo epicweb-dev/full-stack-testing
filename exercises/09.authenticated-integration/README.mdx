@@ -1,1 +1,97 @@
 # Authenticated Integration
+
+Just like in higher level E2E tests, you often are required to simulate an
+authenticated user. This involves a few things:
+
+1. Inserting a test user in the database
+1. Creating a session for that user
+1. Setting the session ID in the cookie header for requests
+1. Handling Verification (like 2FA)
+1. Asserting the auth state is updated properly in responses
+
+Depending on what you're testing, this may require a bit of work because you
+can't just set `document.cookie` and expect a `new Request()` to have the cookie
+value in there. The browser is the one that sets the request's cookie headers
+when an actual request is made. So if we create a request object in our test,
+the source code that checks `request.headers.get('cookie')` will just get
+`null`.
+
+This means two things:
+
+1. If the request object is made by our source code, you won't be able to test
+   it at this level (you'll have to use E2E)
+1. If the thing you're testing accepts a request object (or you can intercept
+   it), you can set the `cookie` header yourself.
+
+## Loaders/Actions
+
+In this case, we're the ones creating the `Request` object, so we can set this
+object ourselves and we already have in a previous exercise:
+
+```ts
+new Request(someUrl, {
+	headers: { cookie: someCookieValue },
+})
+```
+
+The trickiest bit here is that our application utilities are all about creating
+`set-cookie` headers for a response, not `cookie` headers for a request. But
+we've already used `set-cookie-header` parser to deal with this in playwright
+and it will be exactly the same in vitest with our integration tests as well.
+
+## Remix Stub
+
+If you want to test your whole route, then you'll want to do something like
+this:
+
+```tsx filename=app/routes/hello.tsx
+import { json, type DataFunctionArgs } from '@remix-run/node'
+import { useLoaderData } from '@remix-run/react'
+
+export async function loader({ request }: DataFunctionArgs) {
+	const user = await getUser(request)
+	return json({ title: `Hello ${user.name}` })
+}
+export default function HelloRoute() {
+	const data = useLoaderData<typeof loader>()
+
+	return <div>{data.title}</div>
+}
+```
+
+```tsx filename=app/routes/hello.test.tsx
+import { unstable_createRemixStub as createRemixStub } from '@remix-run/testing'
+import { default as HelloRoute, loader } from './hello.tsx'
+
+// ...
+
+const App = createRemixStub([
+	{
+		path: '/hello',
+		element: <HelloRoute />,
+		loader, // <-- pass the loader as-is
+	},
+])
+```
+
+But our loader in this example has this `getUser` utility which presumably looks
+up the user by the cookie in the request. Since Remix is responsible for
+creating this request, there's no way for us to set the cookie... Or is there?
+😉
+
+```tsx
+const App = createRemixStub([
+	{
+		path: '/hello',
+		element: <HelloRoute />,
+		loader: async args => {
+			args.request.headers.set('cookie', 'my=cookie')
+			return loader(args)
+		},
+	},
+])
+```
+
+In this way we can still get full coverage of the `loader`, but we also get the
+opportunity to customize the data sent into the loader to simulate the logged in
+state. A win-win.

@@ -1,1 +1,22 @@
 # Create Session
+
+👨‍💼 Marvelous. Now we have an easy way to create requests that are authenticated
+with a specific user's session. This will make testing authenticated `loader`s
+and `action`s much easier!
+
+🧝‍♂️ You've really unblocked me! I'm going to write a _bunch_ more tests now
+thanks to your work. I'm also going to put your work into a `setupUser` function
+to make it easier to have a test with a user all ready to go. If you'd rather do
+it yourself, be my guest. Here are the test titles I'm going to write:
+
+- when a user is logged in and has already connected, it doesn't do anything and
+  just redirects the user back to the connections page
+- when a user exists with the same email, create connection and make session
+- gives an error if the account is already connected to another user
+- if a user is not logged in, but the connection exists, make a session
+- if a user is not logged in, but the connection exists and they have enabled
+  2FA, send them to verify their 2FA and do not make a session
+
+As usual, if you want to do this yourself, go for it. You
+can <DiffLink app1="playground" app2={1}>check your work against mine</DiffLink>.
+Or just <DiffLink>check the changes</DiffLink> between this step and the next.

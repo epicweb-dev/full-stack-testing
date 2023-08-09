@@ -2,12 +2,12 @@ import { generateTOTP } from '@epic-web/totp'
 import { faker } from '@faker-js/faker'
 import { rest } from 'msw'
 import * as setCookieParser from 'set-cookie-parser'
-import { expect, test } from 'vitest'
-import { createUser } from 'tests/db-utils.ts'
+import { createUser, insertNewUser, insertedUsers } from 'tests/db-utils.ts'
 import { mockGithubProfile, primaryGitHubEmail } from 'tests/mocks/github.ts'
 import { server } from 'tests/mocks/index.ts'
 import { consoleError } from 'tests/setup/setup-test-env.ts'
-import { sessionKey } from '~/utils/auth.server.ts'
+import { afterEach, expect, test } from 'vitest'
+import { getSessionExpirationDate, sessionKey } from '~/utils/auth.server.ts'
 import { prisma } from '~/utils/db.server.ts'
 import { invariant } from '~/utils/misc.tsx'
 import { sessionStorage } from '~/utils/session.server.ts'
@@ -15,6 +15,13 @@ import { twoFAVerificationType } from '../settings+/profile.two-factor.tsx'
 import { ROUTE_PATH, loader } from './auth.github.callback.ts'
 
 const BASE_URL = 'https://www.epicstack.dev'
+
+afterEach(async () => {
+	await prisma.user.deleteMany({
+		where: { id: { in: [...insertedUsers] } },
+	})
+	insertedUsers.clear()
+})
 
 test('a new user goes to onboarding', async () => {
 	const request = await setupRequest()
@@ -41,7 +48,7 @@ test('when auth fails, send the user to login with a toast', async () => {
 
 test('when a user is logged in, it creates the connection', async () => {
 	const session = await setupUser()
-	const request = await setupRequest({ session })
+	const request = await setupRequest(session.id)
 	const response = await loader({ request, params: {}, context: {} })
 	assertRedirect(response, '/settings/profile/connections')
 	assertToastSent(response)
@@ -66,7 +73,7 @@ test(`when a user is logged in and has already connected, it doesn't do anything
 			providerId: mockGithubProfile.id.toString(),
 		},
 	})
-	const request = await setupRequest({ session })
+	const request = await setupRequest(session.id)
 	const response = await loader({ request, params: {}, context: {} })
 	assertRedirect(response, '/settings/profile/connections')
 	assertToastSent(response)
@@ -85,7 +92,7 @@ test('when a user exists with the same email, create connection and make session
 	const connection = await prisma.gitHubConnection.findFirst({
 		select: { id: true },
 		where: {
-			userId: userId,
+			userId,
 			providerId: mockGithubProfile.id.toString(),
 		},
 	})
@@ -98,16 +105,17 @@ test('when a user exists with the same email, create connection and make session
 })
 
 test('gives an error if the account is already connected to another user', async () => {
-	await prisma.user.create({
+	const newUser = await insertNewUser()
+	await prisma.user.update({
+		where: { id: newUser.id },
 		data: {
-			...createUser(),
 			gitHubConnections: {
 				create: { providerId: mockGithubProfile.id.toString() },
 			},
 		},
 	})
 	const session = await setupUser()
-	const request = await setupRequest({ session })
+	const request = await setupRequest(session.id)
 	const response = await loader({ request, params: {}, context: {} })
 	assertRedirect(response, '/settings/profile/connections')
 	assertToastSent(response)
@@ -155,10 +163,9 @@ test('if a user is not logged in, but the connection exists and they have enable
 	})
 	searchParams.sort()
 	expect(response.headers.get('location')).toBe(`/verify?${searchParams}`)
-	await assertSessionMade(response, userId)
 })
 
-async function setupRequest({ session }: { session?: { id: string } } = {}) {
+async function setupRequest(sessionId?: string) {
 	const url = new URL(ROUTE_PATH, BASE_URL)
 	const state = faker.string.uuid()
 	const code = faker.string.uuid()
@@ -166,7 +173,7 @@ async function setupRequest({ session }: { session?: { id: string } } = {}) {
 	url.searchParams.set('code', code)
 	const cookieSession = await sessionStorage.getSession()
 	cookieSession.set('oauth2:state', state)
-	if (session) cookieSession.set(sessionKey, session.id)
+	if (sessionId) cookieSession.set(sessionKey, sessionId)
 	const setCookieHeader = await sessionStorage.commitSession(cookieSession)
 	const request = new Request(url.toString(), {
 		method: 'GET',
@@ -176,19 +183,13 @@ async function setupRequest({ session }: { session?: { id: string } } = {}) {
 }
 
 async function setupUser(userData = createUser()) {
+	const newUser = await insertNewUser(userData)
 	const session = await prisma.session.create({
 		data: {
-			expirationDate: new Date(Date.now() + 1000 * 60 * 60 * 24 * 365),
-			user: {
-				create: {
-					...userData,
-				},
-			},
+			expirationDate: getSessionExpirationDate(),
+			user: { connect: newUser },
 		},
-		select: {
-			id: true,
-			userId: true,
-		},
+		select: { id: true, userId: true },
 	})
 
 	return session
@@ -209,7 +210,7 @@ async function assertSessionMade(response: Response, userId: string) {
 	invariant(setCookie, 'set-cookie header should be set')
 	const parsedCookie = setCookieParser.splitCookiesString(setCookie)
 	expect(parsedCookie).toEqual(
-		expect.arrayContaining([expect.stringContaining(sessionKey)]),
+		expect.arrayContaining([expect.stringContaining('en_session')]),
 	)
 	const session = await prisma.session.findFirst({
 		select: { id: true },

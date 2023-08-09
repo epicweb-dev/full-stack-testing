@@ -4,10 +4,11 @@
 import { faker } from '@faker-js/faker'
 import { unstable_createRemixStub as createRemixStub } from '@remix-run/testing'
 import { render, screen } from '@testing-library/react'
-import { test } from 'vitest'
 import { getUserImages, insertNewUser } from 'tests/db-utils.ts'
 import { getSessionCookieHeader } from 'tests/utils.ts'
+import { test } from 'vitest'
 import { loader as rootLoader } from '~/root.tsx'
+import { getSessionExpirationDate } from '~/utils/auth.server.ts'
 import { prisma } from '~/utils/db.server.ts'
 import { default as UsernameRoute, loader } from './$username.tsx'
 
@@ -47,7 +48,7 @@ test('The user profile when logged in as self', async () => {
 			image: { create: userImage },
 			sessions: {
 				create: {
-					expirationDate: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
+					expirationDate: getSessionExpirationDate(),
 				},
 			},
 		},
@@ -55,7 +56,7 @@ test('The user profile when logged in as self', async () => {
 	const session = await prisma.session.create({
 		select: { id: true },
 		data: {
-			expirationDate: new Date(Date.now() + 1000 * 60 * 60 * 24 * 365),
+			expirationDate: getSessionExpirationDate(),
 			userId: user.id,
 		},
 	})

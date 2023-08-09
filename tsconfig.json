@@ -149,6 +149,24 @@
       "path": "exercises/09.authenticated-integration/02.solution.assert"
     },
     {
+      "path": "exercises/09.authenticated-integration/03.problem.routes"
+    },
+    {
+      "path": "exercises/09.authenticated-integration/03.solution.routes"
+    },
+    {
+      "path": "exercises/10.custom-assertions/01.problem.location"
+    },
+    {
+      "path": "exercises/10.custom-assertions/01.solution.location"
+    },
+    {
+      "path": "exercises/10.custom-assertions/02.problem.setup"
+    },
+    {
+      "path": "exercises/10.custom-assertions/02.solution.setup"
+    },
+    {
       "path": "exercises/12.finish/01.problem.finished"
     }
   ]

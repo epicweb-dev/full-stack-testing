@@ -1,8 +1,8 @@
 import { redirect, type DataFunctionArgs } from '@remix-run/node'
 import { GitHubStrategy } from 'remix-auth-github'
 import {
-	SESSION_EXPIRATION_TIME,
 	authenticator,
+	getSessionExpirationDate,
 	getUserId,
 } from '~/utils/auth.server.ts'
 import { prisma } from '~/utils/db.server.ts'
@@ -177,7 +177,7 @@ async function makeSession(
 	const session = await prisma.session.create({
 		select: { id: true, expirationDate: true, userId: true },
 		data: {
-			expirationDate: new Date(Date.now() + SESSION_EXPIRATION_TIME),
+			expirationDate: getSessionExpirationDate(),
 			userId,
 		},
 	})

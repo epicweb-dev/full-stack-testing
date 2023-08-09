@@ -1,18 +1,25 @@
 import { faker } from '@faker-js/faker'
 import { rest } from 'msw'
 import * as setCookieParser from 'set-cookie-parser'
-import { expect, test } from 'vitest'
-import { createUser } from 'tests/db-utils.ts'
+import { insertNewUser, insertedUsers } from 'tests/db-utils.ts'
 import { mockGithubProfile } from 'tests/mocks/github.ts'
 import { server } from 'tests/mocks/index.ts'
 import { consoleError } from 'tests/setup/setup-test-env.ts'
-import { sessionKey } from '~/utils/auth.server.ts'
+import { afterEach, expect, test } from 'vitest'
+import { getSessionExpirationDate, sessionKey } from '~/utils/auth.server.ts'
 import { prisma } from '~/utils/db.server.ts'
 import { invariant } from '~/utils/misc.tsx'
 import { sessionStorage } from '~/utils/session.server.ts'
 import { ROUTE_PATH, loader } from './auth.github.callback.ts'
 
 const BASE_URL = 'https://www.epicstack.dev'
+
+afterEach(async () => {
+	await prisma.user.deleteMany({
+		where: { id: { in: [...insertedUsers] } },
+	})
+	insertedUsers.clear()
+})
 
 test('a new user goes to onboarding', async () => {
 	const request = await setupRequest()
@@ -38,29 +45,23 @@ test('when auth fails, send the user to login with a toast', async () => {
 })
 
 test('when a user is logged in, it creates the connection', async () => {
+	const newUser = await insertNewUser()
 	const session = await prisma.session.create({
+		select: { id: true },
 		data: {
-			expirationDate: new Date(Date.now() + 1000 * 60 * 60 * 24 * 365),
-			user: {
-				create: {
-					...createUser(),
-				},
-			},
-		},
-		select: {
-			id: true,
-			userId: true,
+			expirationDate: getSessionExpirationDate(),
+			user: { connect: newUser },
 		},
 	})
 
-	const request = await setupRequest({ session })
+	const request = await setupRequest(session.id)
 	const response = await loader({ request, params: {}, context: {} })
 	assertRedirect(response, '/settings/profile/connections')
 	assertToastSent(response)
 	const connection = await prisma.gitHubConnection.findFirst({
 		select: { id: true },
 		where: {
-			userId: session.userId,
+			userId: newUser.id,
 			providerId: mockGithubProfile.id.toString(),
 		},
 	})
@@ -70,7 +71,7 @@ test('when a user is logged in, it creates the connection', async () => {
 	).toBeTruthy()
 })
 
-async function setupRequest({ session }: { session?: { id: string } } = {}) {
+async function setupRequest(sessionId?: string) {
 	const url = new URL(ROUTE_PATH, BASE_URL)
 	const state = faker.string.uuid()
 	const code = faker.string.uuid()
@@ -78,7 +79,7 @@ async function setupRequest({ session }: { session?: { id: string } } = {}) {
 	url.searchParams.set('code', code)
 	const cookieSession = await sessionStorage.getSession()
 	cookieSession.set('oauth2:state', state)
-	if (session) cookieSession.set(sessionKey, session.id)
+	if (sessionId) cookieSession.set(sessionKey, sessionId)
 	const setCookieHeader = await sessionStorage.commitSession(cookieSession)
 	const request = new Request(url.toString(), {
 		method: 'GET',

@@ -1,1 +1,26 @@
 # Assert Session
+
+👨‍💼 Once a user's connected to a GitHub account they can login with that GitHub
+account instead of a password. This is a great user experience and we don't want
+it to break, so we're going to have you test it.
+
+In fact, there are a couple situations where we log the user in after connecting
+authenticating with GitHub and we want to test all of those. So Kellie made a
+function that you're going to need to implement called `assertSessionMade`.
+
+What you're going to need to do here is make certain that the response includes
+a `set-cookie` header with the session so we know that the session was created
+and the user will be successfully logged in.
+
+One thing to remember is that a response can have multiple `set-cookie` headers.
+One for each cookie we want to set. So you need to split those up, find the one
+for the session, to make sure that exists. Then you can check the database to
+make sure the user has a newly created session in there.
+
+To split up the cookies, we'll use `setCookieParser.splitCookiesString`.
+
+```sh nonumber
+npx vitest auth
+```
+
+- [📜 `splitCookiesString`](https://npm.im/set-cookie-parser)
