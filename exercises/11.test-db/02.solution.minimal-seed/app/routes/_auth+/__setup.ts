@@ -10,7 +10,7 @@ process.env.DATABASE_URL = `file:${databasePath}`
 beforeAll(async () => {
 	await execaCommand('prisma migrate reset --force --skip-generate', {
 		stdio: 'inherit',
-		MINIMAL_SEED: 'true',
+		env: { MINIMAL_SEED: 'true', ...process.env },
 	})
 })
 
