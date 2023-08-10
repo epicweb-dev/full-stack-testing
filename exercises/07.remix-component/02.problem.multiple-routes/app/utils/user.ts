@@ -2,6 +2,10 @@ import { useRouteLoaderData } from '@remix-run/react'
 import { type loader as rootLoader } from '~/root.tsx'
 
 export function useOptionalUser() {
+	// 🦉 because we call useRouteLoaderData with 'root', we're telling Remix we
+	// want the loader data from the route that has the ID of 'root'. With our
+	// route convention that's assigned to the root route (the one in app/root.tsx)
+	// automatically, but in our tests, we need to definte it manually.
 	const data = useRouteLoaderData<typeof rootLoader>('root')
 	return data?.user ?? null
 }
