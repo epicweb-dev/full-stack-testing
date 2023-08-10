@@ -9,8 +9,17 @@ run them together that they fail. 😭
 But you know what that means right? It means that we've got a cleanup issue. 🧹
 🤦‍♂️
 
-Something you should know about Testing Library's `render` function is that it
-wants to help you write code that follows our guiding principle:
+🦉 You can use `test.only` to run a single test (adding it to multiple tests
+will run only the ones that have it). You can also use `test.skip` to skip a
+test (adding it to multiple tests will skip all of those). Another helpful thing
+at identifying the failing test is to change the order of the tests. Give these
+things a try! If you add `test.only` to a failing test and it starts passing,
+you know that some other test isn't cleaning up properly. If you add
+`test.only` to a passing test and it starts failing, you know that some other
+test is setting up state that it depends on!
+
+👨‍💼 Something you should know about Testing Library's `render` function is that
+it wants to help you write code that follows our guiding principle:
 
 > The more your tests resemble the way your software is used, the more
 > confidence they can give you. - [@kentcdodds](https://twitter.com/kentcdodds/status/977018512689455106)
