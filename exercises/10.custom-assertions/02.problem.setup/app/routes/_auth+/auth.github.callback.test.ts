@@ -25,7 +25,9 @@ expect.extend({
 				message: () =>
 					`Expected redirect to ${
 						this.isNot ? 'not ' : ''
-					}be ${redirectTo} but got ${response.status}`,
+					}be ${this.utils.printExpected(
+						'>= 300 && < 400',
+					)} but got ${this.utils.printReceived(response.status)}`,
 			}
 		}
 		const location = response.headers.get('location')
@@ -34,7 +36,9 @@ expect.extend({
 			message: () =>
 				`Expected redirect to ${
 					this.isNot ? 'not ' : ''
-				}be ${redirectTo} but got ${location}`,
+				}be ${this.utils.printExpected(
+					redirectTo,
+				)} but got ${this.utils.printReceived(location)}`,
 		}
 	},
 })

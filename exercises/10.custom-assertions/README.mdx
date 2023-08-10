@@ -1,1 +1,134 @@
 # Custom Assertions
+
+You know assertions? I'm talking about this stuff:
+
+```tsx
+expect(1 + 1).toBe(2)
+```
+
+Well, there are a bunch of great built-in assertions. But sometimes you have
+some state that's a little more complex or use-case specific. One solution is
+to have a set of assertions that you wrap up in a function:
+
+```tsx
+function assertLoggedIn(userName: string) {
+	expect(screen.getByRole('link', { name: userName })).toBeTruthy()
+	expect(screen.getByRole('button', { name: /logout/i })).toBeTruthy()
+}
+```
+
+So then you want to use this in multiple tests, you can move it to a separate
+file, but then the code frame you get from Vitest will point to the function,
+not where it was called.
+
+<callout-warning>
+	Currently, Vitest's sourcemap support is kind of messed up, so the code frame
+	for errors is off by a few lines anyway, but still, at least it's in the right
+	file!
+</callout-warning>
+
+What would be cooler is if you could make your own assertions, which you can do!
+Via [the `expect.extend` API](https://vitest.dev/guide/extending-matchers.html).
+
+Here's what that `assertLoggedIn` function would look like as a custom matcher:
+
+```tsx
+expect.extend({
+	toBeLoggedIn(userName: string) {
+		const link = screen.queryByRole('link', { name: userName })
+		const button = screen.queryByRole('button', { name: /logout/i })
+
+		return {
+			pass: Boolean(link && button),
+			message: () => `Expected to be logged in as ${userName}`,
+		}
+	},
+})
+```
+
+You can even support negation (`.not`). Just change the message based on
+`this.isNot`:
+
+```tsx lines=11-13
+expect.extend({
+	toBeLoggedIn(userName: string) {
+		const link = screen.queryByRole('link', { name: userName })
+		const button = screen.queryByRole('button', { name: /logout/i })
+
+		return {
+			// you don't change "pass" based on isNot because vitest will do that for you.
+			pass: Boolean(link && button),
+			// you only change the message
+			message: () => {
+				return `Expected ${
+					this.isNot ? 'not ' : ''
+				}to be logged in as ${userName}`
+			},
+		}
+	},
+})
+```
+
+And then you can use some utils to color the output as well:
+
+```tsx lines=11
+expect.extend({
+	toBeLoggedIn(userName: string) {
+		const link = screen.queryByRole('link', { name: userName })
+		const button = screen.queryByRole('button', { name: /logout/i })
+
+		return {
+			pass: Boolean(link && button),
+			message: () => {
+				return `Expected ${
+					this.isNot ? 'not ' : ''
+				}to be logged in as ${this.utils.printExpected(userName)}`
+			},
+		}
+	},
+})
+```
+
+And then you can add this to the TypeScript definitions for `expect` via a
+module augmentation:
+
+```tsx lines=23-25,27-30
+import {
+	expect,
+	type Assertion,
+	type AsymmetricMatchersContaining,
+} from 'vitest'
+
+expect.extend({
+	toBeLoggedIn(userName: string) {
+		const link = screen.queryByRole('link', { name: userName })
+		const button = screen.queryByRole('button', { name: /logout/i })
+
+		return {
+			pass: Boolean(link && button),
+			message: () => {
+				return `Expected ${
+					this.isNot ? 'not ' : ''
+				}to be logged in as ${this.utils.printExpected(userName)}`
+			},
+		}
+	},
+})
+
+interface CustomMatchers<R = unknown> {
+	toBeLoggedIn(userName: string): R
+}
+
+declare module 'vitest' {
+	interface Assertion<T = any> extends CustomMatchers<T> {}
+	interface AsymmetricMatchersContaining extends CustomMatchers {}
+}
+```
+
+There's a lot of power to this API and entire libraries have been developed to
+handle common use cases for assertions to make them easier to write and improve
+the error messages. For example,
+[`jest-dom`](https://github.com/testing-library/jest-dom) which includes a bunch
+of matchers specific to DOM testing.
+
+- [📜 Vitest Extending Matchers](https://vitest.dev/guide/extending-matchers.html)

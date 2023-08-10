@@ -19,7 +19,7 @@
     "test:all": "node ./scripts/test.js",
     "setup": "node ./setup.js",
     "setup:custom": "node ./scripts/setup-custom.js",
-    "lint": "npm run lint --if-present --workspaces",
+    "lint": "eslint .",
     "format": "prettier --write .",
     "typecheck": "tsc -b",
     "validate:all": "npm-run-all --parallel --print-label --print-name --continue-on-error test:all lint typecheck"
@@ -33,10 +33,23 @@
     "prisma": "npm:noist@^1.0.0"
   },
   "eslintIgnore": [
-    "/node_modules",
-    "/build",
-    "/public/build"
+    "**/node_modules/**",
+    "**/build/**",
+    "**/public/build/**",
+    "**/playwright-report/**",
+    "**/test-results/**",
+    "**/server-build/**"
   ],
+  "eslintConfig": {
+    "root": true,
+    "ecmaFeatures": {
+      "modules": true
+    },
+    "parserOptions": {
+      "ecmaVersion": 2023,
+      "sourceType": "module"
+    }
+  },
   "workspaces": [
     "exercises/*/*",
     "examples/*"
