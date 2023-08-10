@@ -1,1 +1,60 @@
 # Custom Matchers
+
+👨‍💼 Let's make our assertions better! We'll start with one called
+`toHaveRedirect` which should replace our `assertRedirect` util. There are
+really two checks going on here:
+
+1. The response status code is between 300 and 400
+2. The `response.headers.get('location')` is what we expect
+
+So we should have three kinds of error messages:
+
+- `Expected response to redirect but got no redirect`
+- `Expected response status to be >= 300 && < 400 but got {status}`
+- `Expected response to redirect to {expected} but got {actual}`
+
+And then if you have some extra time, you can try to support
+`expect(response).not.toHaveRedirect()` which adds an interesting element to all
+of this (can make the error message code look funny if you don't care about
+ternaries 🫢).
+
+Here's a reminder of what this API is like:
+
+```tsx
+import {
+	expect,
+	type Assertion,
+	type AsymmetricMatchersContaining,
+} from 'vitest'
+
+expect.extend({
+	toBeLoggedIn(userName: string) {
+		const link = screen.queryByRole('link', { name: userName })
+		const button = screen.queryByRole('button', { name: /logout/i })
+
+		return {
+			pass: Boolean(link && button),
+			message: () => {
+				return `Expected ${
+					this.isNot ? 'not ' : ''
+				}to be logged in as ${this.utils.printExpected(userName)}`
+			},
+		}
+	},
+})
+
+interface CustomMatchers<R = unknown> {
+	toBeLoggedIn(userName: string): R
+}
+
+declare module 'vitest' {
+	interface Assertion<T = any> extends CustomMatchers<T> {}
+	interface AsymmetricMatchersContaining extends CustomMatchers {}
+}
+```
+
+```sh nonumber
+npx vitest auth
+```
+
+- [📜 Vitest Extending Matchers](https://vitest.dev/guide/extending-matchers.html)

@@ -146,8 +146,6 @@ test('if a user is not logged in, but the connection exists and they have enable
 	})
 	const request = await setupRequest()
 	const response = await loader({ request, params: {}, context: {} })
-	expect(response.status).toBeGreaterThanOrEqual(300)
-	expect(response.status).toBeLessThan(400)
 	const searchParams = new URLSearchParams({
 		type: twoFAVerificationType,
 		target: userId,
@@ -155,7 +153,7 @@ test('if a user is not logged in, but the connection exists and they have enable
 		remember: 'on',
 	})
 	searchParams.sort()
-	expect(response.headers.get('location')).toBe(`/verify?${searchParams}`)
+	assertRedirect(response, `/verify?${searchParams}`)
 })
 
 async function setupRequest(sessionId?: string) {

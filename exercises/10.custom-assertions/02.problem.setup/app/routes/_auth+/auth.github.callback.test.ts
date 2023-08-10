@@ -16,8 +16,24 @@ import { ROUTE_PATH, loader } from './auth.github.callback.ts'
 
 const BASE_URL = 'https://www.epicstack.dev'
 
+// 🐨 move everything from here to the next 🐨 to the tests/setup/custom-matchers.ts file
 expect.extend({
-	toHaveRedirect(response: Response, redirectTo: string) {
+	toHaveRedirect(response: Response, redirectTo?: string) {
+		const location = response.headers.get('location')
+		const redirectToSupplied = redirectTo !== undefined
+		if (redirectToSupplied !== Boolean(location)) {
+			return {
+				pass: Boolean(location),
+				message: () =>
+					`Expected response to ${this.isNot ? 'not ' : ''}redirect${
+						redirectToSupplied
+							? ` to ${this.utils.printExpected(redirectTo)}`
+							: ''
+					} but got ${
+						location ? 'no redirect' : this.utils.printReceived(location)
+					}`,
+			}
+		}
 		const isRedirectStatusCode = response.status >= 300 && response.status < 400
 		if (!isRedirectStatusCode) {
 			return {
@@ -30,13 +46,13 @@ expect.extend({
 					)} but got ${this.utils.printReceived(response.status)}`,
 			}
 		}
-		const location = response.headers.get('location')
+
 		return {
 			pass: location === redirectTo,
 			message: () =>
-				`Expected redirect to ${
+				`Expected response to ${
 					this.isNot ? 'not ' : ''
-				}be ${this.utils.printExpected(
+				}redirect to ${this.utils.printExpected(
 					redirectTo,
 				)} but got ${this.utils.printReceived(location)}`,
 		}
@@ -44,13 +60,14 @@ expect.extend({
 })
 
 interface CustomMatchers<R = unknown> {
-	toHaveRedirect(redirectTo: string): R
+	toHaveRedirect(redirectTo: string | null): R
 }
 
 declare module 'vitest' {
 	interface Assertion<T = any> extends CustomMatchers<T> {}
 	interface AsymmetricMatchersContaining extends CustomMatchers {}
 }
+// 🐨 move everything from here to the previous 🐨 to the tests/setup/custom-matchers.ts file
 
 test('a new user goes to onboarding', async () => {
 	const request = await setupRequest()
@@ -182,8 +199,6 @@ test('if a user is not logged in, but the connection exists and they have enable
 	})
 	const request = await setupRequest()
 	const response = await loader({ request, params: {}, context: {} })
-	expect(response.status).toBeGreaterThanOrEqual(300)
-	expect(response.status).toBeLessThan(400)
 	const searchParams = new URLSearchParams({
 		type: twoFAVerificationType,
 		target: userId,
@@ -191,7 +206,7 @@ test('if a user is not logged in, but the connection exists and they have enable
 		remember: 'on',
 	})
 	searchParams.sort()
-	expect(response.headers.get('location')).toBe(`/verify?${searchParams}`)
+	expect(response).toHaveRedirect(`/verify?${searchParams}`)
 })
 
 async function setupRequest(sessionId?: string) {

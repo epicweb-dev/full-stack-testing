@@ -16,9 +16,32 @@ import { ROUTE_PATH, loader } from './auth.github.callback.ts'
 
 const BASE_URL = 'https://www.epicstack.dev'
 
+// 🐨 add expect.extend call here
+// 🐨   create a toHaveRedirect "matcher" function here that accepts the response and an optional redirectTo
+// 🐨   return a failing result if:
+//      - The redirecTo was supplied and it does not match the location
+//      - The response.status is not between 300 and 400
+//      - The redirectTo was not supplied, but there's no location
+//        (in this case they don't care where it's redirecting, just that it is)
+// 💯   As extra credit, handle this.isNot in the message
+// 💯   Use this.utils.printExpected/this.utils.printReceived
+
+// 🦺 here's the template for making the types work:
+// interface CustomMatchers<R = unknown> {
+// 	// 🦉 note that the first argument to your matcher is not represented in this type!
+// 	toBeLoggedIn(userName: string): R
+// }
+
+// declare module 'vitest' {
+// 	interface Assertion<T = any> extends CustomMatchers<T> {}
+// 	interface AsymmetricMatchersContaining extends CustomMatchers {}
+// }
+
 test('a new user goes to onboarding', async () => {
 	const request = await setupRequest()
 	const response = await loader({ request, params: {}, context: {} })
+	// 🐨 replace this with your custom matcher:
+	// expect(response).toHaveRedirect('/onboarding/github')
 	assertRedirect(response, '/onboarding/github')
 })
 
@@ -33,6 +56,8 @@ test('when auth fails, send the user to login with a toast', async () => {
 		e => e,
 	)
 	invariant(response instanceof Response, 'response should be a Response')
+	// 🐨 replace this with your custom matcher:
+	// expect(response).toHaveRedirect('/login')
 	assertRedirect(response, '/login')
 	assertToastSent(response)
 	expect(consoleError).toHaveBeenCalledTimes(1)
@@ -43,6 +68,8 @@ test('when a user is logged in, it creates the connection', async () => {
 	const session = await setupUser()
 	const request = await setupRequest(session.id)
 	const response = await loader({ request, params: {}, context: {} })
+	// 🐨 replace this with your custom matcher:
+	// expect(response).toHaveRedirect('/settings/profile/connections')
 	assertRedirect(response, '/settings/profile/connections')
 	assertToastSent(response)
 	const connection = await prisma.gitHubConnection.findFirst({
@@ -68,6 +95,8 @@ test(`when a user is logged in and has already connected, it doesn't do anything
 	})
 	const request = await setupRequest(session.id)
 	const response = await loader({ request, params: {}, context: {} })
+	// 🐨 replace this with your custom matcher:
+	// expect(response).toHaveRedirect('/settings/profile/connections')
 	assertRedirect(response, '/settings/profile/connections')
 	assertToastSent(response)
 })
@@ -78,6 +107,8 @@ test('when a user exists with the same email, create connection and make session
 	const request = await setupRequest()
 	const response = await loader({ request, params: {}, context: {} })
 
+	// 🐨 replace this with your custom matcher:
+	// expect(response).toHaveRedirect('/')
 	assertRedirect(response, '/')
 
 	assertToastSent(response)
@@ -110,6 +141,8 @@ test('gives an error if the account is already connected to another user', async
 	const session = await setupUser()
 	const request = await setupRequest(session.id)
 	const response = await loader({ request, params: {}, context: {} })
+	// 🐨 replace this with your custom matcher:
+	// expect(response).toHaveRedirect('/settings/profile/connections')
 	assertRedirect(response, '/settings/profile/connections')
 	assertToastSent(response)
 })
@@ -124,6 +157,8 @@ test('if a user is not logged in, but the connection exists, make a session', as
 	})
 	const request = await setupRequest()
 	const response = await loader({ request, params: {}, context: {} })
+	// 🐨 replace this with your custom matcher:
+	// expect(response).toHaveRedirect('/')
 	assertRedirect(response, '/')
 	await assertSessionMade(response, userId)
 })
@@ -146,8 +181,6 @@ test('if a user is not logged in, but the connection exists and they have enable
 	})
 	const request = await setupRequest()
 	const response = await loader({ request, params: {}, context: {} })
-	expect(response.status).toBeGreaterThanOrEqual(300)
-	expect(response.status).toBeLessThan(400)
 	const searchParams = new URLSearchParams({
 		type: twoFAVerificationType,
 		target: userId,
@@ -155,7 +188,7 @@ test('if a user is not logged in, but the connection exists and they have enable
 		remember: 'on',
 	})
 	searchParams.sort()
-	expect(response.headers.get('location')).toBe(`/verify?${searchParams}`)
+	assertRedirect(response, `/verify?${searchParams}`)
 })
 
 async function setupRequest(sessionId?: string) {
@@ -211,6 +244,7 @@ async function assertSessionMade(response: Response, userId: string) {
 	expect(session).toBeTruthy()
 }
 
+// 💣 you can remove this now:
 function assertRedirect(response: Response, redirectTo: string) {
 	expect(response.status).toBeGreaterThanOrEqual(300)
 	expect(response.status).toBeLessThan(400)

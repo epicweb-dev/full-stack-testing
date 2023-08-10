@@ -1,1 +1,36 @@
 # Create Isolated Database
+
+👨‍💼 alright, so it makes a lot more sense for us to have isolated databases for
+each of our test files since they're so easy to create and delete before each
+of our tests. We're going to iterate our way to a good solution. The first step
+is just to make sure this is going to work for one test. We'll start with the
+test in <InlineFile file="app/routes/_auth+/auth.github.callback.test.ts" />.
+
+To do this, we need to do a couple steps:
+
+1. Set the `DATABASE_URL` to the test database (before anything imports prisma!)
+1. Run `prisma migrate reset --force --skip-generate` to reset the database
+   before all the tests start. **The `--skip-generate` is important if we don't
+   want to mess up our development client**.
+1. After each test, we need to delete all the users from the database to
+   automatically clean up after ourselves.
+1. After all the tests are done, we need to disconnect from the database and
+   delete the file.
+
+There's one major sticking point to this: We need to make sure we set
+`process.env.DATABASE_URL` before anything imports prisma. Otherwise, prisma
+will start up and use our development database.
+
+So what we're going to do is create a special file next to our test that will
+manage all of this setup for us, and import that file at the top of the test
+file before anything else has a chance to import prisma.
+
+Another issue will be the fact that our test file is inside our `routes`
+directory, but we don't want this setup file to be treated as a Remix route.
+So if you check out the <InlineFile file="remix.config.js" /> file, you'll
+notice that files with a prefix of `__` are ignored. So we'll name our setup
+file `__setup.ts` and it won't be treated as a route.
+
+```sh nonumber
+npx vitest auth
+```

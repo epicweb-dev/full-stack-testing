@@ -1,5 +1,6 @@
 import 'dotenv/config'
 import 'source-map-support/register.js'
+// 🐨 import the ./db-setup.ts file here
 import '~/utils/env.server.ts'
 // we need these to be imported first 👆
 
@@ -9,12 +10,15 @@ import { insertedUsers } from 'tests/db-utils.ts'
 import { afterEach, beforeEach, expect, vi, type SpyInstance } from 'vitest'
 import { prisma } from '~/utils/db.server.ts'
 import { server } from '../mocks/index.ts'
-// 🐨 import the custom matchers file here
+import './custom-matchers.ts'
 
 installGlobals()
 
 afterEach(() => server.resetHandlers())
 afterEach(() => cleanup())
+// 💣 now that we're isolated, we no longer need to worry about keeping track
+// of inserted users and deleting them here, We're handling that generally in
+// the db-setup.ts file, so you can delete this afterEach.
 afterEach(async () => {
 	await prisma.user.deleteMany({
 		where: { id: { in: [...insertedUsers] } },

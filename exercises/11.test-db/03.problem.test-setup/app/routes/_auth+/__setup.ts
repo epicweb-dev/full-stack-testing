@@ -3,6 +3,8 @@ import { execaCommand } from 'execa'
 import fsExtra from 'fs-extra'
 import { afterAll, afterEach, beforeAll } from 'vitest'
 
+// 🐨 update this file path to include the process.env.VITEST_POOL_ID variable
+// to keep it unique and then move this file to tests/setup/db-setup.ts.
 const databaseFile = `./tests/prisma/data.db`
 const databasePath = path.join(process.cwd(), databaseFile)
 process.env.DATABASE_URL = `file:${databasePath}`
@@ -10,7 +12,7 @@ process.env.DATABASE_URL = `file:${databasePath}`
 beforeAll(async () => {
 	await execaCommand('prisma migrate reset --force --skip-generate', {
 		stdio: 'inherit',
-		// 🐨 add an env object here that merges process.env and MINIMAL_SEED: true
+		env: { MINIMAL_SEED: 'true', ...process.env },
 	})
 })
 

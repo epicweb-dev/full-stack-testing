@@ -57,6 +57,8 @@ async function seed() {
 	})
 	console.timeEnd('👑 Created roles...')
 
+	// 🐨 if process.env.MINIMAL_SEED is defined, then return early
+
 	const totalUsers = 5
 	console.time(`👤 Created ${totalUsers} users...`)
 	const noteImages = await getNoteImages()

@@ -1,0 +1,25 @@
+# Global Setup
+
+👨‍💼 We're doing a lot of repeat work in our tests. Each one is running the
+migration script which includes seeding the database. This doesn't take forever,
+but it definitely adds quite a bit to our test runs.
+
+What if instead, we just made a "base" database and then copied it for each test
+run? This would be a lot faster! We just need to make sure to get our base
+database set up before _any_ of the test processes run, so when they are
+spawned, the "base" database is ready to be copied.
+
+Luckily for us, Vitest comes with configuration just for this use case and it's
+called [`globalSetup`](https://vitest.dev/config/#globalsetup). This is a path
+to a file that will be run before any of the tests are run. This is where we'll
+set up our "base" database.
+
+Once you have that set up you should be able to run the test. The first time
+you'll notice the migration script is run and the base database is created,
+but this only happens once for all the tests and after that you'll find the base
+database is there and ready to be copied every test run. The tests should run
+_much_ faster now!
+
+```sh nonumber
+npx vitest
+```
