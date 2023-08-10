@@ -51,7 +51,7 @@ test('counter increments when clicked', async () => {
 	const App = createRemixStub([
 		{
 			path: '/counter',
-			element: Counter,
+			element: <Counter />,
 			loader: () => json({ count }),
 			action: () => {
 				count = count + 1
@@ -84,7 +84,7 @@ test('counter increments when clicked', async () => {
 	const App = createRemixStub([
 		{
 			path: '/counter',
-			element: Counter,
+			element: <Counter />,
 			// 👇 use the original loader and action
 			loader,
 			action,
