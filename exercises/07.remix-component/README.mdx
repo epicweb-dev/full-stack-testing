@@ -17,7 +17,7 @@ the release. Here are your "docs" for that:
 
 ```tsx filename=app/routes/counter.test.tsx
 import { useLoaderData } from '@remix-run/react'
-import { db } from 'utils/db.server'
+import { db } from '~/utils/db.server'
 
 export async function loader() {
 	return json({ count: await db.getCount() })
@@ -59,7 +59,8 @@ test('counter increments when clicked', async () => {
 			},
 		},
 	])
-	const button = screen.getByRole('button', { name: /count:/i })
+	render(<App initialEntries={['/counter']} />)
+	const button = await screen.findByRole('button', { name: /count:/i })
 	expect(button).toHaveTextContent('Count: 0')
 	await userEvent.click(button)
 	expect(button).toHaveTextContent('Count: 1')
@@ -75,9 +76,9 @@ as well:
 import * as React from 'react'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { unstable_createRemixStub as createRemixStub } from '@remix-run/testing'
 // 👇 import the loader and action
 import Counter, { loader, action } from './counter'
-import { unstable_createRemixStub as createRemixStub } from '@remix-run/testing'
 
 test('counter increments when clicked', async () => {
 	const App = createRemixStub([
@@ -89,7 +90,8 @@ test('counter increments when clicked', async () => {
 			action,
 		},
 	])
-	const button = screen.getByRole('button', { name: /count:/i })
+	render(<App initialEntries={['/counter']} />)
+	const button = await screen.findByRole('button', { name: /count:/i })
 	expect(button).toHaveTextContent('Count: 0')
 	await userEvent.click(button)
 	expect(button).toHaveTextContent('Count: 1')
