@@ -18,8 +18,6 @@ test('shows nothing when given an empty list', () => {
 })
 
 test('shows a single error', () => {
-	// 🐨 add a screen.debug() here to test what things look like before/after
-	// you add the cleanup call
 	const errors = [faker.lorem.words(3)]
 	render(<ErrorList errors={errors} />)
 	const errorEls = screen.getAllByRole('listitem')
@@ -27,6 +25,8 @@ test('shows a single error', () => {
 })
 
 test('shows multiple errors', () => {
+	// 🐨 add a screen.debug() here to test what things look like before/after
+	// you add the cleanup call
 	const errors = [faker.lorem.words(3), faker.lorem.words(3)]
 	render(<ErrorList errors={errors} />)
 	const errorEls = screen.getAllByRole('listitem')
