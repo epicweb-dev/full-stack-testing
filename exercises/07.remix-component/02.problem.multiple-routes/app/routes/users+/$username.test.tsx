@@ -55,6 +55,7 @@ test('The user profile when logged in as self', async () => {
 		// but you can fake them out. So you may want to check out the root loader
 
 		// 🐨 nest this route inside a root route that provides the root loader's data
+		// which you'll find in app/root.tsx
 		{
 			path: '/users/:username',
 			element: <UsernameRoute />,
