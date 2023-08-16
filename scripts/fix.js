@@ -61,7 +61,7 @@ async function updatePkgNames() {
 		pkg.name = relativeToWorkshopRoot(file).replace(/\\|\//g, '__sep__')
 		const written = await writeIfNeeded(
 			pkgjsonPath,
-			JSON.stringify(pkg, null, 2),
+			`${JSON.stringify(pkg, null, 2)}\n`,
 		)
 		if (written) {
 			console.log(`updated ${path.relative(process.cwd(), pkgjsonPath)}`)
@@ -79,7 +79,7 @@ async function updateTsconfig() {
 	}
 	const written = await writeIfNeeded(
 		path.join(workshopRoot, 'tsconfig.json'),
-		JSON.stringify(tsconfig, null, 2),
+		`${JSON.stringify(tsconfig, null, 2)}\n`,
 		{ parser: 'json' },
 	)
 
