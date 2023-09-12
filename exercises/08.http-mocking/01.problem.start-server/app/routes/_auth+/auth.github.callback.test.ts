@@ -3,10 +3,10 @@ import * as setCookieParser from 'set-cookie-parser'
 // because it starts the server for us automatically, you don't have to worry
 // about starting it, and it also handles stopping automatically as well. So
 // all you have to do is import the file and you'll be set.
-// 💰 import 'tests/mocks/index.ts'
+// 💰 import '#tests/mocks/index.ts'
 import { test } from 'vitest'
 // 🐨 you're going to want sessionStorage from the utils folder
-// 💰 import { sessionStorage } from '~/utils/session.server.ts'
+// 💰 import { sessionStorage } from '#app/utils/session.server.ts'
 // 🐨 you'll need the loader and the loader's ROUTE_PATH from './auth.github.callback.ts'
 // 💰 import { ROUTE_PATH, loader } from './auth.github.callback.ts'
 

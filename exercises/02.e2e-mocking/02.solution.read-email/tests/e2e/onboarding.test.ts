@@ -1,8 +1,8 @@
 import { faker } from '@faker-js/faker'
 import { expect, test } from '@playwright/test'
-import { requireEmail } from 'tests/mocks/resend.ts'
-import { prisma } from '~/utils/db.server.ts'
-import { invariant } from '~/utils/misc.tsx'
+import { prisma } from '#app/utils/db.server.ts'
+import { invariant } from '#app/utils/misc.tsx'
+import { requireEmail } from '#tests/mocks/resend.ts'
 import { createUser, insertNewUser } from '../db-utils.ts'
 import { waitFor } from '../playwright-utils.ts'
 

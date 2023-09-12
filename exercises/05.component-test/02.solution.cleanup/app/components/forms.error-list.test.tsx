@@ -48,5 +48,5 @@ test('adds id to the ul', () => {
 	const id = faker.lorem.word()
 	render(<ErrorList id={id} errors={[faker.lorem.words(3)]} />)
 	const ul = screen.getByRole('list')
-	expect(ul.getAttribute('id')).toBe(id)
+	expect(ul).toHaveAttribute('id', id)
 })

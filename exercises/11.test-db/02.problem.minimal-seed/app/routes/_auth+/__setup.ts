@@ -15,12 +15,12 @@ beforeAll(async () => {
 })
 
 afterEach(async () => {
-	const { prisma } = await import('~/utils/db.server.ts')
+	const { prisma } = await import('#app/utils/db.server.ts')
 	await prisma.user.deleteMany()
 })
 
 afterAll(async () => {
-	const { prisma } = await import('~/utils/db.server.ts')
+	const { prisma } = await import('#app/utils/db.server.ts')
 	prisma.$disconnect()
 	await fsExtra.remove(databasePath)
 })

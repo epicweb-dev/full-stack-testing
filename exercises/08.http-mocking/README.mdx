@@ -52,7 +52,7 @@ import { setupServer } from 'msw/node'
 const { json } = HttpResponse
 
 const server = setupServer(
-	rest.get('https://example.com/book/:bookId', () => {
+	http.get('https://example.com/book/:bookId', () => {
 		return json({ title: 'Lord of the Rings' })
 	}),
 )
@@ -73,7 +73,7 @@ afterAll(() => {
 test('handles 500 errors from the API', () => {
 	server.use(
 		// Adds a runtime request handler for posting a new book review.
-		rest.get('https://example.com/book/:bookId', () => {
+		http.get('https://example.com/book/:bookId', () => {
 			return json({ error: 'Something went wrong' }, { status: 500 })
 		}),
 	)

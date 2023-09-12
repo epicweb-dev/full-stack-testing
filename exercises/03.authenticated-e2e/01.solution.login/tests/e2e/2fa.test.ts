@@ -1,9 +1,9 @@
 import { faker } from '@faker-js/faker'
 import { expect, test } from '@playwright/test'
 import * as setCookieParser from 'set-cookie-parser'
-import { getSessionExpirationDate, sessionKey } from '~/utils/auth.server.ts'
-import { prisma } from '~/utils/db.server.ts'
-import { sessionStorage } from '~/utils/session.server.ts'
+import { getSessionExpirationDate, sessionKey } from '#app/utils/auth.server.ts'
+import { prisma } from '#app/utils/db.server.ts'
+import { sessionStorage } from '#app/utils/session.server.ts'
 import { insertNewUser } from '../db-utils.ts'
 
 test('Users can add 2FA to their account and use it when logging in', async ({

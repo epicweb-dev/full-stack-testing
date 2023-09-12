@@ -101,7 +101,18 @@ in our tests).
 The `expect` library that we're using with vitest is extensible (we'll learn
 more about this later). There are existing extensions for testing library called
 [`@testing-library/jest-dom`](https://testing-library.com/docs/ecosystem-jest-dom)
-and they're really nice to use. Unfortunately they kind of mess up the types
-when using vitest, so we'll not be using them in this workshop. Hopefully the
-maintainers [fix this](https://github.com/testing-library/jest-dom/pull/472)
-eventually and we can start using the nicer assertions.
+and they're really nice to use. So we'll use them in our tests.
+
+```tsx filename=counter.test.tsx
+import { expect, test } from 'vitest'
+import '@testing-library/jest-dom'
+
+// ...
+
+test('counter increments when clicked', async () => {
+	// ...
+	expect(button).toHaveTextContent('Count: 0')
+	await userEvent.click(button)
+	expect(button).toHaveTextContent('Count: 1')
+})
+```

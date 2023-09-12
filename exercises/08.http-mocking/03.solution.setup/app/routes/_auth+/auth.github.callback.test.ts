@@ -1,11 +1,11 @@
 import { faker } from '@faker-js/faker'
 import { rest } from 'msw'
 import * as setCookieParser from 'set-cookie-parser'
-import { server } from 'tests/mocks/index.ts'
-import { consoleError } from 'tests/setup/setup-test-env.ts'
 import { afterEach, expect, test } from 'vitest'
-import { invariant } from '~/utils/misc.tsx'
-import { sessionStorage } from '~/utils/session.server.ts'
+import { invariant } from '#app/utils/misc.tsx'
+import { sessionStorage } from '#app/utils/session.server.ts'
+import { server } from '#tests/mocks/index.ts'
+import { consoleError } from '#tests/setup/setup-test-env.ts'
 import { ROUTE_PATH, loader } from './auth.github.callback.ts'
 
 const BASE_URL = 'https://www.epicstack.dev'
@@ -22,7 +22,7 @@ test('a new user goes to onboarding', async () => {
 
 test('when auth fails, send the user to login with a toast', async () => {
 	server.use(
-		rest.post('https://github.com/login/oauth/access_token', async () => {
+		http.post('https://github.com/login/oauth/access_token', async () => {
 			return new Response('error', { status: 400 })
 		}),
 	)

@@ -2,16 +2,16 @@ import './__setup.ts'
 import { generateTOTP } from '@epic-web/totp'
 import { faker } from '@faker-js/faker'
 import { rest } from 'msw'
-import { createUser } from 'tests/db-utils.ts'
-import { mockGithubProfile, primaryGitHubEmail } from 'tests/mocks/github.ts'
-import { server } from 'tests/mocks/index.ts'
-import { consoleError } from 'tests/setup/setup-test-env.ts'
-import { BASE_URL, convertSetCookieToCookie } from 'tests/utils.ts'
 import { expect, test } from 'vitest'
-import { getSessionExpirationDate, sessionKey } from '~/utils/auth.server.ts'
-import { prisma } from '~/utils/db.server.ts'
-import { invariant } from '~/utils/misc.tsx'
-import { sessionStorage } from '~/utils/session.server.ts'
+import { getSessionExpirationDate, sessionKey } from '#app/utils/auth.server.ts'
+import { prisma } from '#app/utils/db.server.ts'
+import { invariant } from '#app/utils/misc.tsx'
+import { sessionStorage } from '#app/utils/session.server.ts'
+import { createUser } from '#tests/db-utils.ts'
+import { mockGithubProfile, primaryGitHubEmail } from '#tests/mocks/github.ts'
+import { server } from '#tests/mocks/index.ts'
+import { consoleError } from '#tests/setup/setup-test-env.ts'
+import { BASE_URL, convertSetCookieToCookie } from '#tests/utils.ts'
 import { twoFAVerificationType } from '../settings+/profile.two-factor.tsx'
 import { ROUTE_PATH, loader } from './auth.github.callback.ts'
 
@@ -23,7 +23,7 @@ test('a new user goes to onboarding', async () => {
 
 test('when auth fails, send the user to login with a toast', async () => {
 	server.use(
-		rest.post('https://github.com/login/oauth/access_token', async () => {
+		http.post('https://github.com/login/oauth/access_token', async () => {
 			return new Response('error', { status: 400 })
 		}),
 	)

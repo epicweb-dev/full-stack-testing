@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test'
-import { getPasswordHash } from '~/utils/auth.server.ts'
-import { prisma } from '~/utils/db.server.ts'
+import { getPasswordHash } from '#app/utils/auth.server.ts'
+import { prisma } from '#app/utils/db.server.ts'
 import { createUser } from '../db-utils.ts'
 
 test('Search from home page', async ({ page }) => {

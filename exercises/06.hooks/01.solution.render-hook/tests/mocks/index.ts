@@ -1,12 +1,12 @@
 import closeWithGrace from 'close-with-grace'
-import { passthrough, rest } from 'msw'
+import { passthrough, http } from 'msw'
 import { setupServer } from 'msw/node'
 import { handlers as githubHandlers } from './github.ts'
 import { handlers as resendHandlers } from './resend.ts'
 
 const miscHandlers = [
 	process.env.REMIX_DEV_HTTP_ORIGIN
-		? rest.post(`${process.env.REMIX_DEV_HTTP_ORIGIN}ping`, passthrough)
+		? http.post(`${process.env.REMIX_DEV_HTTP_ORIGIN}ping`, passthrough)
 		: null,
 ].filter(Boolean)
 

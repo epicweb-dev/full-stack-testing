@@ -7,17 +7,17 @@ import { json } from '@remix-run/node'
 import { unstable_createRemixStub as createRemixStub } from '@remix-run/testing'
 // 🐨 you'll need these:
 // import * as setCookieParser from 'set-cookie-parser'
-// import { getUserImages, insertNewUser } from 'tests/db-utils.ts'
+// import { getUserImages, insertNewUser } from '#tests/db-utils.ts'
 import { render, screen } from '@testing-library/react'
 import { test } from 'vitest'
 // 🐨 remove the "type" from here. We're bringing in the real deal!
-import { type loader as rootLoader } from '~/root.tsx'
+import { type loader as rootLoader } from '#app/root.tsx'
 // 🐨 you're going to need these to make the session:
-// import { sessionKey, getSessionExpirationDate } from '~/utils/auth.server.ts'
+// import { sessionKey, getSessionExpirationDate } from '#app/utils/auth.server.ts'
 // 🐨 and while I'm giving you all this stuff, I may as well give you prisma too
-// import { prisma } from '~/utils/db.server.ts'
+// import { prisma } from '#app/utils/db.server.ts'
 // 🐨 you're also going to need sessionStorage:
-// import { sessionStorage } from '~/utils/session.server.ts'
+// import { sessionStorage } from '#app/utils/session.server.ts'
 // 🐨 remove the "type" from here too:
 import { default as UsernameRoute, type loader } from './$username.tsx'
 

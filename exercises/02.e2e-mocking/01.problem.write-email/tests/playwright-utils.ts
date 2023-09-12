@@ -1,5 +1,5 @@
 import { test } from '@playwright/test'
-import { prisma } from '~/utils/db.server.ts'
+import { prisma } from '#app/utils/db.server.ts'
 import { insertedUsers } from './db-utils.ts'
 
 /**

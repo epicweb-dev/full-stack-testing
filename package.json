@@ -8,6 +8,7 @@
   },
   "type": "module",
   "scripts": {
+    "postinstall": "patch-package --patch-dir scripts/patches",
     "build": "npm run build --if-present --workspaces",
     "start": "kcdshop start",
     "dev": "kcdshop start",
@@ -30,6 +31,7 @@
   "dependencies": {
     "@kentcdodds/workshop-app": "^2.20.2",
     "@prisma/client": "npm:noist@^1.0.0",
+    "patch-package": "^8.0.0",
     "prisma": "npm:noist@^1.0.0"
   },
   "eslintIgnore": [
@@ -42,9 +44,6 @@
   ],
   "eslintConfig": {
     "root": true,
-    "ecmaFeatures": {
-      "modules": true
-    },
     "parserOptions": {
       "ecmaVersion": 2023,
       "sourceType": "module"

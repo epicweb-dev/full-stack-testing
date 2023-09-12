@@ -48,7 +48,7 @@ test('The user profile when logged in as self', async () => {
 	const user = createFakeUser()
 	const App = createRemixStub([
 		// 🐨 the root route's path should be "/" and it also needs an id of "root"
-		// because our utility for getting the user requires it (check ~/utils/user.ts)
+		// because our utility for getting the user requires it (check #app/utils/user.ts)
 		// 🐨 for the loader, you can do the same sort of thing we do for the username
 		// route loader, just import the type of the rootLoader and use that.
 		// 🐨 the root loader stub will need to return the same properties the real one does

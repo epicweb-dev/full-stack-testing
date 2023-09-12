@@ -17,7 +17,7 @@ the release. Here are your "docs" for that:
 
 ```tsx filename=app/routes/counter.test.tsx
 import { useLoaderData } from '@remix-run/react'
-import { db } from '~/utils/db.server'
+import { db } from '#app/utils/db.server'
 
 export async function loader() {
 	return json({ count: await db.getCount() })

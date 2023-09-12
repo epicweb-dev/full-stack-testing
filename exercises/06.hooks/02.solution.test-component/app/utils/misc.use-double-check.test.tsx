@@ -60,14 +60,14 @@ test('TestComponent: prevents default on the first click, and does not on the se
 	const status = screen.getByRole('status')
 	const button = screen.getByRole('button')
 
-	expect(status.textContent).toBe('Default Prevented: idle')
-	expect(button.textContent).toBe('Click me')
+	expect(status).toHaveTextContent('Default Prevented: idle')
+	expect(button).toHaveTextContent('Click me')
 
 	await user.click(button)
-	expect(button.textContent).toBe('You sure?')
-	expect(status.textContent).toBe('Default Prevented: yes')
+	expect(button).toHaveTextContent('You sure?')
+	expect(status).toHaveTextContent('Default Prevented: yes')
 
 	await user.click(button)
-	expect(button.textContent).toBe('You sure?')
-	expect(status.textContent).toBe('Default Prevented: no')
+	expect(button).toHaveTextContent('You sure?')
+	expect(status).toHaveTextContent('Default Prevented: no')
 })

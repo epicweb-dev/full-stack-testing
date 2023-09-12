@@ -52,7 +52,7 @@ const { json } = HttpResponse
 
 const server = setupServer(
 	// Describe the requests to mock.
-	rest.get('/book/:bookId', () => {
+	http.get('/book/:bookId', () => {
 		return json({
 			title: 'Lord of the Rings',
 			author: 'J. R. R. Tolkien',

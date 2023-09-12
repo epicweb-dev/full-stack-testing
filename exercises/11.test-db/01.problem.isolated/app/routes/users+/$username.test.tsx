@@ -4,12 +4,12 @@
 import { faker } from '@faker-js/faker'
 import { unstable_createRemixStub as createRemixStub } from '@remix-run/testing'
 import { render, screen } from '@testing-library/react'
-import { getUserImages, insertNewUser } from 'tests/db-utils.ts'
-import { getSessionCookieHeader } from 'tests/utils.ts'
 import { test } from 'vitest'
-import { loader as rootLoader } from '~/root.tsx'
-import { getSessionExpirationDate } from '~/utils/auth.server.ts'
-import { prisma } from '~/utils/db.server.ts'
+import { loader as rootLoader } from '#app/root.tsx'
+import { getSessionExpirationDate } from '#app/utils/auth.server.ts'
+import { prisma } from '#app/utils/db.server.ts'
+import { getUserImages, insertNewUser } from '#tests/db-utils.ts'
+import { getSessionCookieHeader } from '#tests/utils.ts'
 import { default as UsernameRoute, loader } from './$username.tsx'
 
 test('The user profile when not logged in as self', async () => {

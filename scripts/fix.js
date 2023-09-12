@@ -1,14 +1,13 @@
-// This should run by node without any dependencies
-// because you may need to run it without deps.
-
 import fs from 'node:fs'
 import cp from 'node:child_process'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import * as esbuild from 'esbuild'
+import fsExtra from 'fs-extra'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const here = (...p) => path.join(__dirname, ...p)
-const VERBOSE = false
+const VERBOSE = process.env.KCDSHOP_VERBOSE ?? false
 const logVerbose = (...args) => (VERBOSE ? console.log(...args) : undefined)
 
 const workshopRoot = here('..')
@@ -114,7 +113,11 @@ async function updateDataDb() {
 					[/data\.db/],
 			  )
 			: false
-		if (!prismaIsUnchanged) {
+		if (prismaIsUnchanged) {
+			logVerbose(
+				`Skipping copying prisma folder to ${rel(app)} because it's the same`,
+			)
+		} else {
 			if (latestPrismaApp) {
 				logVerbose(
 					`The prisma folder in ${rel(app)} is different to ${rel(
@@ -130,29 +133,89 @@ async function updateDataDb() {
 		const pathToLatestAppDb = path.join(latestPrismaApp, 'prisma/data.db')
 		const pathToDestAppDb = path.join(app, 'prisma/data.db')
 		if (pathToLatestAppDb !== pathToDestAppDb) {
-			if (!isSameFile(pathToLatestAppDb, pathToDestAppDb)) {
-				console.log(
-					`Copying data.db from ${rel(latestPrismaApp)} to ${rel(app)}`,
-				)
-				await fs.promises.copyFile(pathToLatestAppDb, pathToDestAppDb)
-			} else {
+			if (await isSameFile(pathToLatestAppDb, pathToDestAppDb)) {
 				logVerbose(
 					`Skipping copying ${rel(pathToLatestAppDb)} to ${rel(
 						pathToDestAppDb,
 					)} because they are the same`,
 				)
+			} else {
+				console.log(
+					`Copying data.db from ${rel(latestPrismaApp)} to ${rel(app)}`,
+				)
+				await fs.promises.copyFile(pathToLatestAppDb, pathToDestAppDb)
+			}
+		}
+		const pathToLatestGHUserJson = path.join(
+			latestPrismaApp,
+			'#tests/fixtures/github/users.0.local.json',
+		)
+		const pathToDestGHUserJson = path.join(
+			app,
+			'#tests/fixtures/github/users.0.local.json',
+		)
+		if (
+			(await isFile(pathToLatestGHUserJson)) &&
+			pathToLatestGHUserJson !== pathToDestGHUserJson
+		) {
+			if (await isSameFile(pathToLatestGHUserJson, pathToDestGHUserJson)) {
+				logVerbose(
+					`Skipping copying ${rel(pathToLatestGHUserJson)} to ${rel(
+						pathToDestGHUserJson,
+					)} because they are the same`,
+				)
+			} else {
+				console.log(
+					`Copying users.0.local.json from ${rel(latestPrismaApp)} to ${rel(
+						app,
+					)}`,
+				)
+				await fs.promises.copyFile(pathToLatestGHUserJson, pathToDestGHUserJson)
 			}
 		}
 	}
 }
 
-function isSameFile(file1, file2) {
-	const f1IsFile = isFile(file1)
-	const f2IsFile = isFile(file2)
+async function isSameFile(file1, file2) {
+	const f1IsFile = await isFile(file1)
+	const f2IsFile = await isFile(file2)
 	if (!f1IsFile && !f2IsFile) return true
 	if (f1IsFile !== f2IsFile) return false
 
-	return fs.readFileSync(file1).equals(fs.readFileSync(file2))
+	if (/.(ts|js|tsx|jsx)$/.test(file1)) {
+		try {
+			// doing this comparison of the bundled/minified code accounts for code
+			// comments and whitespace changes that should not affect the outcome of
+			// the code.
+			const bundle1 = await getBundle(file1)
+			const bundle2 = await getBundle(file2)
+			return bundle1 === bundle2
+		} catch {
+			return false
+		}
+	} else {
+		const [content1, content2] = await Promise.all([
+			fsExtra.readFile(file1),
+			fsExtra.readFile(file2),
+		])
+		return content1.equals(content2)
+	}
+}
+
+async function getBundle(filepath) {
+	const {
+		outputFiles: [{ text }],
+	} = await esbuild.build({
+		entryPoints: [filepath],
+		bundle: true,
+		platform: 'node',
+		format: 'esm',
+		write: false,
+		packages: 'external',
+		external: ['*.png'],
+		minify: true,
+	})
+	return text
 }
 
 async function dirsAreTheSame(dir1, dir2, exclude = []) {
@@ -185,8 +248,8 @@ async function dirsAreTheSame(dir1, dir2, exclude = []) {
 		const itemPath2 = path.join(dir2, item)
 
 		// Check if the item is a file and compare the content
-		if (isFile(itemPath1) && isFile(itemPath2)) {
-			if (!isSameFile(itemPath1, itemPath2)) return false
+		if ((await isFile(itemPath1)) && (await isFile(itemPath2))) {
+			if (!(await isSameFile(itemPath1, itemPath2))) return false
 		} else {
 			// If the item is a directory, call the function recursively
 			const result = await dirsAreTheSame(itemPath1, itemPath2, exclude)
@@ -227,11 +290,38 @@ async function getNewestStat(fileOrDirPath, exclude) {
 }
 
 async function reseedIfNecessary(app) {
+	const seedPath = path.join(app, 'prisma', 'seed.ts')
+	if (!exists(seedPath)) {
+		logVerbose(
+			`Skipping re-seeding ${rel(app)} because it doesn't have a seed script`,
+		)
+		return false
+	}
+	const projectPackageJson = JSON.parse(
+		await fs.promises.readFile(path.join(app, 'package.json'), 'utf8'),
+	)
+	const hasSeedScript = Boolean(projectPackageJson.prisma?.seed)
+	if (!hasSeedScript) {
+		logVerbose(
+			`Skipping re-seeding ${rel(
+				app,
+			)} because it doesn't have a seed script in package.json`,
+		)
+		return false
+	}
 	const latestPrismaChange = await getNewestStat(path.join(app, 'prisma'), [
 		/data\.db/,
 	])
 	const dbChange = await getNewestStat(path.join(app, 'prisma', 'data.db'))
 	const modifiedTimeDifference = dbChange.mtimeMs - latestPrismaChange.mtimeMs
+
+	async function runSeed() {
+		// touch the seed.ts file to update it's modified time relatively recently
+		// to the data.db file
+		await fs.promises.utimes(seedPath, new Date(), new Date())
+		cp.execSync('npx prisma db seed', { cwd: app, stdio: 'inherit' })
+		return true
+	}
 	// if the difference is negative, the db is older than the prisma folder
 	// if the difference is longer than a minute, then someone changed something
 	// after the seed script finished. We want to override that.
@@ -241,20 +331,17 @@ async function reseedIfNecessary(app) {
 				app,
 			)} (modifiedTimeDifference: ${modifiedTimeDifference}). Re-seeding...`,
 		)
-		// touch the seed.ts file to update it's modified time relatively recently
-		// to the data.db file
-		await fs.promises.utimes(
-			path.join(app, 'prisma', 'seed.ts'),
-			new Date(),
-			new Date(),
-		)
-		cp.execSync('npx prisma db seed', { cwd: app, stdio: 'inherit' })
+		return await runSeed()
+	} else if (process.env.FORCE_SEED) {
+		console.log(`process.env.FORCE_SEED is set, so re-seeding ${rel(app)}`)
+		return await runSeed()
 	} else {
 		logVerbose(
 			`Skipping re-seeding ${rel(
 				app,
 			)} because the data.db file is up to date with a modifiedTimeDifference of ${modifiedTimeDifference}`,
 		)
+		return false
 	}
 }
 
@@ -268,9 +355,10 @@ function exists(p) {
 	}
 }
 
-function isFile(p) {
+async function isFile(p) {
 	try {
-		return fs.statSync(p).isFile()
+		const stat = await fsExtra.stat(p)
+		return stat.isFile()
 	} catch (error) {
 		return false
 	}

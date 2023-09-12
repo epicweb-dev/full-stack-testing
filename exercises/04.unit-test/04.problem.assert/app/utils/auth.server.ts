@@ -4,7 +4,7 @@ import bcrypt from 'bcryptjs'
 import { Authenticator } from 'remix-auth'
 import { GitHubStrategy } from 'remix-auth-github'
 import { safeRedirect } from 'remix-utils'
-import { prisma } from '~/utils/db.server.ts'
+import { prisma } from '#app/utils/db.server.ts'
 import { combineHeaders, downloadFile } from './misc.tsx'
 import { sessionStorage } from './session.server.ts'
 

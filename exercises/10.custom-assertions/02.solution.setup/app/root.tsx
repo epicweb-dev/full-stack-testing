@@ -19,7 +19,7 @@ import {
 	useFetchers,
 	useLoaderData,
 	useMatches,
-	type V2_MetaFunction,
+	type MetaFunction,
 } from '@remix-run/react'
 import { useEffect } from 'react'
 import { Toaster, toast as showToast } from 'sonner'
@@ -292,7 +292,7 @@ function ShowToast({ toast }: { toast: Toast }) {
 	return null
 }
 
-export const meta: V2_MetaFunction = () => {
+export const meta: MetaFunction = () => {
 	return [
 		{ title: 'Epic Notes' },
 		{ name: 'description', content: `Your own captain's log` },

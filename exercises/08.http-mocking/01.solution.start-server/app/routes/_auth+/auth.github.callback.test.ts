@@ -1,8 +1,8 @@
 import { faker } from '@faker-js/faker'
 import * as setCookieParser from 'set-cookie-parser'
-import 'tests/mocks/index.ts'
+import '#tests/mocks/index.ts'
 import { expect, test } from 'vitest'
-import { sessionStorage } from '~/utils/session.server.ts'
+import { sessionStorage } from '#app/utils/session.server.ts'
 import { ROUTE_PATH, loader } from './auth.github.callback.ts'
 
 const BASE_URL = 'https://www.epicstack.dev'

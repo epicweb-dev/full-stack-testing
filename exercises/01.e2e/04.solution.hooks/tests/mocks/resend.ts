@@ -1,11 +1,20 @@
 import { faker } from '@faker-js/faker'
-import { HttpResponse, rest, type RestHandler } from 'msw'
+import { HttpResponse, http, type HttpHandler } from 'msw'
+import { z } from 'zod'
 
 const { json } = HttpResponse
 
-export const handlers: Array<RestHandler> = [
-	rest.post(`https://api.resend.com/emails`, async ({ request }) => {
-		const email = (await request.json()) as Record<string, any>
+const EmailSchema = z.object({
+	to: z.string(),
+	from: z.string(),
+	subject: z.string(),
+	text: z.string(),
+	html: z.string().optional(),
+})
+
+export const handlers: Array<HttpHandler> = [
+	http.post(`https://api.resend.com/emails`, async ({ request }) => {
+		const email = EmailSchema.parse(await request.json())
 		console.info('🔶 mocked email contents:', email)
 
 		return json({

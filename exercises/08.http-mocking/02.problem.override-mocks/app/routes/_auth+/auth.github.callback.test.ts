@@ -1,10 +1,10 @@
 import { faker } from '@faker-js/faker'
 import * as setCookieParser from 'set-cookie-parser'
 // 🐨 add { server } to this import:
-import 'tests/mocks/index.ts'
+import '#tests/mocks/index.ts'
 import { expect, test } from 'vitest'
-import { invariant } from '~/utils/misc.tsx'
-import { sessionStorage } from '~/utils/session.server.ts'
+import { invariant } from '#app/utils/misc.tsx'
+import { sessionStorage } from '#app/utils/session.server.ts'
 import { ROUTE_PATH, loader } from './auth.github.callback.ts'
 
 const BASE_URL = 'https://www.epicstack.dev'
@@ -29,9 +29,9 @@ test('a new user goes to onboarding', async () => {
 })
 
 test('when auth fails, send the user to login with a toast', async () => {
-	// 🐨 add a server.use here for a rest.post to 'https://github.com/login/oauth/access_token'
+	// 🐨 add a server.use here for a http.post to 'https://github.com/login/oauth/access_token'
 	//   🐨 it should return a response with "error" and a 400 status code
-	//   💰 you'll find our happy-path mock implementation of this in 'tests/mocks/github.ts' if you're curious
+	//   💰 you'll find our happy-path mock implementation of this in '#tests/mocks/github.ts' if you're curious
 
 	// 🦉 this is all the same stuff as the last test:
 	const url = new URL(ROUTE_PATH, BASE_URL)
@@ -55,7 +55,7 @@ test('when auth fails, send the user to login with a toast', async () => {
 	// 🐨 assert a redirect to '/login'
 	// 🐨 assert a toast was sent (you can use Kellie's 🧝‍♂️ assertToastSent util below)
 	// 🐨 in the error case, we call console.error, so you can use the consoleError
-	// mock we wrote earlier. It's in 'tests/setup/setup-test-env.ts'. Assert it
+	// mock we wrote earlier. It's in '#tests/setup/setup-test-env.ts'. Assert it
 	// was called once and make sure to call mockClear on it.
 })
 
