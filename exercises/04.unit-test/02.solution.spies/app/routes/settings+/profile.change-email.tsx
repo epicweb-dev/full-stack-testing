@@ -3,6 +3,7 @@ import { getFieldsetConstraint, parse } from '@conform-to/zod'
 import * as E from '@react-email/components'
 import { json, redirect, type DataFunctionArgs } from '@remix-run/node'
 import { Form, useActionData, useLoaderData } from '@remix-run/react'
+import { AuthenticityTokenInput } from 'remix-utils/csrf/react'
 import { z } from 'zod'
 import { ErrorList, Field } from '#app/components/forms.tsx'
 import { Icon } from '#app/components/ui/icon.tsx'
@@ -13,6 +14,7 @@ import {
 	type VerifyFunctionArgs,
 } from '#app/routes/_auth+/verify.tsx'
 import { requireUserId } from '#app/utils/auth.server.ts'
+import { validateCSRF } from '#app/utils/csrf.server.ts'
 import { prisma } from '#app/utils/db.server.ts'
 import { sendEmail } from '#app/utils/email.server.ts'
 import { invariant, useIsPending } from '#app/utils/misc.tsx'
@@ -30,7 +32,6 @@ export async function handleVerification({
 	request,
 	submission,
 }: VerifyFunctionArgs) {
-	await requireRecentVerification(request)
 	invariant(submission.value, 'submission.value should be defined by now')
 
 	const verifySession = await verifySessionStorage.getSession(
@@ -59,7 +60,7 @@ export async function handleVerification({
 		react: <EmailChangeNoticeEmail userId={user.id} />,
 	})
 
-	return redirectWithToast(
+	throw await redirectWithToast(
 		'/settings/profile',
 		{
 			title: 'Email Changed',
@@ -79,7 +80,10 @@ const ChangeEmailSchema = z.object({
 })
 
 export async function loader({ request }: DataFunctionArgs) {
-	await requireRecentVerification(request)
+	await requireRecentVerification({
+		request,
+		userId: await requireUserId(request),
+	})
 	const userId = await requireUserId(request)
 	const user = await prisma.user.findUnique({
 		where: { id: userId },
@@ -94,7 +98,9 @@ export async function loader({ request }: DataFunctionArgs) {
 
 export async function action({ request }: DataFunctionArgs) {
 	const userId = await requireUserId(request)
+	await requireRecentVerification({ request, userId })
 	const formData = await request.formData()
+	await validateCSRF(formData, request.headers)
 	const submission = await parse(formData, {
 		schema: ChangeEmailSchema.superRefine(async (data, ctx) => {
 			const existingUser = await prisma.user.findUnique({
@@ -224,6 +230,7 @@ export default function ChangeEmailIndex() {
 			</p>
 			<div className="mx-auto mt-5 max-w-sm">
 				<Form method="POST" {...form.props}>
+					<AuthenticityTokenInput />
 					<Field
 						labelProps={{ children: 'New Email' }}
 						inputProps={conform.input(fields.email)}

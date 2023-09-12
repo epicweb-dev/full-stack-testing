@@ -8,22 +8,36 @@ import {
 	type MetaFunction,
 } from '@remix-run/node'
 import { Form, useActionData, useSearchParams } from '@remix-run/react'
+import { AuthenticityTokenInput } from 'remix-utils/csrf/react'
+import { HoneypotInputs } from 'remix-utils/honeypot/react'
 import { z } from 'zod'
 import { GeneralErrorBoundary } from '#app/components/error-boundary.tsx'
 import { ErrorList, Field } from '#app/components/forms.tsx'
 import { StatusButton } from '#app/components/ui/status-button.tsx'
+import { requireAnonymous } from '#app/utils/auth.server.ts'
+import { ProviderConnectionForm } from '#app/utils/connections.tsx'
+import { validateCSRF } from '#app/utils/csrf.server.ts'
 import { prisma } from '#app/utils/db.server.ts'
 import { sendEmail } from '#app/utils/email.server.ts'
+import { checkHoneypot } from '#app/utils/honeypot.server.ts'
 import { useIsPending } from '#app/utils/misc.tsx'
 import { EmailSchema } from '#app/utils/user-validation.ts'
 import { prepareVerification } from './verify.tsx'
 
 const SignupSchema = z.object({
 	email: EmailSchema,
+	redirectTo: z.string().optional(),
 })
+
+export async function loader({ request }: DataFunctionArgs) {
+	await requireAnonymous(request)
+	return json({})
+}
 
 export async function action({ request }: DataFunctionArgs) {
 	const formData = await request.formData()
+	await validateCSRF(formData, request.headers)
+	checkHoneypot(formData)
 	const submission = await parse(formData, {
 		schema: SignupSchema.superRefine(async (data, ctx) => {
 			const existingUser = await prisma.user.findUnique({
@@ -39,6 +53,7 @@ export async function action({ request }: DataFunctionArgs) {
 				return
 			}
 		}),
+
 		async: true,
 	})
 	if (submission.intent !== 'submit') {
@@ -47,12 +62,13 @@ export async function action({ request }: DataFunctionArgs) {
 	if (!submission.value) {
 		return json({ status: 'error', submission } as const, { status: 400 })
 	}
-	const { email } = submission.value
+	const { email, redirectTo: postVerificationRedirectTo } = submission.value
 	const { verifyUrl, redirectTo, otp } = await prepareVerification({
 		period: 10 * 60,
 		request,
 		type: 'onboarding',
 		target: email,
+		redirectTo: postVerificationRedirectTo,
 	})
 
 	const response = await sendEmail({
@@ -103,13 +119,14 @@ export const meta: MetaFunction = () => {
 export default function SignupRoute() {
 	const actionData = useActionData<typeof action>()
 	const isPending = useIsPending()
-	const isGitHubSubmitting = useIsPending({ formAction: '/auth/github' })
+
 	const [searchParams] = useSearchParams()
 	const redirectTo = searchParams.get('redirectTo')
 
 	const [form, fields] = useForm({
 		id: 'signup-form',
 		constraint: getFieldsetConstraint(SignupSchema),
+		defaultValue: { redirectTo },
 		lastSubmission: actionData?.submission,
 		onValidate({ formData }) {
 			const result = parse(formData, { schema: SignupSchema })
@@ -128,6 +145,8 @@ export default function SignupRoute() {
 			</div>
 			<div className="mx-auto mt-16 min-w-[368px] max-w-sm">
 				<Form method="POST" {...form.props}>
+					<AuthenticityTokenInput />
+					<HoneypotInputs />
 					<Field
 						labelProps={{
 							htmlFor: fields.email.id,
@@ -136,6 +155,8 @@ export default function SignupRoute() {
 						inputProps={{ ...conform.input(fields.email), autoFocus: true }}
 						errors={fields.email.errors}
 					/>
+
+					<input {...conform.input(fields.redirectTo, { type: 'hidden' })} />
 					<ErrorList errors={form.errors} id={form.errorId} />
 					<StatusButton
 						className="w-full"
@@ -146,20 +167,13 @@ export default function SignupRoute() {
 						Submit
 					</StatusButton>
 				</Form>
-				<Form
-					className="mt-5 flex items-center justify-center gap-2 border-t-2 border-border pt-3"
-					action="/auth/github"
-					method="POST"
-				>
-					<input type="hidden" name="redirectTo" value={redirectTo ?? '/'} />
-					<StatusButton
-						type="submit"
-						className="w-full"
-						status={isGitHubSubmitting ? 'pending' : 'idle'}
-					>
-						Sign up with GitHub
-					</StatusButton>
-				</Form>
+				<div className="mt-5 flex flex-col gap-5 border-b-2 border-t-2 border-border py-3">
+					<ProviderConnectionForm
+						type="Signup"
+						providerName="github"
+						redirectTo={redirectTo}
+					/>
+				</div>
 			</div>
 		</div>
 	)

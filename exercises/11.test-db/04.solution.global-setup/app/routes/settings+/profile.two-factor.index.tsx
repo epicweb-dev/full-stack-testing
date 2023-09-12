@@ -1,10 +1,13 @@
 import { generateTOTP } from '@epic-web/totp'
 import { json, redirect, type DataFunctionArgs } from '@remix-run/node'
-import { Link, useFetcher, useLoaderData } from '@remix-run/react'
+import { Link, Form, useLoaderData } from '@remix-run/react'
+import { AuthenticityTokenInput } from 'remix-utils/csrf/react'
 import { Icon } from '#app/components/ui/icon.tsx'
 import { StatusButton } from '#app/components/ui/status-button.tsx'
 import { requireUserId } from '#app/utils/auth.server.ts'
+import { validateCSRF } from '#app/utils/csrf.server.ts'
 import { prisma } from '#app/utils/db.server.ts'
+import { useIsPending } from '#app/utils/misc.tsx'
 import { twoFAVerificationType } from './profile.two-factor.tsx'
 import { twoFAVerifyVerificationType } from './profile.two-factor.verify.tsx'
 
@@ -14,16 +17,19 @@ export async function loader({ request }: DataFunctionArgs) {
 		where: { target_type: { type: twoFAVerificationType, target: userId } },
 		select: { id: true },
 	})
-	return json({ is2FAEnabled: Boolean(verification) })
+	return json({ isTwoFAEnabled: Boolean(verification) })
 }
 
 export async function action({ request }: DataFunctionArgs) {
 	const userId = await requireUserId(request)
+	const formData = await request.formData()
+	await validateCSRF(formData, request.headers)
 	const { otp: _otp, ...config } = generateTOTP()
 	const verificationData = {
 		...config,
 		type: twoFAVerifyVerificationType,
 		target: userId,
+		expiresAt: new Date(Date.now() + 1000 * 60 * 10),
 	}
 	await prisma.verification.upsert({
 		where: {
@@ -37,11 +43,11 @@ export async function action({ request }: DataFunctionArgs) {
 
 export default function TwoFactorRoute() {
 	const data = useLoaderData<typeof loader>()
-	const enable2FAFetcher = useFetcher<typeof action>()
+	const isPending = useIsPending()
 
 	return (
 		<div className="flex flex-col gap-4">
-			{data.is2FAEnabled ? (
+			{data.isTwoFAEnabled ? (
 				<>
 					<p className="text-lg">
 						<Icon name="check">
@@ -68,17 +74,19 @@ export default function TwoFactorRoute() {
 						</a>{' '}
 						to log in.
 					</p>
-					<enable2FAFetcher.Form method="POST" preventScrollReset>
+					<Form method="POST">
+						<AuthenticityTokenInput />
 						<StatusButton
 							type="submit"
 							name="intent"
 							value="enable"
-							status={enable2FAFetcher.state === 'loading' ? 'pending' : 'idle'}
+							status={isPending ? 'pending' : 'idle'}
+							disabled={isPending}
 							className="mx-auto"
 						>
 							Enable 2FA
 						</StatusButton>
-					</enable2FAFetcher.Form>
+					</Form>
 				</>
 			)}
 		</div>

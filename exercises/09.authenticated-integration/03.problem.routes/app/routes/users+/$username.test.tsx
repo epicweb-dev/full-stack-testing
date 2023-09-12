@@ -19,6 +19,7 @@ import { type loader as rootLoader } from '#app/root.tsx'
 // 🐨 you're also going to need sessionStorage:
 // import { sessionStorage } from '#app/utils/session.server.ts'
 // 🐨 remove the "type" from here too:
+import { honeypot } from '#app/utils/honeypot.server.ts'
 import { default as UsernameRoute, type loader } from './$username.tsx'
 
 // 💣 we can delete this, we'll be doing something else below...
@@ -46,7 +47,7 @@ test('The user profile when not logged in as self', async () => {
 	const App = createRemixStub([
 		{
 			path: '/users/:username',
-			element: <UsernameRoute />,
+			Component: UsernameRoute,
 			// 🐨 replace this fake loader with the real one. That's it for this test!
 			loader(): Awaited<ReturnType<typeof loader>> {
 				return json({
@@ -84,6 +85,7 @@ test('The user profile when logged in as self', async () => {
 			// 🐨 replace this with a smaller one that takes the request, sets the
 			// cookie header and then calls the rootLoader directly
 			loader(): Awaited<ReturnType<typeof rootLoader>> {
+				const honeyProps = honeypot.getInputProps()
 				return json({
 					ENV: { MODE: 'test' },
 					theme: 'light',
@@ -93,12 +95,14 @@ test('The user profile when logged in as self', async () => {
 						...user,
 						roles: [],
 					},
+					csrfToken: 'test-csrf-token',
+					honeyProps,
 				})
 			},
 			children: [
 				{
 					path: 'users/:username',
-					element: <UsernameRoute />,
+					Component: UsernameRoute,
 					// 🐨 replace this with a smaller one that takes the request, sets the
 					// cookie header and then calls the rootLoader directly
 					loader(): Awaited<ReturnType<typeof loader>> {

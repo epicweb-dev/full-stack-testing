@@ -7,6 +7,7 @@ import { unstable_createRemixStub as createRemixStub } from '@remix-run/testing'
 import { render, screen } from '@testing-library/react'
 import { test } from 'vitest'
 import { type loader as rootLoader } from '#app/root.tsx'
+import { honeypot } from '#app/utils/honeypot.server.ts'
 import { default as UsernameRoute, type loader } from './$username.tsx'
 
 function createFakeUser() {
@@ -27,7 +28,7 @@ test('The user profile when not logged in as self', async () => {
 	const App = createRemixStub([
 		{
 			path: '/users/:username',
-			element: <UsernameRoute />,
+			Component: UsernameRoute,
 			loader(): Awaited<ReturnType<typeof loader>> {
 				return json({
 					user,
@@ -52,6 +53,7 @@ test('The user profile when logged in as self', async () => {
 			id: 'root',
 			path: '/',
 			loader(): Awaited<ReturnType<typeof rootLoader>> {
+				const honeyProps = honeypot.getInputProps()
 				return json({
 					ENV: { MODE: 'test' },
 					theme: 'light',
@@ -61,12 +63,14 @@ test('The user profile when logged in as self', async () => {
 						...user,
 						roles: [],
 					},
+					csrfToken: 'test-csrf-token',
+					honeyProps,
 				})
 			},
 			children: [
 				{
 					path: 'users/:username',
-					element: <UsernameRoute />,
+					Component: UsernameRoute,
 					loader(): Awaited<ReturnType<typeof loader>> {
 						return json({
 							user,

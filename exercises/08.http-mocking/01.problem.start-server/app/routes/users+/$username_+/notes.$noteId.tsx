@@ -9,6 +9,7 @@ import {
 	type MetaFunction,
 } from '@remix-run/react'
 import { formatDistanceToNow } from 'date-fns'
+import { AuthenticityTokenInput } from 'remix-utils/csrf/react'
 import { z } from 'zod'
 import { GeneralErrorBoundary } from '#app/components/error-boundary.tsx'
 import { floatingToolbarClassName } from '#app/components/floating-toolbar.tsx'
@@ -16,7 +17,8 @@ import { ErrorList } from '#app/components/forms.tsx'
 import { Button } from '#app/components/ui/button.tsx'
 import { Icon } from '#app/components/ui/icon.tsx'
 import { StatusButton } from '#app/components/ui/status-button.tsx'
-import { requireUserId } from '#app/utils/auth.server.ts'
+import { requireUser } from '#app/utils/auth.server.ts'
+import { validateCSRF } from '#app/utils/csrf.server.ts'
 import { prisma } from '#app/utils/db.server.ts'
 import {
 	getNoteImgSrc,
@@ -66,8 +68,9 @@ const DeleteFormSchema = z.object({
 })
 
 export async function action({ request }: DataFunctionArgs) {
-	const userId = await requireUserId(request)
+	const user = await requireUser(request)
 	const formData = await request.formData()
+	await validateCSRF(formData, request.headers)
 	const submission = parse(formData, {
 		schema: DeleteFormSchema,
 	})
@@ -86,7 +89,7 @@ export async function action({ request }: DataFunctionArgs) {
 	})
 	invariantResponse(note, 'Not found', { status: 404 })
 
-	const isOwner = note.ownerId === userId
+	const isOwner = note.ownerId === user.id
 	await requireUserWithPermission(
 		request,
 		isOwner ? `delete:note:own` : `delete:note:any`,
@@ -94,7 +97,7 @@ export async function action({ request }: DataFunctionArgs) {
 
 	await prisma.note.delete({ where: { id: note.id } })
 
-	return redirectWithToast(`/users/${note.owner.username}/notes`, {
+	throw await redirectWithToast(`/users/${note.owner.username}/notes`, {
 		type: 'success',
 		title: 'Success',
 		description: 'Your note has been deleted.',
@@ -172,6 +175,7 @@ export function DeleteNote({ id }: { id: string }) {
 
 	return (
 		<Form method="post" {...form.props}>
+			<AuthenticityTokenInput />
 			<input type="hidden" name="noteId" value={id} />
 			<StatusButton
 				type="submit"

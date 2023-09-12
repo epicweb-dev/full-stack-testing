@@ -5,8 +5,16 @@ import { getErrorMessage } from './misc.tsx'
 let consoleError: SpyInstance<Parameters<(typeof console)['error']>>
 
 beforeEach(() => {
+	const originalConsoleError = console.error
 	consoleError = vi.spyOn(console, 'error')
-	consoleError.mockImplementation(() => {})
+	consoleError.mockImplementation(
+		(...args: Parameters<typeof console.error>) => {
+			originalConsoleError(...args)
+			throw new Error(
+				'Console error was called. Call consoleError.mockImplementation(() => {}) if this is expected.',
+			)
+		},
+	)
 })
 
 test('Error object returns message', () => {

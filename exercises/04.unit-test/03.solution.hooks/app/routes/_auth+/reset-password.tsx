@@ -11,14 +11,10 @@ import { z } from 'zod'
 import { GeneralErrorBoundary } from '#app/components/error-boundary.tsx'
 import { ErrorList, Field } from '#app/components/forms.tsx'
 import { StatusButton } from '#app/components/ui/status-button.tsx'
-import {
-	logout,
-	requireAnonymous,
-	resetUserPassword,
-} from '#app/utils/auth.server.ts'
+import { requireAnonymous, resetUserPassword } from '#app/utils/auth.server.ts'
 import { prisma } from '#app/utils/db.server.ts'
 import { invariant, useIsPending } from '#app/utils/misc.tsx'
-import { passwordSchema } from '#app/utils/user-validation.ts'
+import { PasswordSchema } from '#app/utils/user-validation.ts'
 import { verifySessionStorage } from '#app/utils/verification.server.ts'
 import { type VerifyFunctionArgs } from './verify.tsx'
 
@@ -37,7 +33,7 @@ export async function handleVerification({
 	// we don't want to say the user is not found if the email is not found
 	// because that would allow an attacker to check if an email is registered
 	if (!user) {
-		submission.error.code = 'Invalid code'
+		submission.error.code = ['Invalid code']
 		return json({ status: 'error', submission } as const, { status: 400 })
 	}
 
@@ -54,8 +50,8 @@ export async function handleVerification({
 
 const ResetPasswordSchema = z
 	.object({
-		password: passwordSchema,
-		confirmPassword: passwordSchema,
+		password: PasswordSchema,
+		confirmPassword: PasswordSchema,
 	})
 	.refine(({ confirmPassword, password }) => password === confirmPassword, {
 		message: 'The passwords did not match',
@@ -99,14 +95,11 @@ export async function action({ request }: DataFunctionArgs) {
 	const verifySession = await verifySessionStorage.getSession(
 		request.headers.get('cookie'),
 	)
-	throw await logout(
-		{ request, redirectTo: '/login' },
-		{
-			headers: {
-				'set-cookie': await verifySessionStorage.destroySession(verifySession),
-			},
+	return redirect('/login', {
+		headers: {
+			'set-cookie': await verifySessionStorage.destroySession(verifySession),
 		},
-	)
+	})
 }
 
 export const meta: MetaFunction = () => {

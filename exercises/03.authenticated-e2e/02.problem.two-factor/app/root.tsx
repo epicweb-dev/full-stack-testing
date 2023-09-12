@@ -22,6 +22,8 @@ import {
 	type MetaFunction,
 } from '@remix-run/react'
 import { useEffect } from 'react'
+import { AuthenticityTokenProvider } from 'remix-utils/csrf/react'
+import { HoneypotProvider } from 'remix-utils/honeypot/react'
 import { Toaster, toast as showToast } from 'sonner'
 import { z } from 'zod'
 import faviconAssetUrl from './assets/favicon.svg'
@@ -30,23 +32,27 @@ import { ErrorList } from './components/forms.tsx'
 import { SearchBar } from './components/search-bar.tsx'
 import { Spacer } from './components/spacer.tsx'
 import { Button } from './components/ui/button.tsx'
-import { Icon, href as iconHref } from './components/ui/icon.tsx'
+import { Icon } from './components/ui/icon.tsx'
 import { KCDShop } from './kcdshop.tsx'
 import fontStylestylesheetUrl from './styles/font.css'
 import tailwindStylesheetUrl from './styles/tailwind.css'
 import { getUserId } from './utils/auth.server.ts'
+import { csrf } from './utils/csrf.server.ts'
 import { prisma } from './utils/db.server.ts'
 import { getEnv } from './utils/env.server.ts'
-import { getUserImgSrc, invariantResponse } from './utils/misc.tsx'
+import { honeypot } from './utils/honeypot.server.ts'
+import {
+	combineHeaders,
+	getUserImgSrc,
+	invariantResponse,
+} from './utils/misc.tsx'
 import { userHasRole } from './utils/permissions.ts'
 import { getTheme, setTheme, type Theme } from './utils/theme.server.ts'
-import { type Toast, getToast } from './utils/toast.server.ts'
+import { getToast, type Toast } from './utils/toast.server.ts'
 import { useOptionalUser } from './utils/user.ts'
 
 export const links: LinksFunction = () => {
 	return [
-		// Preload svg sprite as a resource to avoid render blocking
-		{ rel: 'preload', href: iconHref, as: 'image' },
 		{ rel: 'icon', type: 'image/svg+xml', href: faviconAssetUrl },
 		{ rel: 'stylesheet', href: fontStylestylesheetUrl },
 		{ rel: 'stylesheet', href: tailwindStylesheetUrl },
@@ -55,6 +61,8 @@ export const links: LinksFunction = () => {
 }
 
 export async function loader({ request }: DataFunctionArgs) {
+	const [csrfToken, csrfCookieHeader] = await csrf.commitToken(request)
+	const honeyProps = honeypot.getInputProps()
 	const { toast, headers: toastHeaders } = await getToast(request)
 	const userId = await getUserId(request)
 	const user = userId
@@ -83,8 +91,15 @@ export async function loader({ request }: DataFunctionArgs) {
 			theme: getTheme(request),
 			toast,
 			ENV: getEnv(),
+			csrfToken,
+			honeyProps,
 		},
-		{ headers: toastHeaders },
+		{
+			headers: combineHeaders(
+				csrfCookieHeader ? { 'set-cookie': csrfCookieHeader } : null,
+				toastHeaders,
+			),
+		},
 	)
 }
 
@@ -150,7 +165,7 @@ function Document({
 	)
 }
 
-export default function App() {
+function App() {
 	const data = useLoaderData<typeof loader>()
 	const theme = useTheme()
 	const user = useOptionalUser()
@@ -159,14 +174,14 @@ export default function App() {
 	const isOnSearchPage = matches.find(m => m.id === 'routes/users+/index')
 	return (
 		<Document theme={theme} env={data.ENV}>
-			<header className="container mx-auto py-6">
-				<nav className="flex items-center justify-between">
+			<header className="container px-6 py-4 sm:px-8 sm:py-6">
+				<nav className="flex items-center justify-between gap-4 sm:gap-6">
 					<Link to="/">
 						<div className="font-light">epic</div>
 						<div className="font-bold">notes</div>
 					</Link>
 					{isOnSearchPage ? null : (
-						<div className="ml-auto max-w-sm flex-1 pr-10">
+						<div className="ml-auto max-w-sm flex-1">
 							<SearchBar status="idle" />
 						</div>
 					)}
@@ -183,7 +198,7 @@ export default function App() {
 											alt={user.name ?? user.username}
 											src={getUserImgSrc(user.image?.id)}
 										/>
-										<span className="text-body-sm font-bold">
+										<span className="hidden text-body-sm font-bold sm:block">
 											{user.name ?? user.username}
 										</span>
 									</Link>
@@ -191,7 +206,9 @@ export default function App() {
 								{userIsAdmin ? (
 									<Button asChild variant="secondary">
 										<Link to="/admin">
-											<Icon name="backpack">Admin</Icon>
+											<Icon name="backpack">
+												<span className="hidden sm:block">Admin</span>
+											</Icon>
 										</Link>
 									</Button>
 								) : null}
@@ -209,12 +226,12 @@ export default function App() {
 				<Outlet />
 			</div>
 
-			<div className="container mx-auto flex justify-between">
+			<div className="container flex justify-between">
 				<Link to="/">
 					<div className="font-light">epic</div>
 					<div className="font-bold">notes</div>
 				</Link>
-				<div className="flex gap-2 items-center">
+				<div className="flex items-center gap-2">
 					<p>Built with ♥️ by {data.username}</p>
 					<ThemeSwitch userPreference={theme} />
 				</div>
@@ -222,6 +239,17 @@ export default function App() {
 			<Spacer size="3xs" />
 			{data.toast ? <ShowToast toast={data.toast} /> : null}
 		</Document>
+	)
+}
+
+export default function AppWithProviders() {
+	const data = useLoaderData<typeof loader>()
+	return (
+		<HoneypotProvider {...data.honeyProps}>
+			<AuthenticityTokenProvider token={data.csrfToken}>
+				<App />
+			</AuthenticityTokenProvider>
+		</HoneypotProvider>
 	)
 }
 

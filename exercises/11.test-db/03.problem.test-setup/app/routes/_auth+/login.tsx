@@ -7,19 +7,19 @@ import {
 	type MetaFunction,
 } from '@remix-run/node'
 import { Form, Link, useActionData, useSearchParams } from '@remix-run/react'
-import { safeRedirect } from 'remix-utils'
+import { AuthenticityTokenInput } from 'remix-utils/csrf/react'
+import { HoneypotInputs } from 'remix-utils/honeypot/react'
+import { safeRedirect } from 'remix-utils/safe-redirect'
 import { z } from 'zod'
 import { GeneralErrorBoundary } from '#app/components/error-boundary.tsx'
 import { CheckboxField, ErrorList, Field } from '#app/components/forms.tsx'
 import { Spacer } from '#app/components/spacer.tsx'
 import { StatusButton } from '#app/components/ui/status-button.tsx'
-import {
-	getUserId,
-	login,
-	requireAnonymous,
-	sessionKey,
-} from '#app/utils/auth.server.ts'
+import { login, requireAnonymous, sessionKey } from '#app/utils/auth.server.ts'
+import { ProviderConnectionForm } from '#app/utils/connections.tsx'
+import { validateCSRF } from '#app/utils/csrf.server.ts'
 import { prisma } from '#app/utils/db.server.ts'
+import { checkHoneypot } from '#app/utils/honeypot.server.ts'
 import {
 	combineResponseInits,
 	invariant,
@@ -27,60 +27,45 @@ import {
 } from '#app/utils/misc.tsx'
 import { sessionStorage } from '#app/utils/session.server.ts'
 import { redirectWithToast } from '#app/utils/toast.server.ts'
-import { passwordSchema, usernameSchema } from '#app/utils/user-validation.ts'
+import { PasswordSchema, UsernameSchema } from '#app/utils/user-validation.ts'
 import { verifySessionStorage } from '#app/utils/verification.server.ts'
-import { checkboxSchema } from '#app/utils/zod-extensions.ts'
 import { twoFAVerificationType } from '../settings+/profile.two-factor.tsx'
 import { getRedirectToUrl, type VerifyFunctionArgs } from './verify.tsx'
 
 const verifiedTimeKey = 'verified-time'
 const unverifiedSessionIdKey = 'unverified-session-id'
+const rememberKey = 'remember-me'
 
 export async function handleNewSession(
 	{
 		request,
 		session,
 		redirectTo,
-		remember,
+		remember = false,
 	}: {
 		request: Request
 		session: { userId: string; id: string; expirationDate: Date }
 		redirectTo?: string
-		remember: boolean
+		remember?: boolean
 	},
 	responseInit?: ResponseInit,
 ) {
-	const verification = await prisma.verification.findUnique({
-		select: { id: true },
-		where: {
-			target_type: { target: session.userId, type: twoFAVerificationType },
-		},
-	})
-	const userHasTwoFactor = Boolean(verification)
-
-	if (userHasTwoFactor) {
-		const verifySession = await verifySessionStorage.getSession(
-			request.headers.get('cookie'),
-		)
+	if (await shouldRequestTwoFA({ request, userId: session.userId })) {
+		const verifySession = await verifySessionStorage.getSession()
 		verifySession.set(unverifiedSessionIdKey, session.id)
+		verifySession.set(rememberKey, remember)
 		const redirectUrl = getRedirectToUrl({
 			request,
 			type: twoFAVerificationType,
 			target: session.userId,
-			redirectTo,
 		})
-		if (remember) {
-			redirectUrl.searchParams.set('remember', 'on')
-		}
-		redirectUrl.searchParams.sort()
 		return redirect(
 			`${redirectUrl.pathname}?${redirectUrl.searchParams}`,
 			combineResponseInits(
 				{
 					headers: {
-						'set-cookie': await verifySessionStorage.commitSession(
-							verifySession,
-						),
+						'set-cookie':
+							await verifySessionStorage.commitSession(verifySession),
 					},
 				},
 				responseInit,
@@ -120,29 +105,39 @@ export async function handleVerification({
 		request.headers.get('cookie'),
 	)
 
-	const session = await prisma.session.findUnique({
-		select: { expirationDate: true },
-		where: { id: verifySession.get(unverifiedSessionIdKey) },
-	})
-	if (!session) {
-		throw redirectWithToast('/login', {
-			type: 'error',
-			title: 'Invalid session',
-			description: 'Could not find session to verify. Please try again.',
-		})
-	}
-
-	cookieSession.set(sessionKey, verifySession.get(unverifiedSessionIdKey))
+	const remember = verifySession.get(rememberKey)
 	const { redirectTo } = submission.value
+	const headers = new Headers()
 	cookieSession.set(verifiedTimeKey, Date.now())
 
-	const headers = new Headers()
-	headers.append(
-		'set-cookie',
-		await sessionStorage.commitSession(cookieSession, {
-			expires: submission.value.remember ? session.expirationDate : undefined,
-		}),
-	)
+	const unverifiedSessionId = verifySession.get(unverifiedSessionIdKey)
+	if (unverifiedSessionId) {
+		const session = await prisma.session.findUnique({
+			select: { expirationDate: true },
+			where: { id: unverifiedSessionId },
+		})
+		if (!session) {
+			throw await redirectWithToast('/login', {
+				type: 'error',
+				title: 'Invalid session',
+				description: 'Could not find session to verify. Please try again.',
+			})
+		}
+		cookieSession.set(sessionKey, unverifiedSessionId)
+
+		headers.append(
+			'set-cookie',
+			await sessionStorage.commitSession(cookieSession, {
+				expires: remember ? session.expirationDate : undefined,
+			}),
+		)
+	} else {
+		headers.append(
+			'set-cookie',
+			await sessionStorage.commitSession(cookieSession),
+		)
+	}
+
 	headers.append(
 		'set-cookie',
 		await verifySessionStorage.destroySession(verifySession),
@@ -151,32 +146,36 @@ export async function handleVerification({
 	return redirect(safeRedirect(redirectTo), { headers })
 }
 
-export async function shouldRequestTwoFA(request: Request) {
-	const cookieSession = await sessionStorage.getSession(
-		request.headers.get('cookie'),
-	)
+export async function shouldRequestTwoFA({
+	request,
+	userId,
+}: {
+	request: Request
+	userId: string
+}) {
 	const verifySession = await verifySessionStorage.getSession(
 		request.headers.get('cookie'),
 	)
 	if (verifySession.has(unverifiedSessionIdKey)) return true
-	const userId = await getUserId(request)
-	if (!userId) return false
 	// if it's over two hours since they last verified, we should request 2FA again
 	const userHasTwoFA = await prisma.verification.findUnique({
 		select: { id: true },
 		where: { target_type: { target: userId, type: twoFAVerificationType } },
 	})
 	if (!userHasTwoFA) return false
+	const cookieSession = await sessionStorage.getSession(
+		request.headers.get('cookie'),
+	)
 	const verifiedTime = cookieSession.get(verifiedTimeKey) ?? new Date(0)
 	const twoHours = 1000 * 60 * 60 * 2
 	return Date.now() - verifiedTime > twoHours
 }
 
 const LoginFormSchema = z.object({
-	username: usernameSchema,
-	password: passwordSchema,
+	username: UsernameSchema,
+	password: PasswordSchema,
 	redirectTo: z.string().optional(),
-	remember: checkboxSchema(),
+	remember: z.boolean().optional(),
 })
 
 export async function loader({ request }: DataFunctionArgs) {
@@ -187,6 +186,8 @@ export async function loader({ request }: DataFunctionArgs) {
 export async function action({ request }: DataFunctionArgs) {
 	await requireAnonymous(request)
 	const formData = await request.formData()
+	await validateCSRF(formData, request.headers)
+	checkHoneypot(formData)
 	const submission = await parse(formData, {
 		schema: intent =>
 			LoginFormSchema.transform(async (data, ctx) => {
@@ -225,7 +226,6 @@ export async function action({ request }: DataFunctionArgs) {
 export default function LoginPage() {
 	const actionData = useActionData<typeof action>()
 	const isPending = useIsPending()
-	const isGitHubSubmitting = useIsPending({ formAction: '/auth/github' })
 	const [searchParams] = useSearchParams()
 	const redirectTo = searchParams.get('redirectTo')
 
@@ -254,7 +254,8 @@ export default function LoginPage() {
 				<div>
 					<div className="mx-auto w-full max-w-md px-8">
 						<Form method="POST" {...form.props}>
-							<input type="hidden" name="form" value={form.id} />
+							<AuthenticityTokenInput />
+							<HoneypotInputs />
 							<Field
 								labelProps={{ children: 'Username' }}
 								inputProps={{
@@ -310,24 +311,13 @@ export default function LoginPage() {
 								</StatusButton>
 							</div>
 						</Form>
-						<Form
-							className="mt-5 flex items-center justify-center gap-2 border-t-2 border-border pt-3"
-							action="/auth/github"
-							method="POST"
-						>
-							<input
-								type="hidden"
-								name="redirectTo"
-								value={redirectTo ?? '/'}
+						<div className="mt-5 flex flex-col gap-5 border-b-2 border-t-2 border-border py-3">
+							<ProviderConnectionForm
+								type="Login"
+								providerName="github"
+								redirectTo={redirectTo}
 							/>
-							<StatusButton
-								type="submit"
-								className="w-full"
-								status={isGitHubSubmitting ? 'pending' : 'idle'}
-							>
-								Login with GitHub
-							</StatusButton>
-						</Form>
+						</div>
 						<div className="flex items-center justify-center gap-2 pt-6">
 							<span className="text-muted-foreground">New here?</span>
 							<Link

@@ -1,11 +1,13 @@
-import { type GitHubConnection, type Password, type User } from '@prisma/client'
+import { type Connection, type Password, type User } from '@prisma/client'
 import { redirect } from '@remix-run/node'
 import bcrypt from 'bcryptjs'
 import { Authenticator } from 'remix-auth'
-import { GitHubStrategy } from 'remix-auth-github'
-import { safeRedirect } from 'remix-utils'
-import { prisma } from '#app/utils/db.server.ts'
-import { combineHeaders, downloadFile } from './misc.tsx'
+import { safeRedirect } from 'remix-utils/safe-redirect'
+import { connectionSessionStorage , providers } from './connections.server.ts'
+import { type ProviderName } from './connections.tsx'
+import { prisma } from './db.server.ts'
+import { combineResponseInits, downloadFile } from './misc.tsx'
+import { type ProviderUser } from './providers/provider.ts'
 import { sessionStorage } from './session.server.ts'
 
 export const SESSION_EXPIRATION_TIME = 1000 * 60 * 60 * 24 * 30
@@ -13,37 +15,13 @@ export const getSessionExpirationDate = () =>
 	new Date(Date.now() + SESSION_EXPIRATION_TIME)
 
 export const sessionKey = 'sessionId'
-
-export const authenticator = new Authenticator<{
-	id: string
-	email: string
-	username: string
-	name: string
-	imageUrl: string
-}>(sessionStorage)
-
-authenticator.use(
-	new GitHubStrategy(
-		{
-			clientID: process.env.GITHUB_CLIENT_ID,
-			clientSecret: process.env.GITHUB_CLIENT_SECRET,
-			callbackURL: '/auth/github/callback',
-		},
-		async ({ profile }) => {
-			const email = profile.emails[0].value.trim().toLowerCase()
-			const username = profile.displayName
-			const imageUrl = profile.photos[0].value
-			return {
-				email,
-				id: profile.id,
-				username,
-				name: profile.name.givenName,
-				imageUrl,
-			}
-		},
-	),
-	GitHubStrategy.name,
+export const authenticator = new Authenticator<ProviderUser>(
+	connectionSessionStorage,
 )
+
+for (const [providerName, provider] of Object.entries(providers)) {
+	authenticator.use(provider.getAuthStrategy(), providerName)
+}
 
 export async function getUserId(request: Request) {
 	const cookieSession = await sessionStorage.getSession(
@@ -56,13 +34,7 @@ export async function getUserId(request: Request) {
 		where: { id: sessionId, expirationDate: { gt: new Date() } },
 	})
 	if (!session?.user) {
-		// Perhaps user was deleted?
-		cookieSession.unset(sessionKey)
-		throw redirect('/', {
-			headers: {
-				'set-cookie': await sessionStorage.commitSession(cookieSession),
-			},
-		})
+		throw await logout({ request })
 	}
 	return session.user.id
 }
@@ -92,6 +64,18 @@ export async function requireAnonymous(request: Request) {
 	if (userId) {
 		throw redirect('/')
 	}
+}
+
+export async function requireUser(request: Request) {
+	const userId = await requireUserId(request)
+	const user = await prisma.user.findUnique({
+		select: { id: true, username: true },
+		where: { id: userId },
+	})
+	if (!user) {
+		throw await logout({ request })
+	}
+	return user
 }
 
 export async function login({
@@ -169,17 +153,19 @@ export async function signup({
 	return session
 }
 
-export async function signupWithGitHub({
+export async function signupWithConnection({
 	email,
 	username,
 	name,
-	gitHubId,
+	providerId,
+	providerName,
 	imageUrl,
 }: {
 	email: User['email']
 	username: User['username']
 	name: User['name']
-	gitHubId: GitHubConnection['providerId']
+	providerId: Connection['providerId']
+	providerName: ProviderName
 	imageUrl?: string
 }) {
 	const session = await prisma.session.create({
@@ -190,7 +176,7 @@ export async function signupWithGitHub({
 					email: email.toLowerCase(),
 					username: username.toLowerCase(),
 					name,
-					gitHubConnections: { create: { providerId: gitHubId } },
+					connections: { create: { providerId, providerName } },
 					image: imageUrl
 						? { create: await downloadFile(imageUrl) }
 						: undefined,
@@ -217,15 +203,16 @@ export async function logout(
 		request.headers.get('cookie'),
 	)
 	const sessionId = cookieSession.get(sessionKey)
-	await prisma.session.delete({ where: { id: sessionId } })
-	cookieSession.unset(sessionKey)
-	throw redirect(safeRedirect(redirectTo), {
-		...responseInit,
-		headers: combineHeaders(
-			{ 'set-cookie': await sessionStorage.commitSession(cookieSession) },
-			responseInit?.headers,
-		),
-	})
+	// delete the session if it exists, but don't wait for it, go ahead an log the user out
+	void prisma.session.delete({ where: { id: sessionId } }).catch(() => {})
+	throw redirect(
+		safeRedirect(redirectTo),
+		combineResponseInits(responseInit, {
+			headers: {
+				'set-cookie': await sessionStorage.destroySession(cookieSession),
+			},
+		}),
+	)
 }
 
 export async function getPasswordHash(password: string) {

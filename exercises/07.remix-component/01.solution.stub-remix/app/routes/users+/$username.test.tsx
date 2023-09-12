@@ -26,7 +26,7 @@ test('The user profile when not logged in as self', async () => {
 	const App = createRemixStub([
 		{
 			path: '/users/:username',
-			element: <UsernameRoute />,
+			Component: UsernameRoute,
 			loader(): Awaited<ReturnType<typeof loader>> {
 				return json({
 					user,

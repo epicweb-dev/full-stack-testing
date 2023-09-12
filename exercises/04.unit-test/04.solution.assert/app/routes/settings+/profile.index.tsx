@@ -2,12 +2,14 @@ import { conform, useForm } from '@conform-to/react'
 import { getFieldsetConstraint, parse } from '@conform-to/zod'
 import { json, redirect, type DataFunctionArgs } from '@remix-run/node'
 import { Link, useFetcher, useLoaderData } from '@remix-run/react'
+import { AuthenticityTokenInput } from 'remix-utils/csrf/react'
 import { z } from 'zod'
 import { ErrorList, Field } from '#app/components/forms.tsx'
 import { Button } from '#app/components/ui/button.tsx'
 import { Icon } from '#app/components/ui/icon.tsx'
 import { StatusButton } from '#app/components/ui/status-button.tsx'
 import { requireUserId, sessionKey } from '#app/utils/auth.server.ts'
+import { validateCSRF } from '#app/utils/csrf.server.ts'
 import { prisma } from '#app/utils/db.server.ts'
 import {
 	getUserImgSrc,
@@ -15,12 +17,12 @@ import {
 	useDoubleCheck,
 } from '#app/utils/misc.tsx'
 import { sessionStorage } from '#app/utils/session.server.ts'
-import { nameSchema, usernameSchema } from '#app/utils/user-validation.ts'
+import { NameSchema, UsernameSchema } from '#app/utils/user-validation.ts'
 import { twoFAVerificationType } from './profile.two-factor.tsx'
 
 const ProfileFormSchema = z.object({
-	name: nameSchema.optional(),
-	username: usernameSchema,
+	name: NameSchema.optional(),
+	username: UsernameSchema,
 })
 
 export async function loader({ request }: DataFunctionArgs) {
@@ -60,7 +62,7 @@ export async function loader({ request }: DataFunctionArgs) {
 	return json({
 		user,
 		hasPassword: Boolean(password),
-		isTwoFactorEnabled: Boolean(twoFactorVerification),
+		isTwoFAEnabled: Boolean(twoFactorVerification),
 	})
 }
 
@@ -76,6 +78,7 @@ const deleteDataActionIntent = 'delete-data'
 export async function action({ request }: DataFunctionArgs) {
 	const userId = await requireUserId(request)
 	const formData = await request.formData()
+	await validateCSRF(formData, request.headers)
 	const intent = formData.get('intent')
 	switch (intent) {
 		case profileUpdateActionIntent: {
@@ -134,7 +137,7 @@ export default function EditUserProfile() {
 				</div>
 				<div>
 					<Link to="two-factor">
-						{data.isTwoFactorEnabled ? (
+						{data.isTwoFAEnabled ? (
 							<Icon name="lock-closed">2FA is enabled</Icon>
 						) : (
 							<Icon name="lock-open-1">Enable 2FA</Icon>
@@ -227,6 +230,7 @@ function UpdateProfile() {
 
 	return (
 		<fetcher.Form method="POST" {...form.props}>
+			<AuthenticityTokenInput />
 			<div className="grid grid-cols-6 gap-x-10">
 				<Field
 					className="col-span-3"
@@ -294,6 +298,7 @@ function SignOutOfSessions() {
 		<div>
 			{otherSessionsCount ? (
 				<fetcher.Form method="POST">
+					<AuthenticityTokenInput />
 					<StatusButton
 						{...dc.getButtonProps({
 							type: 'submit',
@@ -333,6 +338,7 @@ function DeleteData() {
 	return (
 		<div>
 			<fetcher.Form method="POST">
+				<AuthenticityTokenInput />
 				<StatusButton
 					{...dc.getButtonProps({
 						type: 'submit',

@@ -2,6 +2,7 @@ import { conform, useForm } from '@conform-to/react'
 import { getFieldsetConstraint, parse } from '@conform-to/zod'
 import { json, redirect, type DataFunctionArgs } from '@remix-run/node'
 import { Form, Link, useActionData } from '@remix-run/react'
+import { AuthenticityTokenInput } from 'remix-utils/csrf/react'
 import { z } from 'zod'
 import { ErrorList, Field } from '#app/components/forms.tsx'
 import { Button } from '#app/components/ui/button.tsx'
@@ -12,9 +13,10 @@ import {
 	requireUserId,
 	verifyUserPassword,
 } from '#app/utils/auth.server.ts'
+import { validateCSRF } from '#app/utils/csrf.server.ts'
 import { prisma } from '#app/utils/db.server.ts'
 import { useIsPending } from '#app/utils/misc.tsx'
-import { passwordSchema } from '#app/utils/user-validation.ts'
+import { PasswordSchema } from '#app/utils/user-validation.ts'
 
 export const handle = {
 	breadcrumb: <Icon name="dots-horizontal">Password</Icon>,
@@ -22,9 +24,9 @@ export const handle = {
 
 const ChangePasswordForm = z
 	.object({
-		currentPassword: passwordSchema,
-		newPassword: passwordSchema,
-		confirmNewPassword: passwordSchema,
+		currentPassword: PasswordSchema,
+		newPassword: PasswordSchema,
+		confirmNewPassword: PasswordSchema,
 	})
 	.superRefine(({ confirmNewPassword, newPassword }, ctx) => {
 		if (confirmNewPassword !== newPassword) {
@@ -56,6 +58,7 @@ export async function action({ request }: DataFunctionArgs) {
 	const userId = await requireUserId(request)
 	await requirePassword(userId)
 	const formData = await request.formData()
+	await validateCSRF(formData, request.headers)
 	const submission = await parse(formData, {
 		async: true,
 		schema: ChangePasswordForm.superRefine(
@@ -98,7 +101,7 @@ export async function action({ request }: DataFunctionArgs) {
 		},
 	})
 
-	return redirect(`/settings/profile`, { status: 302 })
+	return redirect(`/settings/profile`)
 }
 
 export default function ChangePasswordRoute() {
@@ -116,7 +119,8 @@ export default function ChangePasswordRoute() {
 	})
 
 	return (
-		<Form method="POST" {...form.props} className="max-w-md mx-auto">
+		<Form method="POST" {...form.props} className="mx-auto max-w-md">
+			<AuthenticityTokenInput />
 			<Field
 				labelProps={{ children: 'Current Password' }}
 				inputProps={conform.input(fields.currentPassword, { type: 'password' })}
@@ -135,7 +139,7 @@ export default function ChangePasswordRoute() {
 				errors={fields.confirmNewPassword.errors}
 			/>
 			<ErrorList id={form.errorId} errors={form.errors} />
-			<div className="w-full grid grid-cols-2 gap-6">
+			<div className="grid w-full grid-cols-2 gap-6">
 				<Button variant="secondary" asChild>
 					<Link to="..">Cancel</Link>
 				</Button>

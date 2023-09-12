@@ -15,6 +15,7 @@ test('String returns itself', () => {
 test('undefined falls back to Unknown', () => {
 	const consoleError = vi.spyOn(console, 'error')
 	consoleError.mockImplementation(() => {})
+
 	expect(getErrorMessage(undefined)).toBe('Unknown Error')
 	expect(consoleError).toHaveBeenCalledWith(
 		'Unable to get error message for error',

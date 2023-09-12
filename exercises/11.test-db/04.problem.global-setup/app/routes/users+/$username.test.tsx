@@ -24,7 +24,7 @@ test('The user profile when not logged in as self', async () => {
 	const App = createRemixStub([
 		{
 			path: '/users/:username',
-			element: <UsernameRoute />,
+			Component: UsernameRoute,
 			loader,
 		},
 	])
@@ -68,11 +68,10 @@ test('The user profile when logged in as self', async () => {
 			children: [
 				{
 					path: 'users/:username',
-					element: <UsernameRoute />,
+					Component: UsernameRoute,
 					loader: async args => {
 						// add the cookie header to the request
 						args.request.headers.set('cookie', cookieHeader)
-						// @ts-expect-error https://github.com/remix-run/remix/issues/7082
 						return loader(args)
 					},
 				},

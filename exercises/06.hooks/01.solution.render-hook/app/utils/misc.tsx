@@ -4,8 +4,10 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { useSpinDelay } from 'spin-delay'
 import { twMerge } from 'tailwind-merge'
 
+const userFallback = '/img/user.png'
+
 export function getUserImgSrc(imageId?: string | null) {
-	return imageId ? `/resources/user-images/${imageId}` : '/img/user.png'
+	return imageId ? `/resources/user-images/${imageId}` : userFallback
 }
 
 export function getNoteImgSrc(imageId: string) {
@@ -60,9 +62,12 @@ export function getReferrerRoute(request: Request) {
 /**
  * Merge multiple headers objects into one (uses set so headers are overridden)
  */
-export function mergeHeaders(...headers: Array<ResponseInit['headers']>) {
+export function mergeHeaders(
+	...headers: Array<ResponseInit['headers'] | null>
+) {
 	const merged = new Headers()
 	for (const header of headers) {
+		if (!header) continue
 		for (const [key, value] of new Headers(header).entries()) {
 			merged.set(key, value)
 		}
@@ -73,9 +78,12 @@ export function mergeHeaders(...headers: Array<ResponseInit['headers']>) {
 /**
  * Combine multiple header objects into one (uses append so headers are not overridden)
  */
-export function combineHeaders(...headers: Array<ResponseInit['headers']>) {
+export function combineHeaders(
+	...headers: Array<ResponseInit['headers'] | null>
+) {
 	const combined = new Headers()
 	for (const header of headers) {
+		if (!header) continue
 		for (const [key, value] of new Headers(header).entries()) {
 			combined.append(key, value)
 		}

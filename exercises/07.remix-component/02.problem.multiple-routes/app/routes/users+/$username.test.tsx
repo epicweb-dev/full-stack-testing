@@ -26,7 +26,7 @@ test('The user profile when not logged in as self', async () => {
 	const App = createRemixStub([
 		{
 			path: '/users/:username',
-			element: <UsernameRoute />,
+			Component: UsernameRoute,
 			loader(): Awaited<ReturnType<typeof loader>> {
 				return json({
 					user,
@@ -58,7 +58,7 @@ test('The user profile when logged in as self', async () => {
 		// which you'll find in app/root.tsx
 		{
 			path: '/users/:username',
-			element: <UsernameRoute />,
+			Component: UsernameRoute,
 			loader(): Awaited<ReturnType<typeof loader>> {
 				return json({
 					user,

@@ -1,0 +1,38 @@
+[
+  {
+    "code": "MOCK_GITHUB_CODE_KODY",
+    "accessToken": "MOCK_GITHUB_CODE_KODY_mock_access_token",
+    "profile": {
+      "login": "Ardella_Schroeder",
+      "id": "MOCK_GITHUB_CODE_KODY_profile_id",
+      "name": "Melvin Kassulke",
+      "avatar_url": "https://github.com/ghost.png",
+      "emails": [
+        "Angela_Ondricka@gmail.com",
+        "Harry_Rowe26@hotmail.com",
+        "kody@kcd.dev"
+      ]
+    },
+    "emails": [
+      {
+        "email": "Angela_Ondricka@gmail.com",
+        "verified": false,
+        "primary": false,
+        "visibility": "public"
+      },
+      {
+        "email": "Harry_Rowe26@hotmail.com",
+        "verified": true,
+        "primary": false,
+        "visibility": null
+      },
+      {
+        "email": "kody@kcd.dev",
+        "verified": true,
+        "primary": true,
+        "visibility": "public"
+      }
+    ],
+    "primaryEmail": "kody@kcd.dev"
+  }
+]

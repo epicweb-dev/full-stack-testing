@@ -268,6 +268,7 @@ async function isNewer(maybeOlder, maybeNewer, exclude = []) {
 }
 
 async function getNewestStat(fileOrDirPath, exclude) {
+	if (!exists(fileOrDirPath)) return { mtimeMs: 0 }
 	const stats = await fs.promises.stat(fileOrDirPath)
 	if (stats.isFile()) {
 		return stats

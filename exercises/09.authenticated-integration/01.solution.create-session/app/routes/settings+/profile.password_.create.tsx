@@ -10,7 +10,7 @@ import { StatusButton } from '#app/components/ui/status-button.tsx'
 import { getPasswordHash, requireUserId } from '#app/utils/auth.server.ts'
 import { prisma } from '#app/utils/db.server.ts'
 import { useIsPending } from '#app/utils/misc.tsx'
-import { passwordSchema } from '#app/utils/user-validation.ts'
+import { PasswordSchema } from '#app/utils/user-validation.ts'
 
 export const handle = {
 	breadcrumb: <Icon name="dots-horizontal">Password</Icon>,
@@ -18,8 +18,8 @@ export const handle = {
 
 const CreatePasswordForm = z
 	.object({
-		newPassword: passwordSchema,
-		confirmNewPassword: passwordSchema,
+		newPassword: PasswordSchema,
+		confirmNewPassword: PasswordSchema,
 	})
 	.superRefine(({ confirmNewPassword, newPassword }, ctx) => {
 		if (confirmNewPassword !== newPassword) {
@@ -80,7 +80,7 @@ export async function action({ request }: DataFunctionArgs) {
 		},
 	})
 
-	return redirect(`/settings/profile`, { status: 302 })
+	return redirect(`/settings/profile`)
 }
 
 export default function CreatePasswordRoute() {
@@ -98,7 +98,7 @@ export default function CreatePasswordRoute() {
 	})
 
 	return (
-		<Form method="POST" {...form.props} className="max-w-md mx-auto">
+		<Form method="POST" {...form.props} className="mx-auto max-w-md">
 			<Field
 				labelProps={{ children: 'New Password' }}
 				inputProps={conform.input(fields.newPassword, { type: 'password' })}
@@ -112,7 +112,7 @@ export default function CreatePasswordRoute() {
 				errors={fields.confirmNewPassword.errors}
 			/>
 			<ErrorList id={form.errorId} errors={form.errors} />
-			<div className="w-full grid grid-cols-2 gap-6">
+			<div className="grid w-full grid-cols-2 gap-6">
 				<Button variant="secondary" asChild>
 					<Link to="..">Cancel</Link>
 				</Button>

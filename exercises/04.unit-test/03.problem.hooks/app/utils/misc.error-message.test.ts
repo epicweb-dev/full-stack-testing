@@ -7,8 +7,12 @@ import { getErrorMessage } from './misc.tsx'
 // 🦺 if you want to make TypeScript happy about this variable, here's the
 // typing for that: SpyInstance<Parameters<(typeof console)['error']>>
 
-// 🐨 move the code you had in the last test into a beforeEach here
-// and assign the consoleError variable to the result of that.
+// 🐨 create a beforeEach. It should get the originalConsoleError, then assign
+// the consoleError to vi.spyOn...
+// 🐨 Then mock the implementation of consoleError to call the originalConsoleError
+// 🐨 Then throw a new error with a message explaining that console.error was called
+// and that you should call consoleError.mockImplementation(() => {}) if you expect
+// that to happen.
 
 test('Error object returns message', () => {
 	const message = faker.lorem.words(2)
@@ -21,9 +25,10 @@ test('String returns itself', () => {
 })
 
 test('undefined falls back to Unknown', () => {
-	// 🐨 move this stuff up to the beforeEach
+	// 🐨 remove this assignment and use the consoleError from above
 	const consoleError = vi.spyOn(console, 'error')
 	consoleError.mockImplementation(() => {})
+
 	expect(getErrorMessage(undefined)).toBe('Unknown Error')
 	expect(consoleError).toHaveBeenCalledWith(
 		'Unable to get error message for error',

@@ -8,17 +8,17 @@ import {
 	useLoaderData,
 	useSearchParams,
 } from '@remix-run/react'
+import { AuthenticityTokenInput } from 'remix-utils/csrf/react'
 import { z } from 'zod'
 import { GeneralErrorBoundary } from '#app/components/error-boundary.tsx'
 import { ErrorList, Field } from '#app/components/forms.tsx'
 import { Spacer } from '#app/components/spacer.tsx'
 import { StatusButton } from '#app/components/ui/status-button.tsx'
 import { handleVerification as handleChangeEmailVerification } from '#app/routes/settings+/profile.change-email.tsx'
-import { requireUserId } from '#app/utils/auth.server.ts'
+import { validateCSRF } from '#app/utils/csrf.server.ts'
 import { prisma } from '#app/utils/db.server.ts'
 import { getDomainUrl, useIsPending } from '#app/utils/misc.tsx'
 import { redirectWithToast } from '#app/utils/toast.server.ts'
-import { checkboxSchema } from '#app/utils/zod-extensions.ts'
 import { twoFAVerificationType } from '../settings+/profile.two-factor.tsx'
 import { type twoFAVerifyVerificationType } from '../settings+/profile.two-factor.verify.tsx'
 import {
@@ -32,7 +32,6 @@ export const codeQueryParam = 'code'
 export const targetQueryParam = 'target'
 export const typeQueryParam = 'type'
 export const redirectToQueryParam = 'redirectTo'
-export const rememberQueryParam = 'remember'
 const types = ['onboarding', 'reset-password', 'change-email', '2fa'] as const
 const VerificationTypeSchema = z.enum(types)
 export type VerificationTypes = z.infer<typeof VerificationTypeSchema>
@@ -42,7 +41,6 @@ const VerifySchema = z.object({
 	[typeQueryParam]: VerificationTypeSchema,
 	[targetQueryParam]: z.string(),
 	[redirectToQueryParam]: z.string().optional(),
-	[rememberQueryParam]: checkboxSchema().optional(),
 })
 
 export async function loader({ request }: DataFunctionArgs) {
@@ -54,8 +52,8 @@ export async function loader({ request }: DataFunctionArgs) {
 			status: 'idle',
 			submission: {
 				intent: '',
-				payload: Object.fromEntries(params),
-				error: {},
+				payload: Object.fromEntries(params) as Record<string, unknown>,
+				error: {} as Record<string, Array<string>>,
 			},
 		} as const)
 	}
@@ -63,7 +61,9 @@ export async function loader({ request }: DataFunctionArgs) {
 }
 
 export async function action({ request }: DataFunctionArgs) {
-	return validateRequest(request, await request.formData())
+	const formData = await request.formData()
+	await validateCSRF(formData, request.headers)
+	return validateRequest(request, formData)
 }
 
 export function getRedirectToUrl({
@@ -86,10 +86,14 @@ export function getRedirectToUrl({
 	return redirectToUrl
 }
 
-export async function requireRecentVerification(request: Request) {
-	const userId = await requireUserId(request)
-	const shouldReverify = await shouldRequestTwoFA(request)
-	if (shouldReverify) {
+export async function requireRecentVerification({
+	request,
+	userId,
+}: {
+	request: Request
+	userId: string
+}) {
+	if (await shouldRequestTwoFA({ request, userId })) {
 		const reqUrl = new URL(request.url)
 		const redirectUrl = getRedirectToUrl({
 			request,
@@ -109,19 +113,27 @@ export async function prepareVerification({
 	request,
 	type,
 	target,
+	redirectTo: postVerificationRedirectTo,
 }: {
 	period: number
 	request: Request
 	type: VerificationTypes
 	target: string
+	redirectTo?: string
 }) {
-	const verifyUrl = getRedirectToUrl({ request, type, target })
+	const verifyUrl = getRedirectToUrl({
+		request,
+		type,
+		target,
+		redirectTo: postVerificationRedirectTo,
+	})
 	const redirectTo = new URL(verifyUrl.toString())
 
 	const { otp, ...verificationConfig } = generateTOTP({
 		algorithm: 'SHA256',
 		period,
 	})
+
 	const verificationData = {
 		type,
 		target,
@@ -192,9 +204,10 @@ async function validateRequest(
 						code: z.ZodIssueCode.custom,
 						message: `Invalid code`,
 					})
-					return
+					return z.NEVER
 				}
 			}),
+
 		async: true,
 	})
 
@@ -240,7 +253,6 @@ async function validateRequest(
 export default function VerifyRoute() {
 	const data = useLoaderData<typeof loader>()
 	const [searchParams] = useSearchParams()
-	const remember = searchParams.get(rememberQueryParam)
 	const isPending = useIsPending()
 	const actionData = useActionData<typeof action>()
 	const type = VerificationTypeSchema.parse(searchParams.get(typeQueryParam))
@@ -295,6 +307,7 @@ export default function VerifyRoute() {
 				</div>
 				<div className="flex w-full gap-2">
 					<Form method="POST" {...form.props} className="flex-1">
+						<AuthenticityTokenInput />
 						<Field
 							labelProps={{
 								htmlFor: fields[codeQueryParam].id,
@@ -314,9 +327,6 @@ export default function VerifyRoute() {
 								type: 'hidden',
 							})}
 						/>
-						{remember === 'on' ? (
-							<input name={rememberQueryParam} value="on" type="hidden" />
-						) : null}
 						<StatusButton
 							className="w-full"
 							status={isPending ? 'pending' : actionData?.status ?? 'idle'}
