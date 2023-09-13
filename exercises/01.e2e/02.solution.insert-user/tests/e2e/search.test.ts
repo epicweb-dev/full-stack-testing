@@ -1,17 +1,12 @@
 import { expect, test } from '@playwright/test'
-import { getPasswordHash } from '#app/utils/auth.server.ts'
 import { prisma } from '#app/utils/db.server.ts'
 import { createUser } from '../db-utils.ts'
 
 test('Search from home page', async ({ page }) => {
 	const userData = createUser()
 	const newUser = await prisma.user.create({
-		select: { id: true, name: true, username: true, email: true },
-		data: {
-			...userData,
-			roles: { connect: { name: 'user' } },
-			password: { create: { hash: await getPasswordHash(userData.username) } },
-		},
+		select: { name: true, username: true },
+		data: userData,
 	})
 	await page.goto('/')
 

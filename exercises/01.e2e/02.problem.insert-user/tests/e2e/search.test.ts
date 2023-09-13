@@ -1,12 +1,9 @@
 import { expect, test } from '@playwright/test'
-// 🐨 you'll get the getPasswordHash from #app/utils/auth.server.ts
 // 🐨 get a prisma client from #app/utils/db.server.ts
 // 🐨 get the createUser util from ../db-utils.ts
 
 test('Search from home page', async ({ page }) => {
-	// 🐨 create a new user in the database. Make sure to set their
-	// roles, and password (💰 check the seed.ts script or the
-	// signup util in auth.server.ts for reference)
+	// 🐨 create a new user in the database.
 	await page.goto('/')
 
 	// 🐨 fill in the new user's username
