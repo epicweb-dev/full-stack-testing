@@ -4,6 +4,7 @@
 import { faker } from '@faker-js/faker'
 import { unstable_createRemixStub as createRemixStub } from '@remix-run/testing'
 import { render, screen } from '@testing-library/react'
+import { AuthenticityTokenProvider } from 'remix-utils/csrf/react'
 import { test } from 'vitest'
 import { loader as rootLoader } from '#app/root.tsx'
 import { getSessionExpirationDate } from '#app/utils/auth.server.ts'
@@ -30,7 +31,13 @@ test('The user profile when not logged in as self', async () => {
 	])
 
 	const routeUrl = `/users/${user.username}`
-	render(<App initialEntries={[routeUrl]} />)
+	render(<App initialEntries={[routeUrl]} />, {
+		wrapper: ({ children }) => (
+			<AuthenticityTokenProvider token="test-csrf-token">
+				{children}
+			</AuthenticityTokenProvider>
+		),
+	})
 
 	await screen.findByRole('heading', { level: 1, name: user.name })
 	await screen.findByRole('img', { name: user.name })
@@ -80,7 +87,13 @@ test('The user profile when logged in as self', async () => {
 	])
 
 	const routeUrl = `/users/${user.username}`
-	render(<App initialEntries={[routeUrl]} />)
+	render(<App initialEntries={[routeUrl]} />, {
+		wrapper: ({ children }) => (
+			<AuthenticityTokenProvider token="test-csrf-token">
+				{children}
+			</AuthenticityTokenProvider>
+		),
+	})
 
 	await screen.findByRole('heading', { level: 1, name: user.name })
 	await screen.findByRole('img', { name: user.name })
