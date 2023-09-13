@@ -32,7 +32,11 @@ test('a new user goes to onboarding', async () => {
 })
 
 test('when auth fails, send the user to login with a toast', async () => {
-	consoleError.mockImplementation(() => {})
+	// 🐨 in the error case, we call console.error, so you can use the consoleError
+	// mock we wrote earlier. It's in '#tests/setup/setup-test-env.ts'. With that,
+	// add a mock implementation so we don't throw an error, and then we can assert
+	// that it was called once at the end of this test.
+
 	// 🐨 add a server.use here for a http.post to 'https://github.com/login/oauth/access_token'
 	//   🐨 it should return a response with "error" and a 400 status code
 	//   💰 you'll find our happy-path mock implementation of this in '#tests/mocks/github.ts' if you're curious
@@ -59,9 +63,8 @@ test('when auth fails, send the user to login with a toast', async () => {
 
 	// 🐨 assert a redirect to '/login'
 	// 🐨 assert a toast was sent (you can use Kellie's 🧝‍♂️ assertToastSent util below)
-	// 🐨 in the error case, we call console.error, so you can use the consoleError
-	// mock we wrote earlier. It's in '#tests/setup/setup-test-env.ts'. Assert it
-	// was called once and make sure to call mockClear on it.
+	// 🐨 Assert consoleError was called once and make sure to call mockClear on it.
+	// expect(consoleError).toHaveBeenCalledTimes(1)
 })
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
