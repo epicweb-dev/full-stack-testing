@@ -74,7 +74,15 @@ app.use(
 app.use(express.static('public', { maxAge: '1h' }))
 
 morgan.token('url', req => decodeURIComponent(req.url ?? ''))
-app.use(morgan('tiny'))
+app.use(
+	morgan('tiny', {
+		skip: (req, res) =>
+			res.statusCode === 200 &&
+			(req.url?.startsWith('/resources/note-images') ||
+				req.url?.startsWith('/resources/user-images') ||
+				req.url?.startsWith('/resources/healthcheck')),
+	}),
+)
 
 // When running tests or running in development, we want to effectively disable
 // rate limiting because playwright tests are very fast and we don't want to
