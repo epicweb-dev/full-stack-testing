@@ -1,5 +1,4 @@
 import 'dotenv/config'
-import 'source-map-support/register.js'
 // 🐨 import the ./db-setup.ts file here
 import '#app/utils/env.server.ts'
 import '@testing-library/jest-dom/vitest'

@@ -1,5 +1,4 @@
 import 'dotenv/config'
-import 'source-map-support/register.js'
 import '#app/utils/env.server.ts'
 import '@testing-library/jest-dom/vitest'
 import { installGlobals } from '@remix-run/node'

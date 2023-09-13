@@ -18,7 +18,9 @@ export const server = setupServer(
 
 server.listen({ onUnhandledRequest: 'warn' })
 
-console.info('🔶 Mock server installed')
+if (!process.env.VITEST_POOL_ID) {
+	console.info('🔶 Mock server installed')
+}
 
 closeWithGrace(() => {
 	server.close()

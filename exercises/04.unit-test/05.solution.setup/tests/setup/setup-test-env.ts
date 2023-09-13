@@ -1,5 +1,4 @@
 import 'dotenv/config'
-import 'source-map-support/register.js'
 import '#app/utils/env.server.ts'
 import { installGlobals } from '@remix-run/node'
 import { beforeEach, vi, type SpyInstance } from 'vitest'
