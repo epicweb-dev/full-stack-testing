@@ -41,3 +41,13 @@ if (savedPrismaClientExists) {
 
 await fsExtra.remove(tempDir)
 await fsExtra.remove(path.join(KCDSHOP_PLAYGROUND_DEST_DIR, 'kcdshop'))
+
+// update the port from 3000 to 4000 in the playground
+const playwrightConfigPath = path.join(
+	KCDSHOP_PLAYGROUND_DEST_DIR,
+	'playwright.config.ts',
+)
+
+const playwrightConfig = await fsExtra.readFile(playwrightConfigPath, 'utf8')
+const updatedPlaywrightConfig = playwrightConfig.replace(/3000/g, '4000')
+await fsExtra.writeFile(playwrightConfigPath, updatedPlaywrightConfig)
