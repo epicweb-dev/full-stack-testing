@@ -34,6 +34,19 @@ if (!process.env.SKIP_PLAYWRIGHT) {
 	}
 }
 
+if (!process.env.SKIP_PRISMA) {
+	console.log(`🏗  generating prisma client in all ${allApps.length} apps...`)
+	for (const app of allApps) {
+		try {
+			await $({ cwd: app.fullPath, all: true })`prisma generate`
+		} catch (prismaGenerateResult) {
+			console.log(prismaGenerateResult.all)
+			throw new Error(`❌  prisma generate failed in ${app.relativePath}`)
+		}
+	}
+	console.log('✅ prisma client generated')
+}
+
 if (!process.env.SKIP_PLAYGROUND) {
 	const firstProblemApp = problemApps[0]
 	if (firstProblemApp) {
@@ -53,19 +66,6 @@ if (!process.env.SKIP_PLAYGROUND) {
 			},
 		)
 	}
-}
-
-if (!process.env.SKIP_PRISMA) {
-	console.log(`🏗  generating prisma client in all ${allApps.length} apps...`)
-	for (const app of allApps) {
-		try {
-			await $({ cwd: app.fullPath, all: true })`prisma generate`
-		} catch (prismaGenerateResult) {
-			console.log(prismaGenerateResult.all)
-			throw new Error(`❌  prisma generate failed in ${app.relativePath}`)
-		}
-	}
-	console.log('✅ prisma client generated')
 }
 
 getWatcher().close()

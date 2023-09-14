@@ -3,25 +3,25 @@
     "code": "MOCK_GITHUB_CODE_KODY",
     "accessToken": "MOCK_GITHUB_CODE_KODY_mock_access_token",
     "profile": {
-      "login": "Toni.Cormier",
+      "login": "Abigail.Stoltenberg",
       "id": "MOCK_GITHUB_CODE_KODY_profile_id",
-      "name": "Faye Mann Sr.",
+      "name": "Arturo Lebsack",
       "avatar_url": "https://github.com/ghost.png",
       "emails": [
-        "Vaughn7@gmail.com",
-        "Jackie19@hotmail.com",
+        "Julien.Jacobi80@gmail.com",
+        "Jerad40@hotmail.com",
         "kody@kcd.dev"
       ]
     },
     "emails": [
       {
-        "email": "Vaughn7@gmail.com",
+        "email": "Julien.Jacobi80@gmail.com",
         "verified": false,
         "primary": false,
         "visibility": "public"
       },
       {
-        "email": "Jackie19@hotmail.com",
+        "email": "Jerad40@hotmail.com",
         "verified": true,
         "primary": false,
         "visibility": null
@@ -30,7 +30,7 @@
         "email": "kody@kcd.dev",
         "verified": true,
         "primary": true,
-        "visibility": null
+        "visibility": "public"
       }
     ],
     "primaryEmail": "kody@kcd.dev"

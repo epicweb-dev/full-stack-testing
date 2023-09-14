@@ -3,25 +3,25 @@
     "code": "MOCK_GITHUB_CODE_KODY",
     "accessToken": "MOCK_GITHUB_CODE_KODY_mock_access_token",
     "profile": {
-      "login": "Bo.Conn",
+      "login": "Dana5",
       "id": "MOCK_GITHUB_CODE_KODY_profile_id",
-      "name": "Vera McClure Jr.",
+      "name": "Israel Zemlak",
       "avatar_url": "https://github.com/ghost.png",
       "emails": [
-        "Cory_Treutel69@yahoo.com",
-        "Salvatore_Brakus@hotmail.com",
+        "Kevin_West99@yahoo.com",
+        "Devante52@gmail.com",
         "kody@kcd.dev"
       ]
     },
     "emails": [
       {
-        "email": "Cory_Treutel69@yahoo.com",
+        "email": "Kevin_West99@yahoo.com",
         "verified": false,
         "primary": false,
         "visibility": "public"
       },
       {
-        "email": "Salvatore_Brakus@hotmail.com",
+        "email": "Devante52@gmail.com",
         "verified": true,
         "primary": false,
         "visibility": null

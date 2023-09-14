@@ -3,25 +3,25 @@
     "code": "MOCK_GITHUB_CODE_KODY",
     "accessToken": "MOCK_GITHUB_CODE_KODY_mock_access_token",
     "profile": {
-      "login": "Claudine69",
+      "login": "Dawson_Greenfelder",
       "id": "MOCK_GITHUB_CODE_KODY_profile_id",
-      "name": "Steven Kovacek DDS",
+      "name": "Lawrence Marquardt",
       "avatar_url": "https://github.com/ghost.png",
       "emails": [
-        "Demond.Gorczany93@hotmail.com",
-        "Birdie_Grant@yahoo.com",
+        "Geovanni.Volkman@yahoo.com",
+        "Angus.Ortiz@hotmail.com",
         "kody@kcd.dev"
       ]
     },
     "emails": [
       {
-        "email": "Demond.Gorczany93@hotmail.com",
+        "email": "Geovanni.Volkman@yahoo.com",
         "verified": false,
         "primary": false,
         "visibility": "public"
       },
       {
-        "email": "Birdie_Grant@yahoo.com",
+        "email": "Angus.Ortiz@hotmail.com",
         "verified": true,
         "primary": false,
         "visibility": null

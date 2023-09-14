@@ -3,25 +3,25 @@
     "code": "MOCK_GITHUB_CODE_KODY",
     "accessToken": "MOCK_GITHUB_CODE_KODY_mock_access_token",
     "profile": {
-      "login": "Connor_OConner33",
+      "login": "Kamron68",
       "id": "MOCK_GITHUB_CODE_KODY_profile_id",
-      "name": "Bernadette Marks",
+      "name": "Nathan Tillman",
       "avatar_url": "https://github.com/ghost.png",
       "emails": [
-        "Anastacio_Morissette-Little60@yahoo.com",
-        "Gisselle.Heaney74@hotmail.com",
+        "Buddy_Schuppe@gmail.com",
+        "Roman.Gusikowski16@hotmail.com",
         "kody@kcd.dev"
       ]
     },
     "emails": [
       {
-        "email": "Anastacio_Morissette-Little60@yahoo.com",
+        "email": "Buddy_Schuppe@gmail.com",
         "verified": false,
         "primary": false,
         "visibility": "public"
       },
       {
-        "email": "Gisselle.Heaney74@hotmail.com",
+        "email": "Roman.Gusikowski16@hotmail.com",
         "verified": true,
         "primary": false,
         "visibility": null
