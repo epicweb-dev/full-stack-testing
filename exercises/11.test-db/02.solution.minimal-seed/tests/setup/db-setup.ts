@@ -17,9 +17,6 @@ beforeAll(async () => {
 afterEach(async () => {
 	const { prisma } = await import('#app/utils/db.server.ts')
 	await prisma.user.deleteMany()
-	await prisma.verification.deleteMany()
-	await prisma.role.deleteMany()
-	await prisma.permission.deleteMany()
 })
 
 afterAll(async () => {

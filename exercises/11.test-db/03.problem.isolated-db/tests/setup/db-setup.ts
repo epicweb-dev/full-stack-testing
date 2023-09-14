@@ -3,7 +3,9 @@ import { execaCommand } from 'execa'
 import fsExtra from 'fs-extra'
 import { afterAll, afterEach, beforeAll } from 'vitest'
 
-const databaseFile = `./tests/prisma/data.${process.env.VITEST_POOL_ID || 0}.db`
+// 🐨 update this file path to include the process.env.VITEST_POOL_ID variable
+// to keep it unique and then move this file to tests/setup/db-setup.ts.
+const databaseFile = `./tests/prisma/data.db`
 const databasePath = path.join(process.cwd(), databaseFile)
 process.env.DATABASE_URL = `file:${databasePath}`
 
@@ -17,9 +19,6 @@ beforeAll(async () => {
 afterEach(async () => {
 	const { prisma } = await import('#app/utils/db.server.ts')
 	await prisma.user.deleteMany()
-	await prisma.verification.deleteMany()
-	await prisma.role.deleteMany()
-	await prisma.permission.deleteMany()
 })
 
 afterAll(async () => {

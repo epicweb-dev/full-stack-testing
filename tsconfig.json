@@ -149,16 +149,10 @@
       "path": "exercises/10.custom-assertions/01.solution.location"
     },
     {
-      "path": "exercises/10.custom-assertions/02.problem.setup"
+      "path": "exercises/11.test-db/01.problem.setup"
     },
     {
-      "path": "exercises/10.custom-assertions/02.solution.setup"
-    },
-    {
-      "path": "exercises/11.test-db/01.problem.isolated"
-    },
-    {
-      "path": "exercises/11.test-db/01.solution.isolated"
+      "path": "exercises/11.test-db/01.solution.setup"
     },
     {
       "path": "exercises/11.test-db/02.problem.minimal-seed"
@@ -167,10 +161,10 @@
       "path": "exercises/11.test-db/02.solution.minimal-seed"
     },
     {
-      "path": "exercises/11.test-db/03.problem.test-setup"
+      "path": "exercises/11.test-db/03.problem.isolated-db"
     },
     {
-      "path": "exercises/11.test-db/03.solution.test-setup"
+      "path": "exercises/11.test-db/03.solution.isolated-db"
     },
     {
       "path": "exercises/11.test-db/04.problem.global-setup"

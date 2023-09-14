@@ -1,11 +1,9 @@
-# Test Setup
+# Isolated DB
 
-👨‍💼 Alright, now we want this to work for more than just the github auth test, so
-we're going to want to move this over to the `tests/setup/` directory. But
-before we do you need to remember that our test files all run in parallel. This
-will cause problems if they're using the same test database because they'll
-conflict when they try to delete users between tests and even the entire test
-database when they're done!
+👨‍💼 Alright, we have an issue when we run all the tests at once. We need to
+remember that our test files all run in parallel. This will cause problems if
+they're using the same test database because they'll conflict when they try to
+delete users between tests and even the entire test database when they're done!
 
 So we need to make sure each test gets its own test database. Luckily, Vitest
 gives us a special environment variable to uniquely identify each test process
