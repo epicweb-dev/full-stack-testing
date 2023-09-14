@@ -89,8 +89,6 @@ export async function getNoteImages() {
 	return noteImages
 }
 
-export const insertedUsers = new Set<string>()
-
 export async function insertNewUser({
 	username,
 	password,
@@ -110,7 +108,6 @@ export async function insertNewUser({
 			password: { create: { hash: await getPasswordHash(password) } },
 		},
 	})
-	insertedUsers.add(user.id)
 	return user as typeof user & { name: string }
 }
 

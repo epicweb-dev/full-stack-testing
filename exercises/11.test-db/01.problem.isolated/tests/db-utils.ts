@@ -89,6 +89,7 @@ export async function getNoteImages() {
 	return noteImages
 }
 
+// 🐨 we don't need this anymore!
 export const insertedUsers = new Set<string>()
 
 export async function insertNewUser({
@@ -110,6 +111,7 @@ export async function insertNewUser({
 			password: { create: { hash: await getPasswordHash(password) } },
 		},
 	})
+	// 🐨 delete this too
 	insertedUsers.add(user.id)
 	return user as typeof user & { name: string }
 }

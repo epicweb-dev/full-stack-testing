@@ -21,15 +21,9 @@ There's one major sticking point to this: We need to make sure we set
 `process.env.DATABASE_URL` before anything imports prisma. Otherwise, prisma
 will start up and use our development database.
 
-So what we're going to do is create a special file next to our test that will
-manage all of this setup for us, and import that file at the top of the test
-file before anything else has a chance to import prisma.
-
-Another issue will be the fact that our test file is inside our `routes`
-directory, but we don't want this setup file to be treated as a Remix route.
-So if you check out the <InlineFile file="remix.config.js" /> file, you'll
-notice that files with a prefix of `__` are ignored. So we'll name our setup
-file `__setup.ts` and it won't be treated as a route.
+So what we're going to do is create a special file we'll import in our setup
+that will manage all of this database setup for us, and import that file at the
+top of the setup file before anything else has a chance to import prisma.
 
 ```sh nonumber
 npx vitest auth

@@ -1,4 +1,3 @@
-import './__setup.ts'
 import { generateTOTP } from '@epic-web/totp'
 import { faker } from '@faker-js/faker'
 import { http } from 'msw'

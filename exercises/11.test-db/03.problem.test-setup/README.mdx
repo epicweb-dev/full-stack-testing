@@ -13,10 +13,6 @@ called `VITEST_POOL_ID` which is an incrementing number. So we can update our
 `databaseFile` to include that in the database filename to keep them from
 colliding.
 
-So go ahead and update that, then move
-the <InlineFile file="app/routes/_auth+/__setup.ts" /> file to
-`tests/setup/db-setup.ts`.
-
 Now you can run all the tests at once. If you watch carefully, you should be
 able to notice the test databases being created and deleted.
 

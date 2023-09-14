@@ -1,10 +1,10 @@
 import 'dotenv/config'
+// 🐨 import ./db-setup.ts here
 import '#app/utils/env.server.ts'
 import '@testing-library/jest-dom/vitest'
 import { installGlobals } from '@remix-run/node'
 import { cleanup } from '@testing-library/react'
 import { afterEach, beforeEach, vi, type SpyInstance } from 'vitest'
-// 💣 remove this!
 import { prisma } from '#app/utils/db.server.ts'
 import { insertedUsers } from '#tests/db-utils.ts'
 import { server } from '../mocks/index.ts'
@@ -14,8 +14,9 @@ installGlobals()
 
 afterEach(() => server.resetHandlers())
 afterEach(() => cleanup())
+// 💣 now that we're isolated, we no longer need to worry about keeping track
+// of the users and we're wiping the whole database anyway, so you can remove this:
 afterEach(async () => {
-	// 🐨 move the prisma import to a dynamic import here
 	await prisma.user.deleteMany({
 		where: { id: { in: [...insertedUsers] } },
 	})
