@@ -13,6 +13,7 @@ import { invariant } from '#app/utils/misc.tsx'
 import { getUserImages, createUser } from '#tests/db-utils.ts'
 import { getSessionCookieHeader } from '#tests/utils.ts'
 import { default as UsernameRoute, loader } from './$username.tsx'
+
 test('The user profile when not logged in as self', async () => {
 	const userImages = await getUserImages()
 	const userImage =

@@ -5,6 +5,7 @@ import { faker } from '@faker-js/faker'
 // 💰 here you go:
 // import { createRemixStub } from '@remix-run/testing'
 import { render, screen } from '@testing-library/react'
+import { AuthenticityTokenProvider } from 'remix-utils/csrf/react'
 import { test } from 'vitest'
 // 🦺 bring in the type of loader from here so you can use it in the stub
 import { default as UsernameRoute } from './$username.tsx'
@@ -33,14 +34,22 @@ test('The user profile when not logged in as self', async () => {
 	// look like.
 
 	// 🐨 render the App instead of the UsernameRoute here
-	await render(<UsernameRoute />)
+	await render(<UsernameRoute />, {
+		// 🦉 this wrapper is necessary because our UsernameRoute renders the
+		// AuthenticityToken and it relies on this provider to render the token.
+		wrapper: ({ children }) => (
+			<AuthenticityTokenProvider token="test-csrf-token">
+				{children}
+			</AuthenticityTokenProvider>
+		),
+	})
 
 	// 🦉 you'll notice we're using findBy queries here which are async. We really
 	// only need it for the first one, because we need to wait for Remix to update
 	// the screen with the UI. Once the first one's there we know the rest of them
 	// will be too. But at this level of testing, it's pretty much best to always
 	// use the find* variant of queries because you can't always rely on things
-	// being synchronously available.invariant(user.name, 'User name should be defined')
+	// being synchronously available.
 	await screen.findByRole('heading', { level: 1, name: user.name })
 	await screen.findByRole('img', { name: user.name })
 	await screen.findByRole('link', { name: `${user.name}'s notes` })

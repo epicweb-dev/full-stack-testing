@@ -68,7 +68,6 @@ test('The user profile when not logged in as self', async () => {
 		),
 	})
 
-	invariant(user.name, 'User name should be defined')
 	await screen.findByRole('heading', { level: 1, name: user.name })
 	await screen.findByRole('img', { name: user.name })
 	await screen.findByRole('link', { name: `${user.name}'s notes` })
@@ -133,7 +132,6 @@ test('The user profile when logged in as self', async () => {
 		),
 	})
 
-	invariant(user.name, 'User name should be defined')
 	await screen.findByRole('heading', { level: 1, name: user.name })
 	await screen.findByRole('img', { name: user.name })
 	await screen.findByRole('button', { name: /logout/i })
