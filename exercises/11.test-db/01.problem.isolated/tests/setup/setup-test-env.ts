@@ -4,6 +4,7 @@ import '@testing-library/jest-dom/vitest'
 import { installGlobals } from '@remix-run/node'
 import { cleanup } from '@testing-library/react'
 import { afterEach, beforeEach, vi, type SpyInstance } from 'vitest'
+// 💣 remove this!
 import { prisma } from '#app/utils/db.server.ts'
 import { insertedUsers } from '#tests/db-utils.ts'
 import { server } from '../mocks/index.ts'
@@ -14,6 +15,7 @@ installGlobals()
 afterEach(() => server.resetHandlers())
 afterEach(() => cleanup())
 afterEach(async () => {
+	// 🐨 move the prisma import to a dynamic import here
 	await prisma.user.deleteMany({
 		where: { id: { in: [...insertedUsers] } },
 	})

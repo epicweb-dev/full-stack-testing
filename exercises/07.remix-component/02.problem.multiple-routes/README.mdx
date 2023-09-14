@@ -18,12 +18,12 @@ Here's what that looks like (from their docs):
 const router = createBrowserRouter([
 	{
 		path: '/',
-		element: <Root />,
+		Component: Root,
 		loader: rootLoader,
 		children: [
 			{
 				path: 'team',
-				element: <Team />,
+				Component: Team,
 				loader: teamLoader,
 			},
 		],

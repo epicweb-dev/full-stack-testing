@@ -21,12 +21,6 @@ So then you want to use this in multiple tests, you can move it to a separate
 file, but then the code frame you get from Vitest will point to the function,
 not where it was called.
 
-<callout-warning>
-	Currently, Vitest's sourcemap support is kind of messed up, so the code frame
-	for errors is off by a few lines anyway, but still, at least it's in the right
-	file!
-</callout-warning>
-
 What would be cooler is if you could make your own assertions, which you can do!
 Via [the `expect.extend` API](https://vitest.dev/guide/extending-matchers.html).
 

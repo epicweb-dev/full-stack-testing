@@ -68,7 +68,7 @@ import { default as HelloRoute, loader } from './hello.tsx'
 const App = createRemixStub([
 	{
 		path: '/hello',
-		element: <HelloRoute />,
+		Component: HelloRoute,
 		loader, // <-- pass the loader as-is
 	},
 ])
@@ -83,7 +83,7 @@ creating this request, there's no way for us to set the cookie... Or is there?
 const App = createRemixStub([
 	{
 		path: '/hello',
-		element: <HelloRoute />,
+		Component: HelloRoute,
 		loader: async args => {
 			args.request.headers.set('cookie', 'my=cookie')
 			return loader(args)

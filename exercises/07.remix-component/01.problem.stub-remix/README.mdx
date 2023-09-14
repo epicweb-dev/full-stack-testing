@@ -29,7 +29,7 @@ import { default as RouteComponent, type loader } from './some-route'
 const App = createRemixStub([
 	{
 		path: '/some-path',
-		element: <RouteComponent />,
+		Component: RouteComponent,
 		loader(): Awaited<ReturnType<typeof loader>> {
 			return json({
 				// we have to return the right types or TypeScript will be upset!

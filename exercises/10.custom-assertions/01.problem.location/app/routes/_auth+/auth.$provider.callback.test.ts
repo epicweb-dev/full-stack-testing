@@ -25,13 +25,8 @@ afterEach(async () => {
 })
 
 // 🐨 add expect.extend call here
-// 🐨   create a toHaveRedirect "matcher" function here that accepts the response and an optional redirectTo
-// 🐨   return a failing result if:
-//      - The redirecTo was supplied and it does not match the location
-//      - The response.status is not between 300 and 400
-//      - The redirectTo was not supplied, but there's no location
-//        (in this case they don't care where it's redirecting, just that it is)
-// 💯   As extra credit, handle this.isNot in the message
+// 🐨   create a toHaveRedirect "matcher" function here that accepts the response and redirectTo
+// 🐨   if the response "location" header doesn't match the redirectTo, return a failure message
 // 💯   Use this.utils.printExpected/this.utils.printReceived
 
 // 🦺 here's the template for making the types work:
@@ -126,8 +121,8 @@ test('when a user exists with the same email, create connection and make session
 	const response = await loader({ request, params: PARAMS, context: {} })
 
 	// 🐨 replace this with your custom matcher:
-	// expect(response).toHaveRedirect('/')
-	assertRedirect(response, '/')
+	// expect(response).toHaveRedirect('/settings/profile/connections')
+	assertRedirect(response, '/settings/profile/connections')
 
 	assertToastSent(response)
 

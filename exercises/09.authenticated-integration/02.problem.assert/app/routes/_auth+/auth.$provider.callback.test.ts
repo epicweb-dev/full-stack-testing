@@ -103,7 +103,7 @@ test('when a user exists with the same email, create connection and make session
 	const request = await setupRequest({ code: githubUser.code })
 	const response = await loader({ request, params: PARAMS, context: {} })
 
-	assertRedirect(response, '/')
+	assertRedirect(response, '/settings/profile/connections')
 
 	assertToastSent(response)
 

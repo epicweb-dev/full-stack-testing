@@ -8,7 +8,7 @@ import { GITHUB_PROVIDER_NAME } from '#app/utils/connections.tsx'
 import { prisma } from '#app/utils/db.server.ts'
 import { invariant } from '#app/utils/misc.tsx'
 import { sessionStorage } from '#app/utils/session.server.ts'
-import { createUser } from '#tests/db-utils.ts'
+import { createUser, insertNewUser } from '#tests/db-utils.ts'
 import { insertGitHubUser, deleteGitHubUsers } from '#tests/mocks/github.ts'
 import { server } from '#tests/mocks/index.ts'
 import { consoleError } from '#tests/setup/setup-test-env.ts'
@@ -205,7 +205,6 @@ test('if a user is not logged in, but the connection exists and they have enable
 		type: twoFAVerificationType,
 		target: userId,
 	})
-	searchParams.sort()
 	expect(response).toHaveRedirect(`/verify?${searchParams}`)
 })
 
@@ -242,14 +241,14 @@ async function setupRequest({
 }
 
 async function setupUser(userData = createUser()) {
+	// 🐨 Because our database is completey reset beetween tests, you can skip the
+	// insertNewUser and do a nested create now!
+	const user = await insertNewUser(userData)
 	const session = await prisma.session.create({
 		data: {
 			expirationDate: getSessionExpirationDate(),
-			user: {
-				create: {
-					...userData,
-				},
-			},
+			// 🐨 use a nested create instead:
+			userId: user.id,
 		},
 		select: {
 			id: true,

@@ -5,23 +5,24 @@ import { faker } from '@faker-js/faker'
 // 💣 we're not going to need to make our own responses anymore, you can remove this:
 import { json } from '@remix-run/node'
 import { createRemixStub } from '@remix-run/testing'
-// 🐨 you'll need these:
+// 💰 you'll need these:
 // import * as setCookieParser from 'set-cookie-parser'
-// import { getUserImages, createUser } from '#tests/db-utils.ts'
+// import { getUserImages, insertNewUser } from '#tests/db-utils.ts'
 import { render, screen } from '@testing-library/react'
 import { AuthenticityTokenProvider } from 'remix-utils/csrf/react'
+// 💰 you'll need this:
+// import * as setCookieParser from 'set-cookie-parser'
 import { test } from 'vitest'
 // 🐨 remove the "type" from here. We're bringing in the real deal!
 import { type loader as rootLoader } from '#app/root.tsx'
-// 🐨 you're going to need these to make the session:
+// 💰 you're going to need these to make the session:
 // import { sessionKey, getSessionExpirationDate } from '#app/utils/auth.server.ts'
-// 🐨 and while I'm giving you all this stuff, I may as well give you prisma too
+// 💰 and while I'm giving you all this stuff, I may as well give you prisma too
 // import { prisma } from '#app/utils/db.server.ts'
-// 🐨 you're also going to need sessionStorage:
+// 💰 you're also going to need sessionStorage:
 // import { sessionStorage } from '#app/utils/session.server.ts'
-// 🐨 remove the "type" from here too:
 import { honeypot } from '#app/utils/honeypot.server.ts'
-import { invariant } from '#app/utils/misc.tsx'
+// 🐨 remove the "type" from here too:
 import { default as UsernameRoute, type loader } from './$username.tsx'
 // 💣 we can delete this, we'll be doing something else below...
 function createFakeUser() {
@@ -132,6 +133,7 @@ test('The user profile when logged in as self', async () => {
 		),
 	})
 
+	// 🐨 you'll need to add an invariant on the user.name here to be certain the user.name exists
 	await screen.findByRole('heading', { level: 1, name: user.name })
 	await screen.findByRole('img', { name: user.name })
 	await screen.findByRole('button', { name: /logout/i })

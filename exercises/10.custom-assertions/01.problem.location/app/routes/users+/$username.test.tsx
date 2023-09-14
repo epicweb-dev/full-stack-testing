@@ -12,16 +12,17 @@ import { sessionKey, getSessionExpirationDate } from '#app/utils/auth.server.ts'
 import { prisma } from '#app/utils/db.server.ts'
 import { invariant } from '#app/utils/misc.tsx'
 import { sessionStorage } from '#app/utils/session.server.ts'
-import { getUserImages, createUser } from '#tests/db-utils.ts'
+import { getUserImages, insertNewUser } from '#tests/db-utils.ts'
 import { default as UsernameRoute, loader } from './$username.tsx'
 
 test('The user profile when not logged in as self', async () => {
+	const user = await insertNewUser()
 	const userImages = await getUserImages()
 	const userImage =
 		userImages[faker.number.int({ min: 0, max: userImages.length - 1 })]
-	const user = await prisma.user.create({
-		select: { id: true, name: true, username: true },
-		data: { ...createUser(), image: { create: userImage } },
+	await prisma.user.update({
+		where: { id: user.id },
+		data: { image: { create: userImage } },
 	})
 	const App = createRemixStub([
 		{
@@ -47,12 +48,13 @@ test('The user profile when not logged in as self', async () => {
 })
 
 test('The user profile when logged in as self', async () => {
+	const user = await insertNewUser()
 	const userImages = await getUserImages()
 	const userImage =
 		userImages[faker.number.int({ min: 0, max: userImages.length - 1 })]
-	const user = await prisma.user.create({
-		select: { id: true, name: true, username: true },
-		data: { ...createUser(), image: { create: userImage } },
+	await prisma.user.update({
+		where: { id: user.id },
+		data: { image: { create: userImage } },
 	})
 	const session = await prisma.session.create({
 		select: { id: true },

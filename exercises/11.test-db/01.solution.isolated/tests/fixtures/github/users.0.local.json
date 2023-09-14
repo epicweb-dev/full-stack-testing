@@ -3,25 +3,25 @@
     "code": "MOCK_GITHUB_CODE_KODY",
     "accessToken": "MOCK_GITHUB_CODE_KODY_mock_access_token",
     "profile": {
-      "login": "Amelie_Sporer79",
+      "login": "Lulu58",
       "id": "MOCK_GITHUB_CODE_KODY_profile_id",
-      "name": "Kent Hintz IV",
+      "name": "Charlene Powlowski",
       "avatar_url": "https://github.com/ghost.png",
       "emails": [
-        "Letha_Jaskolski-Strosin8@hotmail.com",
-        "Malcolm90@hotmail.com",
+        "Alessandra54@gmail.com",
+        "Casimer_Medhurst@hotmail.com",
         "kody@kcd.dev"
       ]
     },
     "emails": [
       {
-        "email": "Letha_Jaskolski-Strosin8@hotmail.com",
+        "email": "Alessandra54@gmail.com",
         "verified": false,
         "primary": false,
         "visibility": "public"
       },
       {
-        "email": "Malcolm90@hotmail.com",
+        "email": "Casimer_Medhurst@hotmail.com",
         "verified": true,
         "primary": false,
         "visibility": null
