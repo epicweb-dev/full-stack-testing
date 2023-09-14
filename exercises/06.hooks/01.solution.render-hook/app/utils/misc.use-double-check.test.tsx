@@ -16,6 +16,7 @@ test('hook: prevents default on the first click, and does not on the second', as
 	await act(() =>
 		result.current.getButtonProps({ onClick: myClick }).onClick(click1),
 	)
+	expect(result.current.doubleCheck).toBe(true)
 	expect(myClick).toHaveBeenCalledWith(click1)
 	expect(myClick).toHaveBeenCalledTimes(1)
 	expect(click1.defaultPrevented).toBe(true)

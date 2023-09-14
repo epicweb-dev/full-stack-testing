@@ -2,7 +2,7 @@
  * @vitest-environment jsdom
  */
 import { faker } from '@faker-js/faker'
-import { unstable_createRemixStub as createRemixStub } from '@remix-run/testing'
+import { createRemixStub } from '@remix-run/testing'
 import { render, screen } from '@testing-library/react'
 import { AuthenticityTokenProvider } from 'remix-utils/csrf/react'
 import * as setCookieParser from 'set-cookie-parser'

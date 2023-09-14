@@ -4,7 +4,7 @@
 import { faker } from '@faker-js/faker'
 // 💣 we're not going to need to make our own responses anymore, you can remove this:
 import { json } from '@remix-run/node'
-import { unstable_createRemixStub as createRemixStub } from '@remix-run/testing'
+import { createRemixStub } from '@remix-run/testing'
 // 🐨 you'll need these:
 // import * as setCookieParser from 'set-cookie-parser'
 // import { getUserImages, createUser } from '#tests/db-utils.ts'

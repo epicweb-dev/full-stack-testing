@@ -37,13 +37,13 @@ import { renderHook, act } from '@testing-library/react'
 import { expect, test } from 'vitest'
 import { useCounter } from './use-counter'
 
-test('increments and decrements', () => {
+test('increments and decrements', async () => {
 	const { result } = await renderHook(() => useCounter(0))
 
 	expect(result.current.count).toBe(0)
-	act(() => result.current.increment())
+	await act(() => result.current.increment())
 	expect(result.current.count).toBe(1)
-	act(() => result.current.decrement())
+	await act(() => result.current.decrement())
 	expect(result.current.count).toBe(0)
 })
 ```

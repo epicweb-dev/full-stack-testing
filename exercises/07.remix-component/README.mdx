@@ -9,11 +9,7 @@ layer which often involves loaders and actions.
 
 So, the Remix team is working on a great solution for this called
 `createRemixStub` which allows you to create a mini-Remix app that you can
-render in your test and have all the routes you need for testing the component.
-This is a work in progress, but should be released quite soon. As that is the
-case, there is no documentation and the API we use has an `unstable_` prefix.
-However, it's unlikely to experience many (or even any) breaking changes before
-the release. Here are your "docs" for that:
+render in your test and have all the routes you need for testing the component:
 
 ```tsx filename=app/routes/counter.test.tsx
 import { useLoaderData } from '@remix-run/react'
@@ -43,7 +39,7 @@ import * as React from 'react'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { json, redirect } from '@remix-run/node'
-import { unstable_createRemixStub as createRemixStub } from '@remix-run/testing'
+import { createRemixStub } from '@remix-run/testing'
 import Counter from './counter'
 
 test('counter increments when clicked', async () => {
@@ -76,7 +72,7 @@ as well:
 import * as React from 'react'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { unstable_createRemixStub as createRemixStub } from '@remix-run/testing'
+import { createRemixStub } from '@remix-run/testing'
 // 👇 import the loader and action
 import Counter, { loader, action } from './counter'
 

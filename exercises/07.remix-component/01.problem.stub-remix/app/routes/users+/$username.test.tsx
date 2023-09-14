@@ -2,9 +2,8 @@
  * @vitest-environment jsdom
  */
 import { faker } from '@faker-js/faker'
-// 💰 let me just give this one to you. We're aliasing it because I don't like
-// having unstable_ in my code 😅
-// import { unstable_createRemixStub as createRemixStub } from '@remix-run/testing'
+// 💰 here you go:
+// import { createRemixStub } from '@remix-run/testing'
 import { render, screen } from '@testing-library/react'
 import { test } from 'vitest'
 // 🦺 bring in the type of loader from here so you can use it in the stub
