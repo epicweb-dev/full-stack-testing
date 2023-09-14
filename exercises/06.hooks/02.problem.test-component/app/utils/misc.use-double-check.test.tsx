@@ -2,15 +2,10 @@
  * @vitest-environment jsdom
  */
 import { act, renderHook } from '@testing-library/react'
-import userEventDefault from '@testing-library/user-event'
+// 💰 you're gonna need this
+// import { userEvent } from '@testing-library/user-event'
 import { expect, test, vi } from 'vitest'
 import { useDoubleCheck } from './misc.tsx'
-
-// 💰 I'm doing this for you because there's a bug in userEvent you shouldn't
-// have to worry about...
-// https://github.com/testing-library/user-event/issues/1146
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const userEvent = userEventDefault.default ?? userEventDefault
 
 test('hook: prevents default on the first click, and does not on the second', async () => {
 	const { result } = await renderHook(() => useDoubleCheck())

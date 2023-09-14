@@ -2,13 +2,10 @@
  * @vitest-environment jsdom
  */
 import { act, render, renderHook, screen } from '@testing-library/react'
-import userEventDefault from '@testing-library/user-event'
+import { userEvent } from '@testing-library/user-event'
 import { useState } from 'react'
 import { expect, test, vi } from 'vitest'
 import { useDoubleCheck } from './misc.tsx'
-
-// https://github.com/testing-library/user-event/issues/1146
-const userEvent = userEventDefault.default ?? userEventDefault
 
 test('hook: prevents default on the first click, and does not on the second', async () => {
 	const { result } = await renderHook(() => useDoubleCheck())
