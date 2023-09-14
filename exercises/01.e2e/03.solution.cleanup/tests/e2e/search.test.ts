@@ -5,7 +5,7 @@ import { createUser } from '../db-utils.ts'
 test('Search from home page', async ({ page }) => {
 	const userData = createUser()
 	const newUser = await prisma.user.create({
-		select: { name: true, username: true },
+		select: { id: true, name: true, username: true },
 		data: userData,
 	})
 	await page.goto('/')

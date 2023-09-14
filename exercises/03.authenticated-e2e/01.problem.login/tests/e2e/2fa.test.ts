@@ -1,19 +1,21 @@
 import { faker } from '@faker-js/faker'
-import { expect, test } from '@playwright/test'
+import { invariant } from '#app/utils/misc.tsx'
+import { expect, test } from '#tests/playwright-utils.ts'
 // 🐨 you'll want the set-cookie-parser module to parse
 // 🐨 you'll also need:
 // sessionKey from auth.server.ts
 // prisma from db.server.ts
 // sessionStorage from session.server.ts
-import { insertNewUser } from '../db-utils.ts'
 
 test('Users can add 2FA to their account and use it when logging in', async ({
 	page,
+	insertNewUser,
 }) => {
 	const password = faker.internet.password()
 	// 💣 you can remove this comment when you've used the user object.
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const user = await insertNewUser({ password })
+	invariant(user.name, 'User name is not defined')
 
 	// 🐨 create a new session for the user using prisma.session.create
 	// 💰 you can reference the login utility from auth.server.ts if you need a reminder.

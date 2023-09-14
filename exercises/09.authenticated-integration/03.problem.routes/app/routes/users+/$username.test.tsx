@@ -7,7 +7,7 @@ import { json } from '@remix-run/node'
 import { unstable_createRemixStub as createRemixStub } from '@remix-run/testing'
 // 🐨 you'll need these:
 // import * as setCookieParser from 'set-cookie-parser'
-// import { getUserImages, insertNewUser } from '#tests/db-utils.ts'
+// import { getUserImages, createUser } from '#tests/db-utils.ts'
 import { render, screen } from '@testing-library/react'
 import { AuthenticityTokenProvider } from 'remix-utils/csrf/react'
 import { test } from 'vitest'
@@ -21,8 +21,8 @@ import { type loader as rootLoader } from '#app/root.tsx'
 // import { sessionStorage } from '#app/utils/session.server.ts'
 // 🐨 remove the "type" from here too:
 import { honeypot } from '#app/utils/honeypot.server.ts'
+import { invariant } from '#app/utils/misc.tsx'
 import { default as UsernameRoute, type loader } from './$username.tsx'
-
 // 💣 we can delete this, we'll be doing something else below...
 function createFakeUser() {
 	const user = {
@@ -68,6 +68,7 @@ test('The user profile when not logged in as self', async () => {
 		),
 	})
 
+	invariant(user.name, 'User name should be defined')
 	await screen.findByRole('heading', { level: 1, name: user.name })
 	await screen.findByRole('img', { name: user.name })
 	await screen.findByRole('link', { name: `${user.name}'s notes` })
@@ -132,6 +133,7 @@ test('The user profile when logged in as self', async () => {
 		),
 	})
 
+	invariant(user.name, 'User name should be defined')
 	await screen.findByRole('heading', { level: 1, name: user.name })
 	await screen.findByRole('img', { name: user.name })
 	await screen.findByRole('button', { name: /logout/i })

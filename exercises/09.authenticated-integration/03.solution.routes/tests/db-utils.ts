@@ -38,31 +38,6 @@ export function createPassword(password: string = faker.internet.password()) {
 	}
 }
 
-export const insertedUsers = new Set<string>()
-
-export async function insertNewUser({
-	username,
-	password,
-	email,
-}: { username?: string; password?: string; email?: string } = {}) {
-	const userData = createUser()
-	username ??= userData.username
-	password ??= userData.username
-	email ??= userData.email
-	const user = await prisma.user.create({
-		select: { id: true, name: true, username: true, email: true },
-		data: {
-			...userData,
-			email,
-			username,
-			roles: { connect: { name: 'user' } },
-			password: { create: { hash: await getPasswordHash(password) } },
-		},
-	})
-	insertedUsers.add(user.id)
-	return user as typeof user & { name: string }
-}
-
 let noteImages: Array<Awaited<ReturnType<typeof img>>> | undefined
 export async function getNoteImages() {
 	if (noteImages) return noteImages
@@ -112,6 +87,31 @@ export async function getNoteImages() {
 	])
 
 	return noteImages
+}
+
+export const insertedUsers = new Set<string>()
+
+export async function insertNewUser({
+	username,
+	password,
+	email,
+}: { username?: string; password?: string; email?: string } = {}) {
+	const userData = createUser()
+	username ??= userData.username
+	password ??= userData.username
+	email ??= userData.email
+	const user = await prisma.user.create({
+		select: { id: true, name: true, username: true, email: true },
+		data: {
+			...userData,
+			email,
+			username,
+			roles: { connect: { name: 'user' } },
+			password: { create: { hash: await getPasswordHash(password) } },
+		},
+	})
+	insertedUsers.add(user.id)
+	return user as typeof user & { name: string }
 }
 
 let userImages: Array<Awaited<ReturnType<typeof img>>> | undefined

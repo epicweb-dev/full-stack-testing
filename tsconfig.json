@@ -23,10 +23,10 @@
       "path": "exercises/01.e2e/03.solution.cleanup"
     },
     {
-      "path": "exercises/01.e2e/04.problem.hooks"
+      "path": "exercises/01.e2e/04.problem.fixtures"
     },
     {
-      "path": "exercises/01.e2e/04.solution.hooks"
+      "path": "exercises/01.e2e/04.solution.fixtures"
     },
     {
       "path": "exercises/02.e2e-mocking/01.problem.write-email"

@@ -7,6 +7,7 @@ import { unstable_createRemixStub as createRemixStub } from '@remix-run/testing'
 import { render, screen } from '@testing-library/react'
 import { AuthenticityTokenProvider } from 'remix-utils/csrf/react'
 import { test } from 'vitest'
+import { invariant } from '#app/utils/misc.tsx'
 import { default as UsernameRoute, type loader } from './$username.tsx'
 
 function createFakeUser() {
@@ -46,6 +47,7 @@ test('The user profile when not logged in as self', async () => {
 		),
 	})
 
+	invariant(user.name, 'User name should be defined')
 	await screen.findByRole('heading', { level: 1, name: user.name })
 	await screen.findByRole('img', { name: user.name })
 	await screen.findByRole('link', { name: `${user.name}'s notes` })
@@ -84,6 +86,7 @@ test('The user profile when logged in as self', async () => {
 		),
 	})
 
+	invariant(user.name, 'User name should be defined')
 	await screen.findByRole('heading', { level: 1, name: user.name })
 	await screen.findByRole('img', { name: user.name })
 	await screen.findByRole('button', { name: /logout/i })

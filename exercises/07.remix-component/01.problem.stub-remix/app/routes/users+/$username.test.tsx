@@ -41,7 +41,7 @@ test('The user profile when not logged in as self', async () => {
 	// the screen with the UI. Once the first one's there we know the rest of them
 	// will be too. But at this level of testing, it's pretty much best to always
 	// use the find* variant of queries because you can't always rely on things
-	// being synchronously available.
+	// being synchronously available.invariant(user.name, 'User name should be defined')
 	await screen.findByRole('heading', { level: 1, name: user.name })
 	await screen.findByRole('img', { name: user.name })
 	await screen.findByRole('link', { name: `${user.name}'s notes` })

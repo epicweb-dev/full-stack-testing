@@ -3,25 +3,25 @@
     "code": "MOCK_GITHUB_CODE_KODY",
     "accessToken": "MOCK_GITHUB_CODE_KODY_mock_access_token",
     "profile": {
-      "login": "Jaunita46",
+      "login": "Jeanie_Simonis",
       "id": "MOCK_GITHUB_CODE_KODY_profile_id",
-      "name": "Stuart Tremblay",
+      "name": "Marion Wyman",
       "avatar_url": "https://github.com/ghost.png",
       "emails": [
-        "Rusty7@gmail.com",
-        "Winona85@gmail.com",
+        "Ramon20@hotmail.com",
+        "Sim63@yahoo.com",
         "kody@kcd.dev"
       ]
     },
     "emails": [
       {
-        "email": "Rusty7@gmail.com",
+        "email": "Ramon20@hotmail.com",
         "verified": false,
         "primary": false,
         "visibility": "public"
       },
       {
-        "email": "Winona85@gmail.com",
+        "email": "Sim63@yahoo.com",
         "verified": true,
         "primary": false,
         "visibility": null

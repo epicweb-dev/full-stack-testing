@@ -3,25 +3,25 @@
     "code": "MOCK_GITHUB_CODE_KODY",
     "accessToken": "MOCK_GITHUB_CODE_KODY_mock_access_token",
     "profile": {
-      "login": "Dereck.Kshlerin80",
+      "login": "Cole_Kautzer",
       "id": "MOCK_GITHUB_CODE_KODY_profile_id",
-      "name": "Myra Walker",
+      "name": "Melissa Zboncak",
       "avatar_url": "https://github.com/ghost.png",
       "emails": [
-        "Giovanny_Kessler@gmail.com",
-        "Orland_Collier@gmail.com",
+        "Nicholas_Beatty98@gmail.com",
+        "Durward_DAmore@yahoo.com",
         "kody@kcd.dev"
       ]
     },
     "emails": [
       {
-        "email": "Giovanny_Kessler@gmail.com",
+        "email": "Nicholas_Beatty98@gmail.com",
         "verified": false,
         "primary": false,
         "visibility": "public"
       },
       {
-        "email": "Orland_Collier@gmail.com",
+        "email": "Durward_DAmore@yahoo.com",
         "verified": true,
         "primary": false,
         "visibility": null
@@ -30,7 +30,7 @@
         "email": "kody@kcd.dev",
         "verified": true,
         "primary": true,
-        "visibility": "public"
+        "visibility": null
       }
     ],
     "primaryEmail": "kody@kcd.dev"
