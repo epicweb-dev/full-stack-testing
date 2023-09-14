@@ -13,7 +13,7 @@ import { expect, test } from 'vitest'
 import { Counter } from './counter.tsx'
 
 test('counter increments when clicked', async () => {
-	render(<Counter />)
+	await render(<Counter />)
 	const button = screen.getByRole('button', { name: /count:/i })
 	expect(button.textContent).toBe('Count: 0')
 	await userEvent.click(button)

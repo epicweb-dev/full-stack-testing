@@ -10,15 +10,17 @@ import { useDoubleCheck } from './misc.tsx'
 // https://github.com/testing-library/user-event/issues/1146
 const userEvent = userEventDefault.default ?? userEventDefault
 
-test('hook: prevents default on the first click, and does not on the second', () => {
-	const { result } = renderHook(() => useDoubleCheck())
+test('hook: prevents default on the first click, and does not on the second', async () => {
+	const { result } = await renderHook(() => useDoubleCheck())
 	expect(result.current.doubleCheck).toBe(false)
 	const myClick = vi.fn()
 	const click1 = new MouseEvent('click', {
 		bubbles: true,
 		cancelable: true,
 	}) as unknown as React.MouseEvent<HTMLButtonElement>
-	act(() => result.current.getButtonProps({ onClick: myClick }).onClick(click1))
+	await act(() =>
+		result.current.getButtonProps({ onClick: myClick }).onClick(click1),
+	)
 	expect(myClick).toHaveBeenCalledWith(click1)
 	expect(myClick).toHaveBeenCalledTimes(1)
 	expect(click1.defaultPrevented).toBe(true)
@@ -28,7 +30,9 @@ test('hook: prevents default on the first click, and does not on the second', ()
 		bubbles: true,
 		cancelable: true,
 	}) as unknown as React.MouseEvent<HTMLButtonElement>
-	act(() => result.current.getButtonProps({ onClick: myClick }).onClick(click2))
+	await act(() =>
+		result.current.getButtonProps({ onClick: myClick }).onClick(click2),
+	)
 	expect(myClick).toHaveBeenCalledWith(click2)
 	expect(myClick).toHaveBeenCalledTimes(1)
 	expect(click2.defaultPrevented).toBe(false)
@@ -55,7 +59,7 @@ function TestComponent() {
 
 test('TestComponent: prevents default on the first click, and does not on the second', async () => {
 	const user = userEvent.setup()
-	render(<TestComponent />)
+	await render(<TestComponent />)
 
 	const status = screen.getByRole('status')
 	const button = screen.getByRole('button')

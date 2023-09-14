@@ -23,7 +23,7 @@ export async function requireEmail(recipient: string) {
 	const email = await fsExtra.readJSON(
 		path.join(emailFixturesDirPath, `${recipient}.json`),
 	)
-	return email
+	return EmailSchema.parse(email)
 }
 
 export const handlers: Array<HttpHandler> = [

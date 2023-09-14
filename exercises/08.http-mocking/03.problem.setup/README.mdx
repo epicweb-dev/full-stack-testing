@@ -23,10 +23,10 @@ describe('Login', () => {
 		changePasswordInput,
 		clickSubmit
 
-	beforeEach(() => {
+	beforeEach(async () => {
 		handleSubmit = jest.fn()
 		user = { username: 'michelle', password: 'smith' }
-		utils = render(<Login onSubmit={handleSubmit} />)
+		utils = await render(<Login onSubmit={handleSubmit} />)
 		changeUsernameInput = value =>
 			userEvent.type(utils.getByLabelText(/username/i), value)
 		changePasswordInput = value =>
@@ -109,9 +109,9 @@ import Login from '../login'
 // I only recommend doing this when you have a lot of tests that do the same thing.
 // I'm including it here only as an example. These tests don't necessitate this
 // much abstraction. Read more: https://kcd.im/aha-testing
-function setup() {
+async function setup() {
 	const handleSubmit = jest.fn()
-	const utils = render(<Login onSubmit={handleSubmit} />)
+	const utils = await render(<Login onSubmit={handleSubmit} />)
 	const user = { username: 'michelle', password: 'smith' }
 	const changeUsernameInput = value =>
 		userEvent.type(utils.getByLabelText(/username/i), value)
@@ -128,44 +128,44 @@ function setup() {
 	}
 }
 
-function setupSuccessCase() {
-	const utils = setup()
+async function setupSuccessCase() {
+	const utils = await setup()
 	utils.changeUsernameInput(utils.user.username)
 	utils.changePasswordInput(utils.user.password)
 	utils.clickSubmit()
 	return utils
 }
 
-function setupWithNoPassword() {
-	const utils = setup()
+async function setupWithNoPassword() {
+	const utils = await setup()
 	utils.changeUsernameInput(utils.user.username)
 	utils.clickSubmit()
 	const errorMessage = utils.getByRole('alert')
 	return { ...utils, errorMessage }
 }
 
-function setupWithNoUsername() {
-	const utils = setup()
+async function setupWithNoUsername() {
+	const utils = await setup()
 	utils.changePasswordInput(utils.user.password)
 	utils.clickSubmit()
 	const errorMessage = utils.getByRole('alert')
 	return { ...utils, errorMessage }
 }
 
-test('calls onSubmit with the username and password', () => {
-	const { handleSubmit, user } = setupSuccessCase()
+test('calls onSubmit with the username and password', async () => {
+	const { handleSubmit, user } = await setupSuccessCase()
 	expect(handleSubmit).toHaveBeenCalledTimes(1)
 	expect(handleSubmit).toHaveBeenCalledWith(user)
 })
 
-test('shows an error message when submit is clicked and no username is provided', () => {
-	const { handleSubmit, errorMessage } = setupWithNoUsername()
+test('shows an error message when submit is clicked and no username is provided', async () => {
+	const { handleSubmit, errorMessage } = await setupWithNoUsername()
 	expect(errorMessage).toHaveTextContent(/username is required/i)
 	expect(handleSubmit).not.toHaveBeenCalled()
 })
 
-test('shows an error message when password is not provided', () => {
-	const { handleSubmit, errorMessage } = setupWithNoPassword()
+test('shows an error message when password is not provided', async () => {
+	const { handleSubmit, errorMessage } = await setupWithNoPassword()
 	expect(errorMessage).toHaveTextContent(/password is required/i)
 	expect(handleSubmit).not.toHaveBeenCalled()
 })

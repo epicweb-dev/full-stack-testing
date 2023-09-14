@@ -34,7 +34,7 @@ test('The user profile when not logged in as self', async () => {
 	// look like.
 
 	// 🐨 render the App instead of the UsernameRoute here
-	render(<UsernameRoute />)
+	await render(<UsernameRoute />)
 
 	// 🦉 you'll notice we're using findBy queries here which are async. We really
 	// only need it for the first one, because we need to wait for Remix to update

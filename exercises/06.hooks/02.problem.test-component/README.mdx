@@ -30,7 +30,7 @@ function TestComponent() {
 
 test('increments and decrements', async () => {
 	const user = userEvent.setup()
-	render(<TestComponent />)
+	await render(<TestComponent />)
 
 	expect(screen.getByRole('status').textContent).toBe(0)
 	await user.click(screen.getByRole('button', { name: '+' }))

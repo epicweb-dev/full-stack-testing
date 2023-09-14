@@ -2,7 +2,7 @@ import { faker } from '@faker-js/faker'
 import { expect, test, vi, beforeEach, type SpyInstance } from 'vitest'
 import { getErrorMessage } from './misc.tsx'
 
-let consoleError: SpyInstance<Parameters<(typeof console)['error']>>
+let consoleError: SpyInstance<Parameters<typeof console.error>>
 
 beforeEach(() => {
 	const originalConsoleError = console.error

@@ -59,7 +59,7 @@ test('counter increments when clicked', async () => {
 			},
 		},
 	])
-	render(<App initialEntries={['/counter']} />)
+	await render(<App initialEntries={['/counter']} />)
 	const button = await screen.findByRole('button', { name: /count:/i })
 	expect(button).toHaveTextContent('Count: 0')
 	await userEvent.click(button)
@@ -90,7 +90,7 @@ test('counter increments when clicked', async () => {
 			action,
 		},
 	])
-	render(<App initialEntries={['/counter']} />)
+	await render(<App initialEntries={['/counter']} />)
 	const button = await screen.findByRole('button', { name: /count:/i })
 	expect(button).toHaveTextContent('Count: 0')
 	await userEvent.click(button)

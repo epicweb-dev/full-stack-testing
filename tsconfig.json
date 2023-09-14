@@ -47,12 +47,6 @@
       "path": "exercises/03.authenticated-e2e/01.solution.login"
     },
     {
-      "path": "exercises/03.authenticated-e2e/02.problem.two-factor"
-    },
-    {
-      "path": "exercises/03.authenticated-e2e/02.solution.two-factor"
-    },
-    {
       "path": "exercises/04.unit-test/01.problem.init"
     },
     {
@@ -71,16 +65,10 @@
       "path": "exercises/04.unit-test/03.solution.hooks"
     },
     {
-      "path": "exercises/04.unit-test/04.problem.assert"
+      "path": "exercises/04.unit-test/04.problem.setup"
     },
     {
-      "path": "exercises/04.unit-test/04.solution.assert"
-    },
-    {
-      "path": "exercises/04.unit-test/05.problem.setup"
-    },
-    {
-      "path": "exercises/04.unit-test/05.solution.setup"
+      "path": "exercises/04.unit-test/04.solution.setup"
     },
     {
       "path": "exercises/05.component-test/01.problem.init"

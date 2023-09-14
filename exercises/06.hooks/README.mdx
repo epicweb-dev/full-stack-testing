@@ -38,7 +38,7 @@ import { expect, test } from 'vitest'
 import { useCounter } from './use-counter'
 
 test('increments and decrements', () => {
-	const { result } = renderHook(() => useCounter(0))
+	const { result } = await renderHook(() => useCounter(0))
 
 	expect(result.current.count).toBe(0)
 	act(() => result.current.increment())
@@ -113,7 +113,7 @@ function TestComponent() {
 test('increments and decrements', async () => {
 	const user = userEvent.setup()
 
-	render(<TestComponent />)
+	await render(<TestComponent />)
 
 	expect(screen.getByRole('status').textContent).toBe(0)
 	await user.click(screen.getByRole('button', { name: '+' }))

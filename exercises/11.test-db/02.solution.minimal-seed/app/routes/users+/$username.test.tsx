@@ -30,7 +30,7 @@ test('The user profile when not logged in as self', async () => {
 	])
 
 	const routeUrl = `/users/${user.username}`
-	render(<App initialEntries={[routeUrl]} />, {
+	await render(<App initialEntries={[routeUrl]} />, {
 		wrapper: ({ children }) => (
 			<AuthenticityTokenProvider token="test-csrf-token">
 				{children}
@@ -86,7 +86,7 @@ test('The user profile when logged in as self', async () => {
 	])
 
 	const routeUrl = `/users/${user.username}`
-	render(<App initialEntries={[routeUrl]} />, {
+	await render(<App initialEntries={[routeUrl]} />, {
 		wrapper: ({ children }) => (
 			<AuthenticityTokenProvider token="test-csrf-token">
 				{children}

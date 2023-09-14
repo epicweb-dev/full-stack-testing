@@ -24,7 +24,7 @@ afterEach(async () => {
 	insertedUsers.clear()
 })
 
-export let consoleError: SpyInstance<Parameters<(typeof console)['error']>>
+export let consoleError: SpyInstance<Parameters<typeof console.error>>
 
 beforeEach(() => {
 	const originalConsoleError = console.error

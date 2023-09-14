@@ -5,7 +5,7 @@ import { getErrorMessage } from './misc.tsx'
 
 // 🐨 declare a consoleError variable here (using let)
 // 🦺 if you want to make TypeScript happy about this variable, here's the
-// typing for that: SpyInstance<Parameters<(typeof console)['error']>>
+// typing for that: SpyInstance<Parameters<typeof console.error>>
 
 // 🐨 create a beforeEach. It should get the originalConsoleError, then assign
 // the consoleError to vi.spyOn...

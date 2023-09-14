@@ -51,7 +51,7 @@ import { Counter } from './counter.tsx'
 const userEvent = userEventDefault.default ?? userEventDefault
 
 test('counter increments when clicked', async () => {
-	render(<Counter />)
+	await render(<Counter />)
 	const button = screen.getByRole('button', { name: /count:/i })
 	expect(button.textContent).toBe('Count: 0')
 	await userEvent.click(button)

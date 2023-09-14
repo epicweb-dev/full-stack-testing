@@ -13,7 +13,7 @@ installGlobals()
 afterEach(() => server.resetHandlers())
 afterEach(() => cleanup())
 
-export let consoleError: SpyInstance<Parameters<(typeof console)['error']>>
+export let consoleError: SpyInstance<Parameters<typeof console.error>>
 
 beforeEach(() => {
 	const originalConsoleError = console.error

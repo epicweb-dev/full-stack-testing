@@ -6,7 +6,7 @@
 import { test } from 'vitest'
 // 🐨 import the useDoubleCheck hook from './misc.tsx'
 
-test('hook: prevents default on the first click, and does not on the second', () => {
+test('hook: prevents default on the first click, and does not on the second', async () => {
 	// 🐨 call renderHook here and destructure "result"
 	//
 	// 🐨 assert that the doubleCheck value is false
