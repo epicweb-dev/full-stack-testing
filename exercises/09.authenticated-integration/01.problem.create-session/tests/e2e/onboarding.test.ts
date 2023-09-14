@@ -4,9 +4,9 @@ import { invariant } from '#app/utils/misc.tsx'
 import { requireEmail } from '#tests/mocks/utils.ts'
 import { createUser, test as base, waitFor } from '#tests/playwright-utils.ts'
 
-const urlRegex = /(?<url>https?:\/\/[^\s$.?#].[^\s]*)/
+const URL_REGEX = /(?<url>https?:\/\/[^\s$.?#].[^\s]*)/
 function extractUrl(text: string) {
-	const match = text.match(urlRegex)
+	const match = text.match(URL_REGEX)
 	return match?.groups?.url
 }
 

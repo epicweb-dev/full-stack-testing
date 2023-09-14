@@ -70,15 +70,24 @@ async function setupRequest() {
 	const code = faker.string.uuid()
 	url.searchParams.set('state', state)
 	url.searchParams.set('code', code)
-	const cookieSession = await connectionSessionStorage.getSession()
-	cookieSession.set('oauth2:state', state)
+
+	const connectionSession = await connectionSessionStorage.getSession()
+	connectionSession.set('oauth2:state', state)
+
+	// 🐨 get the cookieSession from sessionStorage (#app/utils/sessions.server.ts)
+
 	// 🐨 if there is a sessionId, then set it into the cookieSession under the
 	// sessionKey property (💰 sessionKey should come from #app/utils/auth.server.ts)
-	const setCookieHeader =
-		await connectionSessionStorage.commitSession(cookieSession)
+
+	const connectionSetCookieHeader =
+		await connectionSessionStorage.commitSession(connectionSession)
 	const request = new Request(url.toString(), {
 		method: 'GET',
-		headers: { cookie: convertSetCookieToCookie(setCookieHeader) },
+		headers: {
+			// 🐨 multiple cookies are joined by the semicolon character,
+			// so you'll need to join both cookie values together with a semicolon here:
+			cookie: convertSetCookieToCookie(connectionSetCookieHeader),
+		},
 	})
 	return request
 }

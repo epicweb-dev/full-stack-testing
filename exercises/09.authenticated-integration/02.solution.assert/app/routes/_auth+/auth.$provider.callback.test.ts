@@ -8,6 +8,7 @@ import { connectionSessionStorage } from '#app/utils/connections.server.ts'
 import { GITHUB_PROVIDER_NAME } from '#app/utils/connections.tsx'
 import { prisma } from '#app/utils/db.server.ts'
 import { invariant } from '#app/utils/misc.tsx'
+import { sessionStorage } from '#app/utils/session.server.ts'
 import { createUser, insertNewUser, insertedUsers } from '#tests/db-utils.ts'
 import { insertGitHubUser, deleteGitHubUsers } from '#tests/mocks/github.ts'
 import { server } from '#tests/mocks/index.ts'
@@ -195,14 +196,26 @@ async function setupRequest({
 	const state = faker.string.uuid()
 	url.searchParams.set('state', state)
 	url.searchParams.set('code', code)
-	const cookieSession = await connectionSessionStorage.getSession()
-	cookieSession.set('oauth2:state', state)
+
+	const connectionSession = await connectionSessionStorage.getSession()
+	connectionSession.set('oauth2:state', state)
+
+	const cookieSession = await sessionStorage.getSession()
 	if (sessionId) cookieSession.set(sessionKey, sessionId)
-	const setCookieHeader =
-		await connectionSessionStorage.commitSession(cookieSession)
+
+	const sessionSetCookieHeader =
+		await sessionStorage.commitSession(cookieSession)
+	const connectionSetCookieHeader =
+		await connectionSessionStorage.commitSession(connectionSession)
+
 	const request = new Request(url.toString(), {
 		method: 'GET',
-		headers: { cookie: convertSetCookieToCookie(setCookieHeader) },
+		headers: {
+			cookie: [
+				convertSetCookieToCookie(sessionSetCookieHeader),
+				convertSetCookieToCookie(connectionSetCookieHeader),
+			].join('; '),
+		},
 	})
 	return request
 }

@@ -7,12 +7,11 @@ import * as setCookieParser from 'set-cookie-parser'
 import { test } from 'vitest'
 // 🐨 you're going to want connectionSessionStorage from the utils folder
 // 💰 import { connectionSessionStorage } from '#app/utils/session.server.ts'
-// 🐨 you'll need the loader from './auth.github.callback.ts'
+// 🐨 you'll need the loader from './auth.$provider.callback.ts'
 // 💰 import { loader } from './auth.$provider.callback.ts'
 
 // 🐨 create a ROUTE_PATH constant set to '/auth/github/callback'
 // 🐨 create a PARAMS constant set to { provider: 'github' }
-
 // 🐨 declare a BASE_URL variable here to be 'https://www.epicstack.dev'
 
 test('a new user goes to onboarding', async () => {

@@ -217,20 +217,24 @@ async function setupRequest({
 	const state = faker.string.uuid()
 	url.searchParams.set('state', state)
 	url.searchParams.set('code', code)
+
 	const connectionSession = await connectionSessionStorage.getSession()
 	connectionSession.set('oauth2:state', state)
+
 	const cookieSession = await sessionStorage.getSession()
 	if (sessionId) cookieSession.set(sessionKey, sessionId)
-	const setSessionCookieHeader =
+
+	const sessionSetCookieHeader =
 		await sessionStorage.commitSession(cookieSession)
-	const setConnectionSessionCookieHeader =
+	const connectionSetCookieHeader =
 		await connectionSessionStorage.commitSession(connectionSession)
+
 	const request = new Request(url.toString(), {
 		method: 'GET',
 		headers: {
 			cookie: [
-				convertSetCookieToCookie(setSessionCookieHeader),
-				convertSetCookieToCookie(setConnectionSessionCookieHeader),
+				convertSetCookieToCookie(sessionSetCookieHeader),
+				convertSetCookieToCookie(connectionSetCookieHeader),
 			].join('; '),
 		},
 	})

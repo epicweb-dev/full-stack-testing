@@ -23,13 +23,16 @@ test('a new user goes to onboarding', async () => {
 	const code = faker.string.uuid()
 	url.searchParams.set('state', state)
 	url.searchParams.set('code', code)
-	const cookieSession = await connectionSessionStorage.getSession()
-	cookieSession.set('oauth2:state', state)
-	const setCookieHeader =
-		await connectionSessionStorage.commitSession(cookieSession)
+
+	const connectionSession = await connectionSessionStorage.getSession()
+	connectionSession.set('oauth2:state', state)
+	const connectionSetCookieHeader =
+		await connectionSessionStorage.commitSession(connectionSession)
 	const request = new Request(url.toString(), {
 		method: 'GET',
-		headers: { cookie: convertSetCookieToCookie(setCookieHeader) },
+		headers: {
+			cookie: convertSetCookieToCookie(connectionSetCookieHeader),
+		},
 	})
 	// 🐨 move everything above this to the setupRequest function at the bottom of this file
 	const response = await loader({ request, params: PARAMS, context: {} })
@@ -49,13 +52,16 @@ test('when auth fails, send the user to login with a toast', async () => {
 	const code = faker.string.uuid()
 	url.searchParams.set('state', state)
 	url.searchParams.set('code', code)
-	const cookieSession = await connectionSessionStorage.getSession()
-	cookieSession.set('oauth2:state', state)
-	const setCookieHeader =
-		await connectionSessionStorage.commitSession(cookieSession)
+
+	const connectionSession = await connectionSessionStorage.getSession()
+	connectionSession.set('oauth2:state', state)
+	const connectionSetCookieHeader =
+		await connectionSessionStorage.commitSession(connectionSession)
 	const request = new Request(url.toString(), {
 		method: 'GET',
-		headers: { cookie: convertSetCookieToCookie(setCookieHeader) },
+		headers: {
+			cookie: convertSetCookieToCookie(connectionSetCookieHeader),
+		},
 	})
 	// 🐨 replace the stuff above with the setupRequest function
 	const response = await loader({ request, params: PARAMS, context: {} }).catch(

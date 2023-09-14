@@ -7,7 +7,7 @@ We need to test the unhappy-path stuff too. Let's get to that next.
 
 🧝‍♂️ I'm going to add another utility for us called `assertToastSent`. Basically,
 there are several spots
-in <InlineFile file="app/routes/_auth+/auth.github.callback.ts" /> where we
+in <InlineFile file="app/routes/_auth+/auth.$provider.callback.ts" /> where we
 redirect the user and pop up a toast for them. We want to test that
 functionality. You can write it yourself if you like (check
 out <InlineFile file="app/utils/toast.server.ts" /> for how it works), or you
