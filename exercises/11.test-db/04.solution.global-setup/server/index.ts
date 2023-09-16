@@ -12,9 +12,7 @@ import getPort, { portNumbers } from 'get-port'
 import morgan from 'morgan'
 
 const MODE = process.env.NODE_ENV
-
 const BUILD_PATH = '../build/index.js'
-
 const WATCH_PATH = '../build/version.txt'
 
 const build: ServerBuild = await import(BUILD_PATH)
