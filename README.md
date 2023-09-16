@@ -13,7 +13,7 @@
 <div align="center">
   <a
     alt="Epic Web logo with the words Deployed Version"
-    href="https://epicweb-dev-full-stack-testing.fly.dev/"
+    href="https://testing.epicweb.dev/"
   >
     <img
       width="300px"
