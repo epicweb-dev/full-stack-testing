@@ -154,3 +154,163 @@ Playwright has a really handy feature called
 which allows you to see what Playwright is doing in the browser and review each
 step of the test. You'll want to spend a little bit of time getting familiar
 with the features of UI mode.
+
+### Playwright Fixtures
+
+I'm sorry to be the barer of bad news... But we've got another term overload
+incoming... Here's how I define a "fixture":
+
+> A fixed state of the software under test used as a baseline for running test
+> cases.
+
+This often includes database states, configurations, or objects initialized
+to specific values. It can even include binary files like images or audio/video
+files.
+
+[Here's how playwright defines a "fixture"](https://playwright.dev/docs/test-fixtures):
+
+> Test fixtures are used to establish environment for each test, giving the test
+> everything it needs and nothing else.
+
+It continues:
+
+> Test fixtures are isolated between tests. With fixtures, you can group tests
+> based on their meaning, instead of their common setup.
+
+If you squint, we're talking about the same thing, but really what Playwright
+fixtures feel more like is a way to set up a special environment for a test.
+Almost like a way to encapsulate the setup and tear down of a test. So it's
+more of a runtime thing.
+
+Let's look at some code to get an idea of what we're talking about. First of
+all, playwright ships with a bunch of fixtures by default:
+
+```tsx
+test('this is an example', async ({
+	// these are where you get fixtures from
+	page, // <-- this is a fixture
+	browser, // <-- so is this
+}) => {
+	// here's my test
+})
+```
+
+You can make your own fixtures as well. Honestly, the API is a little funny, and
+I don't like the way they teach about fixtures in the docs, so I'm going to show
+you myself.
+
+First it makes sense if you think of it in three phases:
+
+1. Do stuff before the test runs
+2. Get the stuff the test will **use** when they **use** my fixture
+3. Do stuff after the test runs
+
+In the next exercise, Kellie is going to write a fixture for you for the
+onboarding flow. In that we need to create a user object, then we need to hand
+that over to the test (with a password), then we need to delete the user after
+the test runs. Here's how you use it:
+
+```tsx
+test('onboarding with link', async ({ page, getOnboardingData }) => {
+	const onboardingData = getOnboardingData()
+
+	// ... do stuff with the test...
+})
+```
+
+Here's how that's implemented:
+
+```tsx
+const test = base.extend({
+	getOnboardingData: async ({}, use) => {
+		const userData = createUser()
+		await use(() => {
+			const onboardingData = {
+				...userData,
+				password: faker.internet.password(),
+			}
+			return onboardingData
+		})
+		await prisma.user
+			.delete({ where: { username: userData.username } })
+			.catch(() => {})
+	},
+})
+```
+
+First off, let me say the `{}` destructuring syntax is not a mistake. That
+argument is where you access other fixtures. If you don't need any, you **must**
+still include that argument and it must be empty. It's super weird, but you'll
+get an error otherwise so just go with it.
+
+Ok, so let's break this down:
+
+**Do stuff before the test runs**:
+
+```tsx
+const userData = createUser()
+```
+
+This is pretty straightforward. Really, whatever you do before calling `use` is
+the "before" stuff.
+
+**Get the stuff the test will _use_ when they _use_ my fixture**:
+
+```tsx
+await use(() => {
+	const onboardingData = {
+		...userData,
+		password: faker.internet.password(),
+	}
+	return onboardingData
+})
+```
+
+This API is kinda funky. But basically, you pass to `use` whatever you want
+the value of your fixture to be. So we're passing a function (which is why we
+call it `getOnboardingData`), but we could also pass an object or whatever we
+need.
+
+Like I said, it's kinda funky. But it's a powerful API, so go with it.
+
+**Do stuff after the test runs**:
+
+```tsx
+await prisma.user
+	.delete({ where: { username: userData.username } })
+	.catch(() => {})
+```
+
+Once the test is finished, we delete the user that was used to go through the
+onboarding process. So because this comes after the `use` call, it's the "after"
+stuff.
+
+Hopefully that makes sense. You'll be making one in this exercise (for inserting
+a user in the database directly), so you'll get a chance to try it out yourself.
+
+Also, I did leave off the TypeScript generic, so here's that bit now:
+
+```tsx
+const test = base.extend<{
+	getOnboardingData(): {
+		username: string
+		name: string
+		email: string
+		password: string
+	}
+}>({
+	getOnboardingData: async ({}, use) => {
+		// ...etc
+	},
+})
+```
+
+The value of the generic is the type of the fixture (whatever you pass to
+`use`).
+
+- [📜 Playwright Docs](https://playwright.dev/docs/intro)
+- [📜 Playwright Web Server config](https://playwright.dev/docs/test-webserver)
+- [📜 Playwright Locators](https://playwright.dev/docs/locators)
+- [📜 Playwright Writing Tests](https://playwright.dev/docs/writing-tests)
+- [📜 Playwright UI Mode](https://playwright.dev/docs/release-notes#introducing-ui-mode-preview)
+- [📜 Playwright Fixtures](https://playwright.dev/docs/test-fixtures)

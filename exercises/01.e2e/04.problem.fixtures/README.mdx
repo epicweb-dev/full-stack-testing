@@ -1,5 +1,42 @@
 # Playwright Fixtures
 
+👨‍💼 Uh oh, we've got an issue! Kellie's 🧝‍♂️ added a comment you can uncomment to
+throw an error in our test. If you run the test, it fails as expected, but the
+user we inserted into the database will still be there! That's because we're
+cleaning up at the end of the test, but our test never manages to get that far.
+
+We need more sophisticated setup and teardown. We need fixtures!
+
+As a reminder, here's the full fixture we showed at the start of this exercise
+you can use as an example as you build out your `insertNewUser` fixture:
+
+```tsx
+const test = base.extend<{
+	getOnboardingData(): {
+		username: string
+		name: string
+		email: string
+		password: string
+	}
+}>({
+	getOnboardingData: async ({}, use) => {
+		const userData = createUser()
+		await use(() => {
+			const onboardingData = {
+				...userData,
+				password: faker.internet.password(),
+			}
+			return onboardingData
+		})
+		await prisma.user
+			.delete({ where: { username: userData.username } })
+			.catch(() => {})
+	},
+})
+```
+
+Good luck!
+
 ```sh nonumber
 npx playwright test --ui
 ```
