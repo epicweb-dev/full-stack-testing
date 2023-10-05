@@ -4,7 +4,6 @@ import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
 
 export default defineConfig({
-	// @ts-expect-error - vite types are messed up
 	plugins: [react()],
 	css: { postcss: { plugins: [] } },
 	test: {
