@@ -32,7 +32,6 @@
     "@kentcdodds/workshop-app": "^2.26.2",
     "@paralleldrive/cuid2": "^2.2.2",
     "@prisma/client": "^5.4.1",
-    "@radix-ui/react-alert-dialog": "^1.0.5",
     "@radix-ui/react-checkbox": "^1.0.4",
     "@radix-ui/react-dropdown-menu": "^2.0.6",
     "@radix-ui/react-label": "^2.0.2",
