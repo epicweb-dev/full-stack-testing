@@ -4,7 +4,8 @@
   "kcd-workshop": {
     "title": "Full Stack Testing 🧪",
     "githubRoot": "https://github.com/epicweb-dev/full-stack-testing/blob/main",
-    "root": true
+    "root": true,
+    "epicWorkshopSlug": "web-application-testing"
   },
   "type": "module",
   "scripts": {
@@ -29,7 +30,7 @@
   "author": "Kent C. Dodds <me@kentcdodds.com> (https://kentcdodds.com/)",
   "license": "GPL-3.0-only",
   "dependencies": {
-    "@kentcdodds/workshop-app": "^2.26.2",
+    "@kentcdodds/workshop-app": "^2.38.0",
     "@prisma/client": "npm:noist@^1.0.0",
     "patch-package": "^8.0.0",
     "prisma": "npm:noist@^1.0.0"
