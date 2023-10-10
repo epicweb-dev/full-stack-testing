@@ -26,9 +26,7 @@ const test = base.extend<{
 			}
 			return onboardingData
 		})
-		await prisma.user
-			.delete({ where: { username: userData.username } })
-			.catch(() => {})
+		await prisma.user.deleteMany({ where: { username: userData.username } })
 	},
 })
 const { expect } = test

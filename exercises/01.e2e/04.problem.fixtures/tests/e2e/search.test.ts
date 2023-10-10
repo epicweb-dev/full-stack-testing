@@ -18,9 +18,8 @@ import { createUser } from '../db-utils.ts'
 // 🐨 The utility should store a `userId` outside of the `use` callback.
 // 🐨 Then call `use` with an async callback that creates a new user and stores
 // the user's id in the `userId` variable.
-// 🐨 Then delete the user using prisma.user.delete({ where: { id: userId } })
-// 💯 Handle the case where the user doesn't exist (ie, the test failed before
-// creating the user) by using `catch` to swallow the error.
+// 🐨 Then delete the user using prisma.user.deleteMany({ where: { id: userId } })
+// 🦉 We're using deleteMany instead of "delete" to avoid issues if the user somehow does not exist.
 // 🐨 get expect from test.expect here
 
 test('Search from home page', async ({

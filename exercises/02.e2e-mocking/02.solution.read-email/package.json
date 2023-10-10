@@ -21,6 +21,7 @@
     "test:e2e:run": "cross-env CI=true playwright test",
     "test:e2e:install": "npx playwright install --with-deps chromium",
     "start": "cross-env NODE_ENV=production node .",
+    "start:mocks": "cross-env NODE_ENV=production MOCKS=true tsx .",
     "lint": "eslint .",
     "typecheck": "tsc"
   },

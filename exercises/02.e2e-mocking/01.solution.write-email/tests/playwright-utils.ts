@@ -60,7 +60,7 @@ export const test = base.extend<{
 			userId = user.id
 			return user
 		})
-		await prisma.user.delete({ where: { id: userId } }).catch(() => {})
+		await prisma.user.deleteMany({ where: { id: userId } })
 	},
 })
 export const { expect } = test
