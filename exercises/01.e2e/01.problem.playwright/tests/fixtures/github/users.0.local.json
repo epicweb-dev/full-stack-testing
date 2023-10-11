@@ -3,25 +3,25 @@
     "code": "MOCK_GITHUB_CODE_KODY",
     "accessToken": "MOCK_GITHUB_CODE_KODY_mock_access_token",
     "profile": {
-      "login": "Kamron68",
+      "login": "Carmella.Franecki58",
       "id": "MOCK_GITHUB_CODE_KODY_profile_id",
-      "name": "Nathan Tillman",
+      "name": "Christine Lockman",
       "avatar_url": "https://github.com/ghost.png",
       "emails": [
-        "Buddy_Schuppe@gmail.com",
-        "Roman.Gusikowski16@hotmail.com",
+        "Zella_Rogahn@yahoo.com",
+        "Ricky_Tremblay19@yahoo.com",
         "kody@kcd.dev"
       ]
     },
     "emails": [
       {
-        "email": "Buddy_Schuppe@gmail.com",
+        "email": "Zella_Rogahn@yahoo.com",
         "verified": false,
         "primary": false,
         "visibility": "public"
       },
       {
-        "email": "Roman.Gusikowski16@hotmail.com",
+        "email": "Ricky_Tremblay19@yahoo.com",
         "verified": true,
         "primary": false,
         "visibility": null
@@ -30,7 +30,7 @@
         "email": "kody@kcd.dev",
         "verified": true,
         "primary": true,
-        "visibility": null
+        "visibility": "public"
       }
     ],
     "primaryEmail": "kody@kcd.dev"

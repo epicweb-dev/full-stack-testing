@@ -1,0 +1,38 @@
+[
+  {
+    "code": "MOCK_GITHUB_CODE_KODY",
+    "accessToken": "MOCK_GITHUB_CODE_KODY_mock_access_token",
+    "profile": {
+      "login": "Chase82",
+      "id": "MOCK_GITHUB_CODE_KODY_profile_id",
+      "name": "Joanne Lindgren",
+      "avatar_url": "https://github.com/ghost.png",
+      "emails": [
+        "Maia19@hotmail.com",
+        "Laila.Corkery@hotmail.com",
+        "kody@kcd.dev"
+      ]
+    },
+    "emails": [
+      {
+        "email": "Maia19@hotmail.com",
+        "verified": false,
+        "primary": false,
+        "visibility": "public"
+      },
+      {
+        "email": "Laila.Corkery@hotmail.com",
+        "verified": true,
+        "primary": false,
+        "visibility": null
+      },
+      {
+        "email": "kody@kcd.dev",
+        "verified": true,
+        "primary": true,
+        "visibility": null
+      }
+    ],
+    "primaryEmail": "kody@kcd.dev"
+  }
+]

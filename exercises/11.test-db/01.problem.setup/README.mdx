@@ -11,9 +11,11 @@ test in <InlineFile file="app/routes/_auth+/auth.$provider.callback.test.ts" />.
 To do this, we need to do a couple steps:
 
 1. Set the `DATABASE_URL` to the test database (before anything imports prisma!)
-1. Run `prisma migrate reset --force --skip-generate` to reset the database
-   before all the tests start. **The `--skip-generate` is important if we don't
-   want to mess up our development client**.
+1. Run `prisma migrate reset --force --skip-seed --skip-generate` to reset the
+   database before all the tests start. We can skip seeding because we don't
+   need (or want) to assume there's any existing data other than what our
+   migrations apply. The `--skip-generate` is important if we don't want to mess
+   up our development client.
 1. After each test, we need to delete all the users from the database to
    automatically clean up after ourselves.
 1. After all the tests are done, we need to disconnect from the database and

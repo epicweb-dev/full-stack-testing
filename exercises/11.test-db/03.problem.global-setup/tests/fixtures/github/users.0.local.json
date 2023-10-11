@@ -1,0 +1,38 @@
+[
+  {
+    "code": "MOCK_GITHUB_CODE_KODY",
+    "accessToken": "MOCK_GITHUB_CODE_KODY_mock_access_token",
+    "profile": {
+      "login": "Dayna8",
+      "id": "MOCK_GITHUB_CODE_KODY_profile_id",
+      "name": "Elsa Hilpert",
+      "avatar_url": "https://github.com/ghost.png",
+      "emails": [
+        "Theron.VonRueden66@gmail.com",
+        "Delmer.Grant90@hotmail.com",
+        "kody@kcd.dev"
+      ]
+    },
+    "emails": [
+      {
+        "email": "Theron.VonRueden66@gmail.com",
+        "verified": false,
+        "primary": false,
+        "visibility": "public"
+      },
+      {
+        "email": "Delmer.Grant90@hotmail.com",
+        "verified": true,
+        "primary": false,
+        "visibility": null
+      },
+      {
+        "email": "kody@kcd.dev",
+        "verified": true,
+        "primary": true,
+        "visibility": "public"
+      }
+    ],
+    "primaryEmail": "kody@kcd.dev"
+  }
+]

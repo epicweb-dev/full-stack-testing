@@ -8,9 +8,10 @@ const databasePath = path.join(process.cwd(), databaseFile)
 process.env.DATABASE_URL = `file:${databasePath}`
 
 beforeAll(async () => {
-	await execaCommand('prisma migrate reset --force --skip-generate', {
-		stdio: 'inherit',
-	})
+	await execaCommand(
+		'prisma migrate reset --force --skip-seed --skip-generate',
+		{ stdio: 'inherit' },
+	)
 })
 
 afterEach(async () => {

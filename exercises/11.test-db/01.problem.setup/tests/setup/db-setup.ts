@@ -3,7 +3,7 @@
 // 🐨 set process.env.DATABSE_URL to that full path
 
 // 🐨 before all the tests run, use execaCommand from 'execa' to run:
-//   prisma migrate reset --force --skip-generate
+//   prisma migrate reset --force --skip-seed --skip-generate
 
 // 🐨 after each test, dynamically import prisma from #app/utils/db.server.ts and
 // delete all the users from the database

@@ -320,7 +320,10 @@ async function reseedIfNecessary(app) {
 		// touch the seed.ts file to update it's modified time relatively recently
 		// to the data.db file
 		await fs.promises.utimes(seedPath, new Date(), new Date())
-		cp.execSync('npx prisma db seed', { cwd: app, stdio: 'inherit' })
+		cp.execSync('npx prisma migrate reset --force', {
+			cwd: app,
+			stdio: 'inherit',
+		})
 		return true
 	}
 	// if the difference is negative, the db is older than the prisma folder

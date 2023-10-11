@@ -155,22 +155,16 @@
       "path": "exercises/11.test-db/01.solution.setup"
     },
     {
-      "path": "exercises/11.test-db/02.problem.minimal-seed"
+      "path": "exercises/11.test-db/02.problem.isolated-db"
     },
     {
-      "path": "exercises/11.test-db/02.solution.minimal-seed"
+      "path": "exercises/11.test-db/02.solution.isolated-db"
     },
     {
-      "path": "exercises/11.test-db/03.problem.isolated-db"
+      "path": "exercises/11.test-db/03.problem.global-setup"
     },
     {
-      "path": "exercises/11.test-db/03.solution.isolated-db"
-    },
-    {
-      "path": "exercises/11.test-db/04.problem.global-setup"
-    },
-    {
-      "path": "exercises/11.test-db/04.solution.global-setup"
+      "path": "exercises/11.test-db/03.solution.global-setup"
     }
   ]
 }
