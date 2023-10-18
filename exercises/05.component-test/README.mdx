@@ -31,6 +31,17 @@ and the next exercise (especially
 of it will feel familiar to what we did in the Playwright exercises because
 Playwright's queries were inspired by Testing Library's queries 🎉.
 
+<callout-info>
+	NOTE: In the near future, React Testing Library will have a completely async
+	API
+	([#1214](https://github.com/testing-library/react-testing-library/pull/1214)).
+	The videos were recorded with this implemented and the version of Testing
+	Library you have in this workshop app has this implemented as well. However,
+	if you use the latest version of Testing Library, you will not have this
+	implemented yet. Things should work either way, but that's why we're adding
+	`await` to our `render` and `act` calls.
+</callout-info>
+
 Here's the simplest example of a test using Testing Library:
 
 ```tsx filename=counter.tsx
