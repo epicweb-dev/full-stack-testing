@@ -3,7 +3,7 @@
 <EpicVideo url="https://www.epicweb.dev/workshops/web-application-testing/end-to-end-mocking/intro-to-e2e-mocking" />
 
 When testing things, sometimes you need to fake things out. Imagine you sell
-plush Koalas and you want to test the checkout flow. If you were to actually
+plush Koalas, and you want to test the checkout flow. If you were to actually
 make a request to your payment processor, you'd be charged every time you ran
 your tests. While it would be fun to have hundreds of Koalas in your house,
 you'd probably go broke. 😅
@@ -13,7 +13,7 @@ parties. And this isn't just a good idea for testing, it's also a good idea for
 development as well.
 
 Personally, I prefer to be able to do all my work completely offline, so I mock
-out all third party requests during development as well as in testing. This
+out all third-party requests during development as well as in testing. This
 helps a great deal with my productivity.
 
 That said...
@@ -31,14 +31,14 @@ software is used.
 Read more about this in
 [The Merits of Mocking](https://kentcdodds.com/blog/the-merits-of-mocking).
 
-Another thing you want to watch out for though is to make sure you don't impact
+Another thing you want to watch out for, though, is to make sure you don't impact
 your source code to make it easier to mock. This is why it's great to have a
 tool capable of unobtrusively intercepting HTTP requests made by your app. And
 that tool is called [MSW](https://mswjs.io/) (short for "Mock Service Worker").
 
-MSW originated as a utility for mocking browser requests, but is more often used
+MSW originated as a utility for mocking browser requests but is more often used
 in Node as a testing utility. In Remix apps, it's pretty much only used on the
-server during testing and development because typically most (if not all)
+server during testing and development because, typically, most (if not all)
 external network requests are made on the server.
 
 📜 You'll find
@@ -74,7 +74,7 @@ closeWithGrace(() => {
 
 In general, it's best to have the default HTTP mocks handle the happy path,
 though I do recommend you try to make them as similar to the real deal as
-reasonable. I often user `faker` to generate fake data for what's returned from
+reasonable. I often use `faker` to generate fake data for what's returned from
 the APIs and even do basic validation on the requests as well (make sure the
 `Authorization` header is present and the request body follows the schema, etc).
 
@@ -83,19 +83,19 @@ the APIs and even do basic validation on the requests as well (make sure the
 One of the tricky things we run into when running tests against our app in
 Playwright is that we can't easily communicate between the playwright server and
 our app server because they are running in different processes. The best way
-I've found to communicate is through the file system. However this is a bit
-limited which is one of the reasons I typically focus E2E tests on happy path
+I've found to communicate is through the file system. However, this is a bit
+limited, which is one of the reasons I typically focus E2E tests on happy path
 user flows and edge cases are handled by integration tests with vitest.
 
 When your tests and source code run in the same process, you can take advantage
 of MSW's [`server.use`](https://mswjs.io/docs/api/setup-server/use) function to
-alter the default handlers which allows you to test situations where the HTTP
+alter the default handlers, which allows you to test situations where the HTTP
 request fails or returns an error.
 
 <callout-info>
 	MSW is currently working on a way to improve process-to-process communication
 	for this use case and it's really pretty cool. It will allow us to have much
-	more sophisticated HTTP mocks (using `server.use` which we'll do later in the
+	more sophisticated HTTP mocks (using `server.use`, which we'll do later in the
 	workshop with vitest).
 	<br />
 	Even with that, writing the emails to the file system has some benefits (like
