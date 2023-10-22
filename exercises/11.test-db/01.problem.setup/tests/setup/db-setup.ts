@@ -1,6 +1,6 @@
 // 🐨 create a databaseFile variable that points to `./tests/prisma/data.db`
 // 🐨 create a full path to that file with path.join(process.cwd(), databaseFile)
-// 🐨 set process.env.DATABSE_URL to that full path
+// 🐨 set process.env.DATABASE_URL to that full path
 
 // 🐨 before all the tests run, use execaCommand from 'execa' to run:
 //   prisma migrate reset --force --skip-seed --skip-generate
