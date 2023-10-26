@@ -1,5 +1,5 @@
 <div>
-  <h1 align="center"><a href="https://kentcdodds.com/workshops">🧪 Full Stack Testing</a></h1>
+  <h1 align="center"><a href="https://www.epicweb.dev/workshops/web-application-testing">🧪 Full Stack Testing</a></h1>
   <strong>
     Confidently ship your full-stack app with automated tests
   </strong>
