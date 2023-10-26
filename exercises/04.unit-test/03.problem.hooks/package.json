@@ -121,9 +121,6 @@
     "typescript": "^5.2.2",
     "vitest": "^0.34.6"
   },
-  "engines": {
-    "node": "18"
-  },
   "prisma": {
     "seed": "npx tsx prisma/seed.ts"
   },
