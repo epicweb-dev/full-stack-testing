@@ -241,7 +241,7 @@ async function setupRequest({
 }
 
 async function setupUser(userData = createUser()) {
-	// 🐨 Because our database is completey reset beetween tests, you can skip the
+	// 🐨 Because our database is completely reset beetween tests, you can skip the
 	// insertNewUser and do a nested create now!
 	const user = await insertNewUser(userData)
 	const session = await prisma.session.create({
