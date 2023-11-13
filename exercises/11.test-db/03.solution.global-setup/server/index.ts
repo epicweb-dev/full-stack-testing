@@ -201,7 +201,7 @@ if (process.env.NODE_ENV === 'development') {
 		clearTimeout(timeout)
 		timeout = setTimeout(async () => {
 			const { prisma } = await import('#app/utils/db.server.ts')
-			prisma.$disconnect()
+			await prisma.$disconnect()
 		}, 300)
 	})
 	closeWithGrace(async () => {
