@@ -25,7 +25,7 @@ test('a new user goes to onboarding', async () => {
 	// 🐨 create a new Request with the url.toString().
 	//   🐨 the method should be GET (since we're calling the loader)
 	//   🐨 the headers should include a cookie, use the convertSetCookieToCookie function below
-	// 🐨 call the loader with the request, an empty params object, and an empty context object
+	// 🐨 call the loader with the request, the PARAMS, and an empty context object
 	// assert the response is a redirect to `/onboarding/github`
 	// 💰 response.headers.get('location') and response.status
 })
