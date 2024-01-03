@@ -1,9 +1,9 @@
 import { faker } from '@faker-js/faker'
 import * as setCookieParser from 'set-cookie-parser'
-// 🐨 add { server } to this import:
 import { expect, test } from 'vitest'
 import { connectionSessionStorage } from '#app/utils/connections.server.ts'
 import { invariant } from '#app/utils/misc.tsx'
+// 🐨 add { server } to this import:
 import '#tests/mocks/index.ts'
 import { loader } from './auth.$provider.callback.ts'
 
