@@ -35,7 +35,7 @@ test('increments and decrements', async () => {
 	await user.click(screen.getByRole('button', { name: '+' }))
 	expect(screen.getByRole('status').textContent).toBe(1)
 	await user.click(screen.getByRole('button', { name: '-' }))
-	expect(result.current.count).toBe(0)
+	expect(screen.getByRole('status').textContent).toBe(0)
 })
 ```
 
