@@ -35,7 +35,8 @@ afterEach(async () => {
 is an exception. There are in fact, no tests where I want the real
 `console.error` to be called. So by using a `beforeEach` hook, we can mock the
 `console.error` for every test and restore it after it's finished. Additionally,
-it would be a good idea
+it would be a good idea to have some sort of description of what the additional
+good idea would be 😅
 
 Sadly, this is going to require a bit more work than what we were doing before,
 but it'll be better this way, I promise.
