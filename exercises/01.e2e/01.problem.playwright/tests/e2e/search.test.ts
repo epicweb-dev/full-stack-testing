@@ -2,7 +2,7 @@
 
 // 🐨 create your test here, you'll need the page fixture.
 //   🐨 go to the home page (💰 "/")
-//   🐨 fill in the search box with "kody" (💰 it's implicit role is "searchbox" and it's named "search")
+//   🐨 fill in the search box with "kody" (💰 its implicit role is "searchbox" and it's named "search")
 //   🐨 click the search button (💰 it's named "search")
 //   🐨 wait for the URL to be "/users?search=kody" (💰 page.waitForURL)
 //   🐨 assert that the text "Epic Notes Users" is visible (💰 don't forget to add "await")
