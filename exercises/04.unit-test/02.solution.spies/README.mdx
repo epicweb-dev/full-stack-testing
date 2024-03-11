@@ -3,10 +3,13 @@
 <EpicVideo url="https://www.epicweb.dev/workshops/web-application-testing/unit-testing/managing-test-output-and-error-logging-with-console-mocking/solution" />
 
 👨‍💼 Great! Now our test output is cleaner! But do you remember our user search
-E2E test where we were doing the cleanup at the end of the test? Remember the
-problem that caused?
+E2E test where we were doing the cleanup at the end of the test? The bit where
+we called `await prisma.user.delete({ where: { id: newUser.id } })` at the end?
+Remember the problem that caused?
 
-The problem it caused was if the test failed, the cleanup never ran. We reached
-for playwright's `test.afterEach` to solve this. We've got a similar problem
-here with our cleanup and we can solve it in a similar way with vitest. We'll do
-that next.
+The problem it caused was if the test failed, the cleanup never ran. We solved
+this by using a playwright fixture which and calling that after the `use`
+function call.
+
+We've got a similar problem here with our cleanup and we can solve it in a bit
+of a different way with vitest. We'll do that next.
