@@ -58,7 +58,7 @@ function TestComponent() {
 test('TestComponent: prevents default on the first click, and does not on the second', async () => {
 	const user = userEvent.setup()
 	await render(<TestComponent />)
-
+// Please further clarify how we're able to get the "status" role on the `<output/>` tag without explicitly set it in the `<TestComponent/>` ?
 	const status = screen.getByRole('status')
 	const button = screen.getByRole('button')
 
