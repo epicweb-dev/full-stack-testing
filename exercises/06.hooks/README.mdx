@@ -92,7 +92,7 @@ Here's how we would do that with the example above:
 /**
  * @vitest-environment jsdom
  */
-import { renderHook, screen } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { useState } from 'react'
 import { expect, test } from 'vitest'
@@ -102,7 +102,7 @@ function TestComponent() {
 	const { count, increment, decrement } = useCounter(0)
 	return (
 		<div>
-			<output>{count}</output>
+			<output role='status'>{count}</output>
 			<button onClick={increment}>+</button>
 			<button onClick={decrement}>-</button>
 		</div>
