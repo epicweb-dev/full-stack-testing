@@ -8,7 +8,7 @@ we called `await prisma.user.delete({ where: { id: newUser.id } })` at the end?
 Remember the problem that caused?
 
 The problem it caused was if the test failed, the cleanup never ran. We solved
-this by using a playwright fixture which and calling that after the `use`
+this by using a playwright fixture and calling that after the `use`
 function call.
 
 We've got a similar problem here with our cleanup and we can solve it in a bit
