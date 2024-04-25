@@ -1,0 +1,35 @@
+diff --git a/node_modules/@testing-library/react/types/index.d.ts b/node_modules/@testing-library/react/types/index.d.ts
+index e7cf02b..1ddecdf 100644
+--- a/node_modules/@testing-library/react/types/index.d.ts
++++ b/node_modules/@testing-library/react/types/index.d.ts
+@@ -105,11 +105,11 @@ export function render<
+ >(
+   ui: React.ReactNode,
+   options: RenderOptions<Q, Container, BaseElement>,
+-): RenderResult<Q, Container, BaseElement>
++): Promise<RenderResult<Q, Container, BaseElement>>
+ export function render(
+   ui: React.ReactNode,
+   options?: Omit<RenderOptions, 'queries'>,
+-): RenderResult
++): Promise<RenderResult>
+ 
+ export interface RenderHookResult<Result, Props> {
+   /**
+@@ -159,7 +159,7 @@ export function renderHook<
+ >(
+   render: (initialProps: Props) => Result,
+   options?: RenderHookOptions<Props, Q, Container, BaseElement>,
+-): RenderHookResult<Result, Props>
++): Promise<RenderHookResult<Result, Props>>
+ 
+ /**
+  * Unmounts React trees that were mounted with render.
+@@ -171,6 +171,4 @@ export function cleanup(): void
+  * If that's not available (older version of react) then it
+  * simply calls the given callback immediately
+  */
+-export const act: typeof reactAct extends undefined
+-  ? (callback: () => void) => void
+-  : typeof reactAct
++export const act: (callback: () => void) => Promise<void>
