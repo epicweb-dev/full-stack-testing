@@ -111,7 +111,7 @@ async function updateDataDb() {
 					path.join(latestPrismaApp, 'prisma'),
 					path.join(app, 'prisma'),
 					[/data\.db/],
-			  )
+				)
 			: false
 		if (prismaIsUnchanged) {
 			logVerbose(

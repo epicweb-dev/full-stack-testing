@@ -47,10 +47,14 @@ If you want to test your whole route, then you'll want to do something like
 this:
 
 ```tsx filename=app/routes/hello.tsx
-import { json, type DataFunctionArgs } from '@remix-run/node'
+import {
+	json,
+	type ActionFunctionArgs,
+	type LoaderFunctionArgs,
+} from '@remix-run/node'
 import { useLoaderData } from '@remix-run/react'
 
-export async function loader({ request }: DataFunctionArgs) {
+export async function loader({ request }: LoaderFunctionArgs) {
 	const user = await getUser(request)
 	return json({ title: `Hello ${user.name}` })
 }

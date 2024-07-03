@@ -7,11 +7,7 @@
       "id": "MOCK_GITHUB_CODE_KODY_profile_id",
       "name": "Velma Watsica",
       "avatar_url": "https://github.com/ghost.png",
-      "emails": [
-        "Phoebe68@yahoo.com",
-        "Hal_Muller@yahoo.com",
-        "kody@kcd.dev"
-      ]
+      "emails": ["Phoebe68@yahoo.com", "Hal_Muller@yahoo.com", "kody@kcd.dev"]
     },
     "emails": [
       {
