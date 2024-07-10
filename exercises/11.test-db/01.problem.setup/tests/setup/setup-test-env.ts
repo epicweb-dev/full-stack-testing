@@ -4,7 +4,7 @@ import '#app/utils/env.server.ts'
 import '@testing-library/jest-dom/vitest'
 import { installGlobals } from '@remix-run/node'
 import { cleanup } from '@testing-library/react'
-import { afterEach, beforeEach, vi, type SpyInstance } from 'vitest'
+import { afterEach, beforeEach, vi, type MockInstance } from 'vitest'
 import { prisma } from '#app/utils/db.server.ts'
 import { insertedUsers } from '#tests/db-utils.ts'
 import { server } from '../mocks/index.ts'
@@ -23,7 +23,7 @@ afterEach(async () => {
 	insertedUsers.clear()
 })
 
-export let consoleError: SpyInstance<Parameters<typeof console.error>>
+export let consoleError: MockInstance<typeof console.error>
 
 beforeEach(() => {
 	const originalConsoleError = console.error

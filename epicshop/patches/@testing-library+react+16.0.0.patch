@@ -1,8 +1,8 @@
 diff --git a/node_modules/@testing-library/react/types/index.d.ts b/node_modules/@testing-library/react/types/index.d.ts
-index e7cf02b..1ddecdf 100644
+index 37c8392..dcdbbab 100644
 --- a/node_modules/@testing-library/react/types/index.d.ts
 +++ b/node_modules/@testing-library/react/types/index.d.ts
-@@ -105,11 +105,11 @@ export function render<
+@@ -145,11 +145,11 @@ export function render<
  >(
    ui: React.ReactNode,
    options: RenderOptions<Q, Container, BaseElement>,
@@ -16,7 +16,7 @@ index e7cf02b..1ddecdf 100644
  
  export interface RenderHookResult<Result, Props> {
    /**
-@@ -159,7 +159,7 @@ export function renderHook<
+@@ -239,7 +239,7 @@ export function renderHook<
  >(
    render: (initialProps: Props) => Result,
    options?: RenderHookOptions<Props, Q, Container, BaseElement>,
@@ -25,11 +25,11 @@ index e7cf02b..1ddecdf 100644
  
  /**
   * Unmounts React trees that were mounted with render.
-@@ -171,6 +171,4 @@ export function cleanup(): void
-  * If that's not available (older version of react) then it
-  * simply calls the given callback immediately
+@@ -252,6 +252,4 @@ export function cleanup(): void
+  * simply calls the deprecated version which is ReactTestUtils.act(cb)
   */
--export const act: typeof reactAct extends undefined
--  ? (callback: () => void) => void
+ // IfAny<typeof reactAct, reactDeprecatedAct, reactAct> from https://stackoverflow.com/a/61626123/3406963
+-export const act: 0 extends 1 & typeof reactAct
+-  ? typeof reactDeprecatedAct
 -  : typeof reactAct
 +export const act: (callback: () => void) => Promise<void>

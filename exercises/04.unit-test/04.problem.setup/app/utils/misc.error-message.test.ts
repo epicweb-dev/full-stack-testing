@@ -1,9 +1,9 @@
 import { faker } from '@faker-js/faker'
-import { beforeEach, expect, test, vi, type SpyInstance } from 'vitest'
+import { beforeEach, expect, test, vi, type MockInstance } from 'vitest'
 import { getErrorMessage } from './misc.tsx'
 
 // 🐨 move everything between here and the next 🐨 to the setup file
-let consoleError: SpyInstance<Parameters<typeof console.error>>
+let consoleError: MockInstance<typeof console.error>
 
 beforeEach(() => {
 	const originalConsoleError = console.error

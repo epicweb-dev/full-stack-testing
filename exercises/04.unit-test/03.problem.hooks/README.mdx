@@ -46,3 +46,8 @@ even a configuration option to do it by default. So we can remove that call and
 add that in <InlineFile file="vitest.config.ts" />. This will actually ensure
 our cleanup of the mock functions always run after each test which is exactly
 what we want.
+
+<callout-info>
+	vitest replaced `SpyInstance` with `MockInstance` so the videos will use
+	`SpyInstance`, but you'll be using `MockInstance`.
+</callout-info>

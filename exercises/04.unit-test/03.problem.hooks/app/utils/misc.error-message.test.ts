@@ -1,11 +1,11 @@
 import { faker } from '@faker-js/faker'
-// 🐨 bring in beforeEach and SpyInstance from vitest
+// 🐨 bring in beforeEach and MockInstance from vitest
 import { expect, test, vi } from 'vitest'
 import { getErrorMessage } from './misc.tsx'
 
 // 🐨 declare a consoleError variable here (using let)
 // 🦺 if you want to make TypeScript happy about this variable, here's the
-// typing for that: SpyInstance<Parameters<typeof console.error>>
+// typing for that: MockInstance<typeof console.error>
 
 // 🐨 create a beforeEach. It should get the originalConsoleError, then assign
 // the consoleError to vi.spyOn...

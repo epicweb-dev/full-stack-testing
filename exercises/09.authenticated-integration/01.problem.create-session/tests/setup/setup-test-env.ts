@@ -3,7 +3,7 @@ import '#app/utils/env.server.ts'
 import '@testing-library/jest-dom/vitest'
 import { installGlobals } from '@remix-run/node'
 import { cleanup } from '@testing-library/react'
-import { afterEach, beforeEach, vi, type SpyInstance } from 'vitest'
+import { afterEach, beforeEach, vi, type MockInstance } from 'vitest'
 import { server } from '../mocks/index.ts'
 
 installGlobals()
@@ -11,7 +11,7 @@ installGlobals()
 afterEach(() => server.resetHandlers())
 afterEach(() => cleanup())
 
-export let consoleError: SpyInstance<Parameters<typeof console.error>>
+export let consoleError: MockInstance<typeof console.error>
 
 beforeEach(() => {
 	const originalConsoleError = console.error
