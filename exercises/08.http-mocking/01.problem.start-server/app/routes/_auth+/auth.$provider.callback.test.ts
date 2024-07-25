@@ -6,7 +6,7 @@ import * as setCookieParser from 'set-cookie-parser'
 // 💰 import '#tests/mocks/index.ts'
 import { test } from 'vitest'
 // 🐨 you're going to want connectionSessionStorage from the utils folder
-// 💰 import { connectionSessionStorage } from '#app/utils/session.server.ts'
+// 💰 import { connectionSessionStorage } from '#app/utils/connections.server.ts'
 // 🐨 you'll need the loader from './auth.$provider.callback.ts'
 // 💰 import { loader } from './auth.$provider.callback.ts'
 
