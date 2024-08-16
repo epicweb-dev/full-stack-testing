@@ -8,10 +8,6 @@ import {
 	isProblemApp,
 	setPlayground,
 } from '@epic-web/workshop-utils/apps.server'
-import { getWatcher } from '@epic-web/workshop-utils/change-tracker.server'
-
-// getApps expects this env var
-process.env.NODE_ENV = 'development'
 
 const allApps = await getApps()
 const uniqueApps = allApps.filter(
@@ -67,5 +63,3 @@ if (!process.env.SKIP_PLAYGROUND) {
 		)
 	}
 }
-
-getWatcher().close()
