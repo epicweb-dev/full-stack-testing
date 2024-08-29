@@ -112,7 +112,7 @@ test('The user profile when logged in as self', async () => {
 					path: 'users/:username',
 					Component: UsernameRoute,
 					// 🐨 replace this with a smaller one that takes the request, sets the
-					// cookie header and then calls the rootLoader directly
+					// cookie header and then calls the loader directly
 					loader(): Awaited<ReturnType<typeof loader>> {
 						return json({
 							user,
