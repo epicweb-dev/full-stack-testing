@@ -30,7 +30,7 @@
     "@conform-to/zod": "^0.9.0",
     "@epic-web/remember": "^1.1.0",
     "@epic-web/totp": "^1.1.2",
-    "@epic-web/workshop-utils": "^5.2.0",
+    "@epic-web/workshop-utils": "^5.3.0",
     "@paralleldrive/cuid2": "^2.2.2",
     "@prisma/client": "^5.16.2",
     "@radix-ui/react-checkbox": "^1.1.1",
