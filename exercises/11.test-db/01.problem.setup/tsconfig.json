@@ -2,6 +2,8 @@
   "include": ["**/*.ts", "**/*.tsx"],
   "compilerOptions": {
     "lib": ["DOM", "DOM.Iterable", "ES2022"],
+    // this is necessary because our custom matchers are overriding the jest-dom matchers types
+    "types": ["vitest", "@testing-library/jest-dom"],
     "isolatedModules": true,
     "esModuleInterop": true,
     "jsx": "react-jsx",
