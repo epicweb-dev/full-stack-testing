@@ -13,7 +13,7 @@ So, the Remix team is working on a great solution for this called
 `createRemixStub` which allows you to create a mini-Remix app that you can
 render in your test and have all the routes you need for testing the component:
 
-```tsx filename=app/routes/counter.test.tsx
+```tsx filename=app/routes/counter.tsx
 import { useLoaderData } from '@remix-run/react'
 import { db } from '#app/utils/db.server'
 
@@ -36,7 +36,7 @@ export default function Counter() {
 }
 ```
 
-```tsx filename=app/counter.test.tsx
+```tsx filename=app/routes/counter.test.tsx
 import * as React from 'react'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
@@ -70,7 +70,7 @@ logic, however, I'm often interested in testing the component holistically, so
 we can actually import and use the original `action` and `loader` from the route
 as well:
 
-```tsx filename=app/counter.test.tsx
+```tsx filename=app/routes/counter.test.tsx
 import * as React from 'react'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
