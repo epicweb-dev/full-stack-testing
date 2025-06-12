@@ -143,6 +143,58 @@ EPICSHOP_EDITOR="C:\Program Files\Microsoft VS Code\bin\code.cmd"
 Make certain that if the path includes spaces that you wrap the path in quotes
 as above.
 
+### Remote development/devcontainer setup
+
+If you want or need to run this workshop in a remote environment, or if you're 
+using devcontainer, then for the tests to work you need some additional setup.
+
+Devcontainer is implemented differently in different editors, but in VS Code it's
+as simple as having the `Dev containers` extension installed and then creating a
+configuration file. There's a wizard that will walk you through the process of
+setting it up.
+
+The minimal configuration needs would use the `Node.js & Typescript` template.
+From there you would need to add the following to the `devcontainer.json` file:
+
+```json
+"remoteEnv": {
+  // or the editor you use so that actions to open files
+  // in the workshop will work correctly
+  "EDITOR": "code",
+  // this is for playwright remote server connection assuming
+  // network host so no changes in the workshop code are required
+  // in actual scenarios, you could use a docker compose file
+  // then use the container name instead of localhost
+  // (in which case, the playwright config would need to
+  // change to point to the main container name instead of localhost)
+  "PW_TEST_CONNECT_WS_ENDPOINT": "ws://localhost:3000/"
+},
+"initializeCommand": {
+  // this stops and removes the container if it's already running
+  // then starts a new one while starting the devcontainer
+  // pay attention that the version of playwright matches the one in the workshop
+  // check the docs for more information on how to run the playwright remote server
+  // https://playwright.dev/docs/docker#remote-connection
+  "playwright": "docker stop playwright || true && docker rm playwright || true && docker run --network=host -d --rm --name playwright --init -it --workdir /home/pwuser --user pwuser mcr.microsoft.com/playwright:v1.47.0-noble /bin/sh -c \"npx -y playwright@1.47.0 run-server --port 3000 --host 0.0.0.0\""
+},
+// this is needed to simplify the setup process for the workshop
+"runArgs": [ "--network=host" ]
+```
+
+After this, you can run the devcontainer, then run the `npm run setup` command
+to set up the environment.
+
+Finally, on the `playground` folder, when running the playwright tests, you
+should use the following command:
+
+```bash
+# you can change the port if needed
+npm run test:e2e:dev -- --ui-port=9292 --ui-host=0.0.0.0
+```
+
+This will open the UI mode in a browser window instead of the native window.
+For more information: https://playwright.dev/docs/test-ui-mode#docker--github-codespaces
+
 ## Exercises
 
 - `exercises/*.*/README.md`: Exercise background information
