@@ -143,6 +143,10 @@ EPICSHOP_EDITOR="C:\Program Files\Microsoft VS Code\bin\code.cmd"
 Make certain that if the path includes spaces that you wrap the path in quotes
 as above.
 
+### Remote Playwright Server
+
+If you're using DevContainers, can't install Playwright binaries/dependencies or can't launch the UI mode natively, check this [issue](https://github.com/epicweb-dev/full-stack-testing/issues/41) for information on how to run Playwright in a container and/or launch the UI mode in the browser.
+
 ## Exercises
 
 - `exercises/*.*/README.md`: Exercise background information
