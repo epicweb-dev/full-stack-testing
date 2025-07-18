@@ -13,7 +13,7 @@ ENV NODE_ENV="production"
 WORKDIR /myapp
 
 # Clone the workshop repo during build time, excluding database files
-RUN git clone --depth 1 ${EPICSHOP_REPO} ${EPICSHOP_CONTEXT_CWD}
+RUN git clone --depth 1 ${EPICSHOP_REPO} ${EPICSHOP_CONTEXT_CWD} \
     find ${EPICSHOP_CONTEXT_CWD} -name "data.db" -delete
 
 ADD . .
