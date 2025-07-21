@@ -13,6 +13,8 @@ on:
       - 'main'
 jobs:
   setup:
+    name: 🔧 Setup
+    timeout-minutes: 20
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
@@ -37,6 +39,7 @@ jobs:
 
   deploy:
     name: 🚀 Deploy
+    timeout-minutes: 10
     runs-on: ubuntu-latest
     # only deploy main branch on pushes
     if: ${{ github.ref == 'refs/heads/main' && github.event_name == 'push' }}
