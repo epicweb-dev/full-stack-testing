@@ -14,7 +14,7 @@ export async function loader({ params }: LoaderFunctionArgs) {
 	return new Response(image.blob, {
 		headers: {
 			'content-type': image.contentType,
-			'content-length': Buffer.byteLength(image.blob).toString(),
+			'content-length': image.blob.length.toString(),
 			'content-disposition': `inline; filename="${params.imageId}"`,
 			'cache-control': 'public, max-age=31536000, immutable',
 		},

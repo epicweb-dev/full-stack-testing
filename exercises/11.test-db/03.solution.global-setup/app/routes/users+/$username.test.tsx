@@ -32,6 +32,7 @@ test('The user profile when not logged in as self', async () => {
 	])
 
 	const routeUrl = `/users/${user.username}`
+	console.log(routeUrl)
 	await render(<App initialEntries={[routeUrl]} />, {
 		wrapper: ({ children }) => (
 			<AuthenticityTokenProvider token="test-csrf-token">
@@ -78,6 +79,9 @@ test('The user profile when logged in as self', async () => {
 				// add the cookie header to the request
 				args.request.headers.set('cookie', cookieHeader)
 				return rootLoader(args)
+			},
+			Component: function TestComponent() {
+				return <div>Test Component</div>
 			},
 			children: [
 				{

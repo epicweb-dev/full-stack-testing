@@ -2,15 +2,12 @@ import 'dotenv/config'
 // 🐨 import ./db-setup.ts here
 import '#app/utils/env.server.ts'
 import '@testing-library/jest-dom/vitest'
-import { installGlobals } from '@remix-run/node'
 import { cleanup } from '@testing-library/react'
 import { afterEach, beforeEach, vi, type MockInstance } from 'vitest'
 import { prisma } from '#app/utils/db.server.ts'
 import { insertedUsers } from '#tests/db-utils.ts'
 import { server } from '../mocks/index.ts'
 import './custom-matchers.ts'
-
-installGlobals()
 
 afterEach(() => server.resetHandlers())
 afterEach(() => cleanup())

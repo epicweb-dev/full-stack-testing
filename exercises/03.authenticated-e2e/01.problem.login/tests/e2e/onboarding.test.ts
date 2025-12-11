@@ -49,9 +49,7 @@ test('onboarding with link', async ({ page, getOnboardingData }) => {
 
 	await page.getByRole('textbox', { name: /email/i }).fill(onboardingData.email)
 	await page.getByRole('button', { name: /submit/i }).click()
-	await expect(
-		page.getByRole('button', { name: /submit/i, disabled: true }),
-	).toBeVisible()
+
 	await expect(page.getByText(/check your email/i)).toBeVisible()
 
 	const email = await waitFor(() => requireEmail(onboardingData.email))

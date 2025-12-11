@@ -23,3 +23,14 @@ Vitest renamed `SpyInstance` to `MockInstance` so the videos will use
 - SpyInstance<Parameters<typeof console.error>>
 + MockInstance<typeof console.error>
 ```
+
+## Prisma v6
+
+Updated everything to use Prisma v6. The only substantial change is instead of
+using `Buffer.from` to convert a file to a `Uint8Array`, we now use
+`new Uint8Array(await file.arrayBuffer())`.
+
+## `installGlobals`
+
+`installGlobals` is no longer needed in modern versions of Node.js and
+references to it have been removed from the exercise content.

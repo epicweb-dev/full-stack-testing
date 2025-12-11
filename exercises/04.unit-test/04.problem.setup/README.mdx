@@ -13,10 +13,6 @@ we should be simulating. Here's some of that setup code:
 ```ts
 import 'dotenv/config'
 import '#app/utils/env.server.ts'
-
-import { installGlobals } from '@remix-run/node'
-
-installGlobals()
 ```
 
 You'll find similar setup in our <InlineFile file="server/index.ts" />. So we
@@ -26,6 +22,14 @@ While you could easily create a file and import it in every test file, it's
 better to use
 [the vitest `setupFiles` config](https://vitest.dev/config/#setupfiles) because
 it's just much more convenient this way.
+
+<callout-info>
+	At the time of the original recording, our setup code also included
+	`installGlobals` from `@remix-run/node`. This would set up things like
+	`Headers`, `fetch`, etc. In modern Node.js, we no longer need these globals
+	installed because they are now built in. The exercise content has been updated
+	to reflect this change.
+</callout-info>
 
 Additionally, because we want our `console.error` code to be handled the same
 in every one our tests, we can move our console error stuff to our setup file

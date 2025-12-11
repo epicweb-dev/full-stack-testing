@@ -1,11 +1,8 @@
 import 'dotenv/config'
 import '#app/utils/env.server.ts'
 import '@testing-library/jest-dom/vitest'
-import { installGlobals } from '@remix-run/node'
 import { cleanup } from '@testing-library/react'
 import { afterEach, beforeEach, vi, type MockInstance } from 'vitest'
-
-installGlobals()
 
 afterEach(() => cleanup())
 

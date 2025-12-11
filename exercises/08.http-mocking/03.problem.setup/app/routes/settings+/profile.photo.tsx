@@ -76,7 +76,7 @@ export async function action({ request }: ActionFunctionArgs) {
 			return {
 				image: {
 					contentType: data.photoFile.type,
-					blob: Buffer.from(await data.photoFile.arrayBuffer()),
+					blob: new Uint8Array(await data.photoFile.arrayBuffer()),
 				},
 			}
 		}),

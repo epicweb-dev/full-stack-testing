@@ -1,9 +1,6 @@
 import 'dotenv/config'
 import '#app/utils/env.server.ts'
-import { installGlobals } from '@remix-run/node'
 import { beforeEach, vi, type MockInstance } from 'vitest'
-
-installGlobals()
 
 export let consoleError: MockInstance<typeof console.error>
 
