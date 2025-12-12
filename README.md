@@ -77,7 +77,7 @@ variable and how to fix it here for [windows][win-path] or
 Use the Epic Workshop CLI to get this setup:
 
 ```sh nonumber
-npx epicshop@latest add full-stack-testing
+npx --yes epicshop@latest add full-stack-testing
 ```
 
 If you experience errors here, please open [an issue][issue] with as many
@@ -133,7 +133,11 @@ as above.
 
 ### Remote Playwright Server
 
-If you're using DevContainers, can't install Playwright binaries/dependencies or can't launch the UI mode natively, check this [issue](https://github.com/epicweb-dev/full-stack-testing/issues/41) for information on how to run Playwright in a container and/or launch the UI mode in the browser.
+If you're using DevContainers, can't install Playwright binaries/dependencies or
+can't launch the UI mode natively, check this
+[issue](https://github.com/epicweb-dev/full-stack-testing/issues/41) for
+information on how to run Playwright in a container and/or launch the UI mode in
+the browser.
 
 ## Exercises
 
