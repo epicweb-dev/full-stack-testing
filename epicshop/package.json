@@ -1,11 +1,11 @@
 {
   "type": "module",
   "dependencies": {
-    "@epic-web/workshop-app": "^6.48.1",
-    "@epic-web/workshop-utils": "^6.48.1",
+    "@epic-web/workshop-app": "^6.48.2",
+    "@epic-web/workshop-utils": "^6.48.2",
     "chokidar": "^3.6.0",
     "enquirer": "^2.4.1",
-    "epicshop": "^6.48.1",
+    "epicshop": "^6.48.2",
     "execa": "^9.6.1",
     "fs-extra": "^11.2.0",
     "match-sorter": "^8.2.0",
