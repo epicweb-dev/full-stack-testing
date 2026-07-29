@@ -80,9 +80,6 @@ test('The user profile when logged in as self', async () => {
 				args.request.headers.set('cookie', cookieHeader)
 				return rootLoader(args)
 			},
-			Component: function TestComponent() {
-				return <div>Test Component</div>
-			},
 			children: [
 				{
 					path: 'users/:username',
