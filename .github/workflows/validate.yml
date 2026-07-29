@@ -93,13 +93,14 @@ jobs:
         run: npm run setup:custom
 
       # Exercises 1–3 contain Playwright suites, which cannot be collected by
-      # their `npm test` Vitest command. Exercises 4–11 contain the workshop's
-      # Vitest solution suites; keep every one of those suites in CI.
+      # their `npm test` Vitest command. Run every test in the completed Vitest
+      # solution for exercises 4–11; intermediate steps can intentionally
+      # demonstrate failing tests that later steps fix.
       - name: 🧪 Run solution tests
         run: |
           set -euo pipefail
           if [ -f ./epicshop/test.js ]; then
-            node ./epicshop/test.js '4..s,5..s,6..s,7..s,8..s,9..s,10..s,11..s'
+            node ./epicshop/test.js '4.4.s,5.2.s,6.2.s,7.2.s,8.3.s,9.3.s,10.1.s,11.3.s'
           else
             echo "No epicshop/test.js in this workshop; skipping solution-app test runner."
           fi
