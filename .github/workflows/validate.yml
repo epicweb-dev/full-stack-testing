@@ -108,9 +108,9 @@ jobs:
       - name: 📦 Install dependencies
         run: npm ci
 
-      - name: 🎭 Install Playwright browser
-        if: ${{ hashFiles('epicshop/test.js') != '' }}
-        run: npx playwright install --with-deps chromium
+      # Solution CI runs `npm run test` (vitest) via epicshop/test.js, not
+      # Playwright e2e (`test:e2e`). Skip browser install: with-deps has been
+      # hanging after the Chromium download on GHA (also cancelled on main).
 
       - name: ◭ Generate Prisma clients
         if: ${{ hashFiles('epicshop/test.js') != '' }}
