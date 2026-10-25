@@ -21,6 +21,13 @@ jobs:
         os: [ubuntu-latest, windows-latest, macos-latest]
     runs-on: ${{ matrix.os }}
     steps:
+      # Checkout the PR head (works for forks) instead of epicshop add
+      # repo#branch, which only clones epicweb-dev and cannot see fork branches.
+      - name: ⬇️ Checkout repo
+        uses: actions/checkout@v4
+        with:
+          path: workshop
+
       - name: ⎔ Setup node
         uses: actions/setup-node@v4
         with:
@@ -30,8 +37,9 @@ jobs:
       # intentionally fail solution tests/types, which would create false CI red.
       # Use bash explicitly: Windows runners default to PowerShell, which cannot
       # parse this retry loop.
-      - name: ▶️ Add repo
+      - name: ▶️ Setup workshop
         shell: bash
+        working-directory: ./workshop
         env:
           # Kept getting npm ECOMPROMISED errors on windows. This fixed it.
           npm_config_cache: ${{ runner.temp }}/npm-cache
@@ -43,9 +51,9 @@ jobs:
           max_attempts=3
           delay_seconds=20
           while true; do
-            echo "::group::epicshop add attempt ${attempt}/${max_attempts}"
+            echo "::group::epicshop setup attempt ${attempt}/${max_attempts}"
             set +e
-            npx --yes epicshop@latest add ${{ github.event.repository.name }}#${{ github.head_ref || github.ref_name }} ./workshop
+            npx --yes epicshop@latest setup
             status=$?
             set -e
             echo "::endgroup::"
@@ -53,10 +61,10 @@ jobs:
               exit 0
             fi
             if [ "$attempt" -ge "$max_attempts" ]; then
-              echo "epicshop add failed after ${max_attempts} attempts" >&2
+              echo "epicshop setup failed after ${max_attempts} attempts" >&2
               exit "$status"
             fi
-            echo "epicshop add failed (exit ${status}); retrying in ${delay_seconds}s..."
+            echo "epicshop setup failed (exit ${status}); retrying in ${delay_seconds}s..."
             sleep "$delay_seconds"
             delay_seconds=$((delay_seconds * 2))
             attempt=$((attempt + 1))
@@ -85,7 +93,9 @@ jobs:
     name: 🧪 Test
     # Browser installation plus solution-app tests can exceed the setup budget.
     timeout-minutes: 30
-    runs-on: ubuntu-latest
+    # Pin 24.04: ubuntu-latest moved to 26.04, and Playwright 1.56.1 in this
+    # lockfile does not support chromium on ubuntu26.04 yet.
+    runs-on: ubuntu-24.04
     steps:
       - name: ⬇️ Checkout repo
         uses: actions/checkout@v4

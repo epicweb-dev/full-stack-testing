@@ -23,6 +23,7 @@ expect.extend({
 							? ` to ${this.utils.printExpected(redirectTo)}`
 							: ''
 					} but got ${
+						// Note: the videos show these swapped; this is the corrected order so the failure message prints the received location when there is one.
 						location ? this.utils.printReceived(location) : 'no redirect'
 					}`,
 			}
